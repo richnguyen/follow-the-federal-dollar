@@ -1,1 +1,52 @@
-[]
+[
+ {
+  "id": "ssa-tr2026",
+  "title": "The 2026 Annual Report of the Board of Trustees of the Federal OASI and DI Trust Funds (highlights)",
+  "publisher": "Social Security Administration",
+  "url": "https://www.ssa.gov/oact/tr/2026/II_A_highlights.html",
+  "note": "Depletion dates, percent payable, 75-year actuarial deficit, and the payroll-tax and benefit changes needed (full report: https://www.ssa.gov/oact/TR/2026/tr2026.pdf). Figures read from ssa.gov via search; ssa.gov blocks automated downloads."
+ },
+ {
+  "id": "ssa-press",
+  "title": "Social Security Board of Trustees: Projection for Combined Trust Funds Remains Consistent with Prior Year (June 9, 2026)",
+  "publisher": "Social Security Administration",
+  "url": "https://www.ssa.gov/news/en/press/releases/2026-06-09.html"
+ },
+ {
+  "id": "ssa-facts",
+  "title": "Fact Sheet on the Old-Age, Survivors, and Disability Insurance Program, June 30, 2026",
+  "publisher": "Social Security Administration, Office of the Chief Actuary",
+  "url": "https://www.ssa.gov/OACT/FACTS/"
+ },
+ {
+  "id": "cms-tr2026",
+  "title": "2026 Annual Report of the Boards of Trustees of the Federal Hospital Insurance and Federal Supplementary Medical Insurance Trust Funds",
+  "publisher": "Centers for Medicare & Medicaid Services",
+  "url": "https://www.cms.gov/files/document/2026-medicare-trustees-report.pdf",
+  "note": "HI trust fund depletion in the second quarter of 2033; 89% of costs payable then."
+ },
+ {
+  "id": "irs-rp2532",
+  "title": "Rev. Proc. 2025-32: tax year 2026 inflation adjustments (brackets, standard deduction)",
+  "publisher": "Internal Revenue Service",
+  "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+ },
+ {
+  "id": "irs-p15",
+  "title": "Publication 15 (2026), Employer’s Tax Guide: Social Security wage base and Medicare tax rates",
+  "publisher": "Internal Revenue Service",
+  "url": "https://www.irs.gov/pub/irs-pdf/p15.pdf"
+ },
+ {
+  "id": "irs-tc560",
+  "title": "Topic 560, Additional Medicare Tax",
+  "publisher": "Internal Revenue Service",
+  "url": "https://www.irs.gov/taxtopics/tc560"
+ },
+ {
+  "id": "scotus-ieepa",
+  "title": "Learning Resources, Inc. v. Trump, No. 24-1287 (February 20, 2026)",
+  "publisher": "Supreme Court of the United States",
+  "url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_4gcj.pdf"
+ }
+]

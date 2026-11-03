@@ -176,13 +176,17 @@ export interface SSAData {
     oasi: { year: number; quarter?: number; payablePct: number };
     di: { year: number; payablePct: number } | null;
     oasdi: { year: number; quarter?: number; payablePct: number };
-    hi?: { year: number; payablePct: number; report: string };
+    hi?: { year: number; quarter?: number; payablePct: number; report: string };
   };
   payableLongRun?: { year: number; pct: number };
   actuarialDeficit?: number; // % of taxable payroll
   fixes?: { label: string; value: string }[];
+  /** Fiscal-year history from the Treasury (MTS Table 8). `year` is the fiscal year. */
   oasdi: TrustFundYear[];
   oasi: TrustFundYear[];
+  di: TrustFundYear[];
+  hi: TrustFundYear[];
+  basis: 'fiscal';
   beneficiaries?: { total: number; asOf: string; sourceId: string };
   sourceIds: string[];
 }

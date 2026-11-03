@@ -199,7 +199,7 @@ export function Seg<T extends string>({ value, options, onChange, label }: { val
 export function Stat({ label, value, note, color }: { label: ReactNode; value: ReactNode; note?: ReactNode; color?: string }) {
   return (
     <div className="stat">
-      <div className="stat-label">{color && <span className="swatch" style={{ background: color }} />}{label}</div>
+      <div className="stat-label">{color && <span className="swatch" style={{ background: color }} />}<span>{label}</span></div>
       <div className="stat-value">{value}</div>
       {note && <div className="stat-note">{note}</div>}
     </div>

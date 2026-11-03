@@ -4,7 +4,7 @@ import { Guilloche } from '../components/Guilloche';
 import { ChartFrame, Legend, Section, Seg, Stat, Term, TipRow } from '../components/ui';
 import { budget, cbo, debt, fyTotals, HH, POP } from '../data';
 import { BUCKETS, CATEGORIES } from '../lib/categories';
-import { dollars, fyRange, money, moneyWords, monthShort, pct, signedPct } from '../lib/format';
+import { dateLabel, dollars, fyRange, money, moneyWords, monthShort, pct, signedPct } from '../lib/format';
 import { useLive } from '../lib/live';
 import { type UnitMode, useUnits } from '../lib/units';
 import { bucketYear, categoryTotals } from '../lib/derive';
@@ -223,7 +223,7 @@ export default function Overview() {
           </div>
           <div className="fact">
             <div className="fact-big">{money((live.debt ?? debt.latest).total)}</div>
-            <p>was the <Term id="gross-debt">total public debt</Term> on {(live.debt ?? debt.latest).date}, or about {dollars((live.debt ?? debt.latest).total / HH)} per household. <a href="#debt">See the debt →</a></p>
+            <p>was the <Term id="gross-debt">total public debt</Term> on {dateLabel((live.debt ?? debt.latest).date)}, or about {dollars((live.debt ?? debt.latest).total / HH)} per household. <a href="#debt">See the debt →</a></p>
           </div>
         </div>
       </Section>

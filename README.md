@@ -1,0 +1,54 @@
+# Follow the Federal Dollar
+
+A plain-language web app that shows average voters where U.S. federal tax money goes: spending by
+purpose and by every agency account, revenue by source, the structural gap between autopilot
+spending and revenue, the debt and interest, the laws that changed deficits, how Congress actually
+budgets, federal money in each state and congressional district, Social Security's trust fund
+timeline, a personal tax receipt, and a balance-the-budget sandbox.
+
+Every number comes from an official U.S. government source and every chart links to its dataset.
+
+## Run it
+
+```bash
+npm install
+npm run dev            # http://localhost:5173
+npm run build          # standalone site in dist/ (refreshes debt and latest month live from Treasury)
+npm run build:artifact # one self-contained HTML page in dist-artifact/ (data baked in)
+```
+
+The standalone build is static and can be hosted anywhere (GitHub Pages, Netlify, Vercel, S3).
+Routes are hash-based (`#spending`, `#state-ca`), so no server configuration is needed.
+
+## Refresh the data
+
+```bash
+npm run data           # fetch every source (cached in data/raw/) and rebuild src/data/generated/
+npm run data:build     # rebuild from the cache only
+node scripts/fetch-all.mjs --refresh   # ignore the cache
+```
+
+`scripts/check-hosts.mjs` reports which source hosts are reachable. Behind an HTTP proxy, Node's
+`fetch` needs `NODE_USE_ENV_PROXY=1` (the npm scripts set it).
+
+| Data | Official source | How it's obtained |
+|---|---|---|
+| Receipts, outlays, deficit (monthly and by fiscal year), outlays by budget function and by agency/account, receipts by source, payroll taxes by trust fund, customs collections and refunds, trust fund balances | U.S. Treasury, Monthly Treasury Statement Tables 1, 4, 5, 8, 9 | Fiscal Data API (`scripts/fetch-treasury.mjs`) |
+| Debt to the Penny, historical debt, interest expense, average interest rates | U.S. Treasury, Fiscal Data | Fiscal Data API |
+| FY1962–FY2025 mandatory / discretionary / net interest, revenue history, debt held by the public, GDP; projections | OMB Historical Tables, FY2027 Budget (Tables 1.1, 2.1, 7.1, 8.1, 10.1) | XLSX from whitehouse.gov (`scripts/build-cbo.mjs`) |
+| Federal awards by state and congressional district, top agencies and programs | USAspending.gov | USAspending API (`scripts/fetch-usaspending.mjs`) |
+| Population, households | Census Bureau (Vintage 2025 estimate; Housing Vacancy Survey) | census.gov releases (`scripts/fetch-census.mjs`) |
+| 2026 tax brackets, standard deduction, payroll tax parameters | IRS Rev. Proc. 2025-32, Publication 15, Topic 560 | irs.gov documents, recorded in `src/data/curated/tax.json` |
+| Social Security and Medicare trust fund projections | 2026 Social Security and Medicare Trustees Reports | `src/data/curated/trustees.json` (cited) |
+| Laws' deficit effects; budget-process history; who benefits | CBO/JCT cost estimates; CRS reports; agency statistics | `src/data/curated/*.json` (each entry cites its official URL) |
+
+CBO's projections are the preferred benchmark for the gap chart and the sandbox. The pipeline uses
+them automatically when `data/raw/cbo/baseline.parsed.json` exists; otherwise it uses OMB's
+estimates and labels them as the President's budget.
+
+## Code map
+
+- `src/pages/` one file per section; `src/components/charts.tsx` the D3-based charts;
+  `src/components/USMap.tsx` the state map; `src/lib/` formatting, categories, tax and sandbox math.
+- `src/data/types.ts` is the contract between the pipeline and the app.
+- Chart colors are a validated categorical palette (colorblind-safe order, both themes).

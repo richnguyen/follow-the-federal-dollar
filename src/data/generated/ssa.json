@@ -1,1 +1,396 @@
-{}
+{
+ "report": "2026 Social Security Trustees Report",
+ "released": "2026-06-09",
+ "depletion": {
+  "oasi": {
+   "year": 2032,
+   "quarter": 4,
+   "payablePct": 78
+  },
+  "di": null,
+  "oasdi": {
+   "year": 2034,
+   "quarter": 3,
+   "payablePct": 83
+  },
+  "hi": {
+   "year": 2033,
+   "quarter": 2,
+   "payablePct": 89,
+   "report": "2026 Medicare Trustees Report"
+  }
+ },
+ "payableLongRun": {
+  "year": 2100,
+  "pct": 65
+ },
+ "actuarialDeficit": 4.42,
+ "fixes": [
+  {
+   "value": "16.65%",
+   "label": "Raise the combined Social Security payroll tax from 12.4% to 16.65% starting in 2026 (17.30% if Congress waits until 2034)."
+  },
+  {
+   "value": "−25.2%",
+   "label": "Cut all benefits, for current and future retirees alike, by 25.2% starting in 2026 (28.5% if Congress waits until 2034)."
+  },
+  {
+   "value": "−30.3%",
+   "label": "Or cut benefits 30.3% only for people who first become eligible in 2026 or later, sparing current beneficiaries."
+  }
+ ],
+ "beneficiaries": {
+  "total": 71255000,
+  "asOf": "2026-06-30",
+  "sourceId": "ssa-facts"
+ },
+ "oasdi": [
+  {
+   "year": 2015,
+   "income": 913372994408.98,
+   "cost": 887786330160.55,
+   "reserves": 2808287259000,
+   "projected": false
+  },
+  {
+   "year": 2016,
+   "income": 950222958651.46,
+   "cost": 916077397031.48,
+   "reserves": 2842591861000,
+   "projected": false
+  },
+  {
+   "year": 2017,
+   "income": 992089445167.11,
+   "cost": 944947005147.48,
+   "reserves": 2889869336000,
+   "projected": false
+  },
+  {
+   "year": 2018,
+   "income": 992567392877.37,
+   "cost": 987857808790.96,
+   "reserves": 2894654468000,
+   "projected": false
+  },
+  {
+   "year": 2019,
+   "income": 1051119774132.93,
+   "cost": 1044538364907.4,
+   "reserves": 2900916030000,
+   "projected": false
+  },
+  {
+   "year": 2020,
+   "income": 1103085812390.88,
+   "cost": 1095642762840.62,
+   "reserves": 2908422771000,
+   "projected": false
+  },
+  {
+   "year": 2021,
+   "income": 1080303888682.46,
+   "cost": 1134562919209.19,
+   "reserves": 2853816941000,
+   "projected": false
+  },
+  {
+   "year": 2022,
+   "income": 1203074001975.92,
+   "cost": 1218672161086.31,
+   "reserves": 2838279291000,
+   "projected": false
+  },
+  {
+   "year": 2023,
+   "income": 1332947080654.6,
+   "cost": 1354523670135.72,
+   "reserves": 2816655121000,
+   "projected": false
+  },
+  {
+   "year": 2024,
+   "income": 1404363245954.54,
+   "cost": 1460907751339.8398,
+   "reserves": 2759979663000,
+   "projected": false
+  },
+  {
+   "year": 2025,
+   "income": 1438203092957.15,
+   "cost": 1580990616485.9602,
+   "reserves": 2616159670000,
+   "projected": false
+  },
+  {
+   "year": 2026,
+   "income": 1492203311575.64,
+   "cost": 1667468093771.53,
+   "reserves": 2441060404000,
+   "projected": false
+  }
+ ],
+ "oasi": [
+  {
+   "year": 2015,
+   "income": 795334136555.11,
+   "cost": 741478503341.91,
+   "reserves": 2766649222000,
+   "projected": false
+  },
+  {
+   "year": 2016,
+   "income": 799867120066.51,
+   "cost": 769805748551.11,
+   "reserves": 2796711764000,
+   "projected": false
+  },
+  {
+   "year": 2017,
+   "income": 822530612498.22,
+   "cost": 799091845747.64,
+   "reserves": 2820200264000,
+   "projected": false
+  },
+  {
+   "year": 2018,
+   "income": 822255762689.33,
+   "cost": 841243749519.24,
+   "reserves": 2801253964000,
+   "projected": false
+  },
+  {
+   "year": 2019,
+   "income": 900037148360.65,
+   "cost": 896723231918.24,
+   "reserves": 2804396457000,
+   "projected": false
+  },
+  {
+   "year": 2020,
+   "income": 955597192519.52,
+   "cost": 948808704960.83,
+   "reserves": 2811213290000,
+   "projected": false
+  },
+  {
+   "year": 2021,
+   "income": 935908961574.75,
+   "cost": 991167378860.65,
+   "reserves": 2755784664000,
+   "projected": false
+  },
+  {
+   "year": 2022,
+   "income": 1041053853617.07,
+   "cost": 1073280220110.47,
+   "reserves": 2723600525000,
+   "projected": false
+  },
+  {
+   "year": 2023,
+   "income": 1152202225964.47,
+   "cost": 1202004522239.82,
+   "reserves": 2673749448000,
+   "projected": false
+  },
+  {
+   "year": 2024,
+   "income": 1212910305007.61,
+   "cost": 1304396689140.88,
+   "reserves": 2582205113000,
+   "projected": false
+  },
+  {
+   "year": 2025,
+   "income": 1240425127563.47,
+   "cost": 1420791997802.62,
+   "reserves": 2400807809000,
+   "projected": false
+  },
+  {
+   "year": 2026,
+   "income": 1284047187662.93,
+   "cost": 1504618188439.86,
+   "reserves": 2180423716000,
+   "projected": false
+  }
+ ],
+ "di": [
+  {
+   "year": 2015,
+   "income": 118038857853.87,
+   "cost": 146307826818.64,
+   "reserves": 41638037000,
+   "projected": false
+  },
+  {
+   "year": 2016,
+   "income": 150355838584.95,
+   "cost": 146271648480.37,
+   "reserves": 45880097000,
+   "projected": false
+  },
+  {
+   "year": 2017,
+   "income": 169558832668.89,
+   "cost": 145855159399.84,
+   "reserves": 69669072000,
+   "projected": false
+  },
+  {
+   "year": 2018,
+   "income": 170311630188.04,
+   "cost": 146614059271.72,
+   "reserves": 93400504000,
+   "projected": false
+  },
+  {
+   "year": 2019,
+   "income": 151082625772.28,
+   "cost": 147815132989.16,
+   "reserves": 96519573000,
+   "projected": false
+  },
+  {
+   "year": 2020,
+   "income": 147488619871.36,
+   "cost": 146834057879.79,
+   "reserves": 97209481000,
+   "projected": false
+  },
+  {
+   "year": 2021,
+   "income": 144394927107.71,
+   "cost": 143395540348.54,
+   "reserves": 98032277000,
+   "projected": false
+  },
+  {
+   "year": 2022,
+   "income": 162020148358.85,
+   "cost": 145391940975.84,
+   "reserves": 114678766000,
+   "projected": false
+  },
+  {
+   "year": 2023,
+   "income": 180744854690.13,
+   "cost": 152519147895.9,
+   "reserves": 142905673000,
+   "projected": false
+  },
+  {
+   "year": 2024,
+   "income": 191452940946.93,
+   "cost": 156511062198.96,
+   "reserves": 177774550000,
+   "projected": false
+  },
+  {
+   "year": 2025,
+   "income": 197777965393.68,
+   "cost": 160198618683.34,
+   "reserves": 215351861000,
+   "projected": false
+  },
+  {
+   "year": 2026,
+   "income": 208156123912.71,
+   "cost": 162849905331.67,
+   "reserves": 260636688000,
+   "projected": false
+  }
+ ],
+ "hi": [
+  {
+   "year": 2015,
+   "income": 277211631660.74,
+   "cost": 283509741525.39,
+   "reserves": 195457769000,
+   "projected": false
+  },
+  {
+   "year": 2016,
+   "income": 295380054412.86,
+   "cost": 298925698673.42,
+   "reserves": 192209143000,
+   "projected": false
+  },
+  {
+   "year": 2017,
+   "income": 304364524808.22,
+   "cost": 299362632709.46,
+   "reserves": 197834717000,
+   "projected": false
+  },
+  {
+   "year": 2018,
+   "income": 308889702934.55,
+   "cost": 303182072011.91,
+   "reserves": 202805100000,
+   "projected": false
+  },
+  {
+   "year": 2019,
+   "income": 325486806717.09,
+   "cost": 329820823050.13,
+   "reserves": 198625096000,
+   "projected": false
+  },
+  {
+   "year": 2020,
+   "income": 347874133522.03,
+   "cost": 412406828373.93,
+   "reserves": null,
+   "projected": false
+  },
+  {
+   "year": 2021,
+   "income": 361710009068.16,
+   "cost": 359803673257.01,
+   "reserves": null,
+   "projected": false
+  },
+  {
+   "year": 2022,
+   "income": 436278232672.81,
+   "cost": 394447007214.99,
+   "reserves": null,
+   "projected": false
+  },
+  {
+   "year": 2023,
+   "income": 423309072031.43,
+   "cost": 409523505319.68,
+   "reserves": 194361566000,
+   "projected": false
+  },
+  {
+   "year": 2024,
+   "income": 453038503217.49,
+   "cost": 410025402178.38,
+   "reserves": 234959577000,
+   "projected": false
+  },
+  {
+   "year": 2025,
+   "income": 467335760504.08,
+   "cost": 447463091736.51,
+   "reserves": 252906444000,
+   "projected": false
+  },
+  {
+   "year": 2026,
+   "income": 488096208478.83,
+   "cost": 470774280035,
+   "reserves": 267475280000,
+   "projected": false
+  }
+ ],
+ "basis": "fiscal",
+ "sourceIds": [
+  "mts8",
+  "ssa-tr2026"
+ ]
+}

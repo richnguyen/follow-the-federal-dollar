@@ -48,6 +48,11 @@ export const DATASETS = {
     title: 'Monthly Treasury Statement, Table 1: Summary of Receipts, Outlays, and the Deficit/Surplus',
     page: 'https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/summary-of-receipts-outlays-and-the-deficit-surplus-of-the-u-s-government',
   },
+  mts8: {
+    endpoint: '/v1/accounting/mts/mts_table_8',
+    title: 'Monthly Treasury Statement, Table 8: Trust Fund Impact on Budget Results and Investment Holdings',
+    page: 'https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/trust-fund-impact-on-budget-results-and-investment-holdings',
+  },
   penny: {
     endpoint: '/v2/accounting/od/debt_to_penny',
     title: 'Debt to the Penny',
@@ -89,6 +94,9 @@ export async function fetchTreasury() {
     out.mts4[d] = await fetchAll(DATASETS.mts4.endpoint, { filter: `record_date:eq:${d}`, sort: 'src_line_nbr' });
   }
 
+  console.log('[treasury] MTS table 8 (trust funds), every September…');
+  out.mts8 = await fetchAll(DATASETS.mts8.endpoint, { filter: 'record_calendar_month:eq:09', sort: 'record_date,src_line_nbr' });
+  console.log(`[treasury]   ${out.mts8.rows.length} rows`);
   console.log('[treasury] Debt to the Penny…');
   out.penny = await fetchAll(DATASETS.penny.endpoint, {
     fields: 'record_date,debt_held_public_amt,intragov_hold_amt,tot_pub_debt_out_amt',

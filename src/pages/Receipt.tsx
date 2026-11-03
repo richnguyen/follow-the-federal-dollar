@@ -31,10 +31,17 @@ export default function Receipt() {
   // "dedicated": payroll taxes go to their trust-fund programs; income tax is split across the rest.
   const lines = useMemo(() => {
     if (method === 'simple') return cats.map((c) => ({ ...c, mine: (r.total * c.amount) / totalOut }));
-    const restTotal = cats.filter((c) => c.id !== 'ss' && c.id !== 'medicare').reduce((s, c) => s + c.amount, 0);
-    return cats.map((c) => ({
+    // Payroll taxes dedicated to each program's trust funds (MTS Table 4) pay part of that program;
+    // income tax is split across what remains of each category's spending.
+    const dedicated: Record<string, number> = {
+      ss: budget.payroll.filter((p) => /OASI|\(DI\)/.test(p.name)).reduce((s, p) => s + p.amount, 0),
+      medicare: budget.payroll.filter((p) => /\(HI\)/.test(p.name)).reduce((s, p) => s + p.amount, 0),
+    };
+    const remaining = cats.map((c) => Math.max(0, c.amount - (dedicated[c.id] ?? 0)));
+    const remTotal = remaining.reduce((s, v) => s + v, 0);
+    return cats.map((c, i) => ({
       ...c,
-      mine: c.id === 'ss' ? r.ssTax : c.id === 'medicare' ? r.medicareTax : (r.incomeTax * c.amount) / restTotal,
+      mine: (c.id === 'ss' ? r.ssTax : c.id === 'medicare' ? r.medicareTax : 0) + (r.incomeTax * remaining[i]) / remTotal,
     }));
   }, [method, cats, r.total, r.ssTax, r.medicareTax, r.incomeTax, totalOut]);
   const borrowedOnTop = r.total * (t.deficit / t.receipts);
@@ -71,12 +78,12 @@ export default function Receipt() {
             <Seg<Method> label="Allocation method" value={method} onChange={setMethod} options={[{ value: 'dedicated', label: 'Follow payroll taxes' }, { value: 'simple', label: 'Split evenly' }]} />
             <p className="small muted">
               {method === 'dedicated'
-                ? 'Your Social Security and Medicare payroll taxes go to those programs’ trust funds. Your income tax is split across everything else in proportion to spending.'
+                ? 'Your Social Security and Medicare payroll taxes go to those programs’ trust funds. Your income tax is split across the spending that payroll taxes don’t cover, including the large share of Medicare paid from general revenue.'
                 : 'Every tax dollar is split in proportion to total federal spending, the way the White House’s old “taxpayer receipt” worked.'}
             </p>
           </div>
           <div className="prose small">
-            <p><strong>What this estimate assumes:</strong> {tax.year} tax rates, wages are your only income, you take the <Term id="standard-deduction">standard deduction</Term>, and you claim no credits (such as the Child Tax Credit). Only your own share of payroll taxes is counted; your employer pays an equal amount.</p>
+            <p><strong>What this estimate assumes:</strong> {tax.year} tax rates, wages are your only income, you take the <Term id="standard-deduction">standard deduction</Term>, and you claim no credits (such as the Child Tax Credit). For married couples the wages are treated as one earner’s. Only your own share of payroll taxes is counted; your employer pays an equal amount.</p>
             <p>Your taxable income: {dollars(r.taxable)} · top bracket: {pct(r.marginal, 0)} · total federal tax as a share of wages: {pct(r.effective)}.</p>
           </div>
         </div>
@@ -112,7 +119,7 @@ export default function Receipt() {
       <Section id="receipt-note" title="Reading your receipt">
         <div className="prose">
           <p>Your taxes don’t literally go into labeled jars. Except for payroll taxes, which are legally dedicated to Social Security and Medicare, federal money is pooled in the Treasury’s general fund. This receipt shows your share of each category if your taxes were divided the same way the government spent its money.</p>
-          <p>Spending categories and amounts come from the Monthly Treasury Statement for FY{fy}. Tax rates come from the IRS and the Social Security Administration (see <a href="#sources">Sources</a>).</p>
+          <p>Spending categories and amounts come from the Monthly Treasury Statement for FY{fy}. Tax rates, the Social Security wage base, and Medicare tax thresholds come from IRS publications for {tax.year} (see <a href="#sources">Sources</a>).</p>
         </div>
       </Section>
     </>

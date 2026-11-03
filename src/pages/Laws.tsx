@@ -33,6 +33,7 @@ export default function Laws() {
   const added = laws.filter((l) => l.deficitEffect > 0).reduce((s, l) => s + l.deficitEffect, 0);
   const cut = laws.filter((l) => l.deficitEffect < 0).reduce((s, l) => s + l.deficitEffect, 0);
   const kinds = [...new Set(laws.map((l) => l.kind))];
+  const addPres = [...new Set([...laws].sort((x, y) => x.signed.localeCompare(y.signed)).filter((l) => l.deficitEffect > 0).map((l) => l.president))];
   return (
     <>
       <PageHead
@@ -43,7 +44,7 @@ export default function Laws() {
       <div className="facts">
         <div className="fact"><div className="fact-big">{bn(added)}</div><p>in larger deficits from the {laws.filter((l) => l.deficitEffect > 0).length} deficit-increasing laws listed here, as officially estimated when each was enacted.</p></div>
         <div className="fact"><div className="fact-big">{bn(cut)}</div><p>in smaller deficits from the {laws.filter((l) => l.deficitEffect < 0).length} deficit-reducing laws listed.</p></div>
-        <div className="fact"><div className="fact-big">Bipartisan</div><p>Both parties have passed laws that added to deficits: tax cuts, emergency relief, and spending-cap increases, under presidents of both parties.</p></div>
+        {addPres.length > 1 && <div className="fact"><div className="fact-big">{addPres.length} presidents</div><p>signed the deficit-increasing laws listed here ({addPres.join(', ')}). Tax cuts, emergency relief, and spending increases have come from both parties.</p></div>}
       </div>
       <div className="toolbar">
         <div className="toolbar-item">

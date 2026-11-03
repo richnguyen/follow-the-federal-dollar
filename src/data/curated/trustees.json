@@ -1,0 +1,25 @@
+{
+  "report": "2026 Social Security Trustees Report",
+  "released": "2026-06-09",
+  "depletion": {
+    "oasi": { "year": 2032, "quarter": 4, "payablePct": 78 },
+    "di": null,
+    "oasdi": { "year": 2034, "quarter": 3, "payablePct": 83 },
+    "hi": { "year": 2033, "quarter": 2, "payablePct": 89, "report": "2026 Medicare Trustees Report" }
+  },
+  "payableLongRun": { "year": 2100, "pct": 65 },
+  "actuarialDeficit": 4.42,
+  "reservesEndOf2025": 2560000000000,
+  "fixes": [
+    { "value": "16.65%", "label": "Raise the combined Social Security payroll tax from 12.4% to 16.65% starting in 2026 (17.30% if Congress waits until 2034)." },
+    { "value": "−25.2%", "label": "Cut all benefits, for current and future retirees alike, by 25.2% starting in 2026 (28.5% if Congress waits until 2034)." },
+    { "value": "−30.3%", "label": "Or cut benefits 30.3% only for people who first become eligible in 2026 or later, sparing current beneficiaries." }
+  ],
+  "beneficiaries": { "total": 71255000, "asOf": "2026-06-30", "sourceId": "ssa-facts" },
+  "sources": [
+    { "id": "ssa-tr2026", "title": "The 2026 Annual Report of the Board of Trustees of the Federal OASI and DI Trust Funds (highlights)", "publisher": "Social Security Administration", "url": "https://www.ssa.gov/oact/tr/2026/II_A_highlights.html", "note": "Depletion dates, percent payable, 75-year actuarial deficit, and the payroll-tax and benefit changes needed (full report: https://www.ssa.gov/oact/TR/2026/tr2026.pdf). Figures read from ssa.gov via search; ssa.gov blocks automated downloads." },
+    { "id": "ssa-press", "title": "Social Security Board of Trustees: Projection for Combined Trust Funds Remains Consistent with Prior Year (June 9, 2026)", "publisher": "Social Security Administration", "url": "https://www.ssa.gov/news/en/press/releases/2026-06-09.html" },
+    { "id": "ssa-facts", "title": "Fact Sheet on the Old-Age, Survivors, and Disability Insurance Program, June 30, 2026", "publisher": "Social Security Administration, Office of the Chief Actuary", "url": "https://www.ssa.gov/OACT/FACTS/" },
+    { "id": "cms-tr2026", "title": "2026 Annual Report of the Boards of Trustees of the Federal Hospital Insurance and Federal Supplementary Medical Insurance Trust Funds", "publisher": "Centers for Medicare & Medicaid Services", "url": "https://www.cms.gov/files/document/2026-medicare-trustees-report.pdf", "note": "HI trust fund depletion in the second quarter of 2033; 89% of costs payable then." }
+  ]
+}

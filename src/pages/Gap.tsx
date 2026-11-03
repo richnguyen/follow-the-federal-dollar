@@ -47,7 +47,7 @@ export default function Gap() {
         id="structural"
         eyebrow="Visualizing the structural gap"
         title="Autopilot spending vs. all revenue"
-        sub={<>The dark band is <Term id="mandatory">mandatory spending</Term> plus <Term id="net-interest">net interest</Term>. The light band on top is everything Congress votes on each year. The line is total revenue. Hatched years are when autopilot spending and interest alone cost more than all revenue.</>}
+        sub={<>The green band is <Term id="mandatory">mandatory spending</Term> plus <Term id="net-interest">net interest</Term>. The gray band on top is everything Congress votes on each year. The line is total revenue. Hatched years are when autopilot spending and interest alone cost more than all revenue.</>}
       >
         <div className="card">
           <ChartFrame

@@ -71,9 +71,9 @@ export default function Sandbox() {
         </div>
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="grid-2">
-            <Stat label={`10-year deficits, FY${years[0]}–${String(years.at(-1)).slice(2)}`} value={money(tenMine)} note={`${cbo.projShort}: ${money(tenBase)} · ${signedMoney(tenMine - tenBase)}`} />
-            <Stat label={<>Debt held by the public, FY{years.at(-1)}</>} value={pct(last.debt / last.gdp, 0) + ' of GDP'} note={`Baseline: ${pct(lastB.debt / lastB.gdp, 0)} · ${money(last.debt)}`} />
-            <Stat label="Interest costs saved" value={money(intSaved)} note="Less borrowing means less interest over ten years." />
+            <Stat label={`${years.length}-year deficits, FY${years[0]}–${String(years.at(-1)).slice(2)}`} value={money(tenMine)} note={`${cbo.projShort}: ${money(tenBase)} · ${signedMoney(tenMine - tenBase)}`} />
+            <Stat label={<>Debt held by the public, FY{years.at(-1)}</>} value={pct(last.debt / last.gdp, 0) + ' of GDP'} note={`${cbo.projShort}: ${pct(lastB.debt / lastB.gdp, 0)} · yours: ${money(last.debt)}`} />
+            <Stat label="Interest costs saved" value={money(intSaved)} note={`Less borrowing means less interest over ${years.length} years.`} />
             <Stat label={`Deficit in FY${years.at(-1)}`} value={last.deficit <= 0 ? 'Balanced' : money(last.deficit)} note={last.deficit <= 0 ? `Surplus of ${money(-last.deficit)} · ${balancedYears} balanced year${balancedYears === 1 ? '' : 's'}` : `${pct(last.deficit / last.gdp)} of GDP`} />
           </div>
         </div>

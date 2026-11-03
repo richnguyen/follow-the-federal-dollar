@@ -58,6 +58,13 @@
   "note": "Files: https://www.whitehouse.gov/wp-content/uploads/2026/04/hist08z1_fy2027.xlsx and companions"
  },
  {
+  "id": "mts8",
+  "title": "Monthly Treasury Statement, Table 8: Trust Fund Impact on Budget Results and Investment Holdings",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/trust-fund-impact-on-budget-results-and-investment-holdings",
+  "retrieved": "2026-11-03T23:42:55.067Z"
+ },
+ {
   "id": "census-pop",
   "title": "Vintage 2025 national population estimate (press release)",
   "publisher": "U.S. Census Bureau",

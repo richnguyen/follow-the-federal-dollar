@@ -9,7 +9,7 @@ export default function Sources() {
       <PageHead
         eyebrow="Reference"
         title="Sources & methods"
-        lede="Every number on this site comes from an official U.S. government source. Data were downloaded from each agency’s published API or files by a reproducible script; the date each was retrieved is listed below."
+        lede="Every number on this site comes from an official U.S. government source. Most data were downloaded by a reproducible script from each agency’s API or published files, with the retrieval date listed below. A few figures (the Social Security trustees’ projections, the cost estimates for major laws, and the budget-process record) come from agencies whose websites block automated downloads; those were read from the agencies’ own pages, and each one links to its page."
       />
       <Section id="list" title="Datasets and documents">
         {groups.map((g) => (
@@ -37,7 +37,7 @@ export default function Sources() {
           <p><strong>Mandatory, discretionary, and interest</strong> splits and the long-run history (FY{cbo.history[0]?.fy}–FY{cbo.history.at(-1)?.fy}) come from the OMB Historical Tables published with the FY2027 budget (Tables 1.1, 2.1, 7.1, 8.1, 10.1). Projections are the {cbo.vintage}, {cbo.projAssumes}.</p>
           <p><strong>Per person and per household</strong> figures divide national totals by the U.S. resident population ({budget.population.label}) and number of households ({budget.households.label}).</p>
           <p><strong>State and district figures</strong> are federal award obligations in FY{geo.fy} from USAspending.gov, by place of performance. Obligations are commitments to spend and differ from outlays; not all federal spending is recorded as an award.</p>
-          <p><strong>Social Security</strong> projections are from the {ssa.report} (intermediate assumptions), released {ssa.released}.</p>
+          <p><strong>Social Security</strong> trust fund history (income, cost, and reserves by fiscal year) comes from the Treasury’s Monthly Treasury Statement, Table 8. Depletion dates, the share of benefits payable afterward, and the changes needed to close the gap are from the {ssa.report} (intermediate assumptions), released {dateLabel(ssa.released)}, and the 2026 Medicare Trustees Report.</p>
           <p><strong>Laws.</strong> Deficit effects are the official CBO or JCT estimates published when each law was enacted, as linked on each entry.</p>
           <p><strong>Rounding.</strong> Figures are rounded for readability; totals may not add because of rounding.</p>
         </div>
