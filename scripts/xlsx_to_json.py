@@ -4,7 +4,7 @@ import json, sys, datetime
 import openpyxl
 
 src, dst = sys.argv[1], sys.argv[2]
-wb = openpyxl.load_workbook(src, data_only=True, read_only=True)
+wb = openpyxl.load_workbook(src, data_only=True, read_only=False)
 out = {}
 for ws in wb.worksheets:
     rows = []

@@ -117,7 +117,7 @@ export default function Debt() {
           <div className="card">
             <ChartFrame
               title="Where interest is headed"
-              sub={`Net interest and defense as a share of GDP, with CBO’s ${cbo.vintage} projection`}
+              sub={`Net interest and defense as a share of GDP, with the ${cbo.vintage}`}
               legend={<Legend items={[{ label: 'Net interest', color: 'var(--c-interest)', kind: 'line' }, { label: 'Defense (discretionary)', color: 'var(--c-defense)', kind: 'line' }]} />}
               sourceIds={[cbo.historySourceId, cbo.baselineSourceId]}
             >
@@ -129,7 +129,7 @@ export default function Debt() {
                 yFormat={(v) => `${(v * 100).toFixed(0)}%`}
                 tipFormat={(v) => pct(v)}
                 projectFrom={projIdx > 0 ? projIdx : undefined}
-                projectLabel="CBO"
+                projectLabel={cbo.projBy}
                 series={[
                   { id: 'i', label: 'Net interest', color: 'var(--c-interest)', kind: 'line', values: rows.map((r) => r.netInterest / r.gdp) },
                   { id: 'd', label: 'Defense', color: 'var(--c-defense)', kind: 'line', values: rows.map((r) => r.defense / r.gdp) },
@@ -147,7 +147,8 @@ export default function Debt() {
             <TimeChart
               label="Average interest rate on marketable Treasury debt"
               x={rates.map((r) => r.date)}
-              xLabel={(d) => (String(d).slice(5, 7) === '01' && Number(String(d).slice(0, 4)) % 5 === 0 ? String(d).slice(0, 4) : '')}
+              xLabel={(d) => String(d).slice(0, 4)}
+              xTicks={rates.map((r, i) => (r.date.slice(5, 7) === '01' && Number(r.date.slice(0, 4)) % 5 === 0 ? i : -1)).filter((i) => i >= 0)}
               tipTitle={(d) => String(d).slice(0, 7)}
               height={220}
               yFormat={(v) => `${v.toFixed(0)}%`}

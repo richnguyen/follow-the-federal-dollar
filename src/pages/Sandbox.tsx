@@ -40,7 +40,7 @@ export default function Sandbox() {
       <PageHead
         eyebrow="Balance the budget"
         title="Your turn to close the gap"
-        lede={<>Start from CBO’s {cbo.vintage} projection for FY{years[0]}–FY{years.at(-1)}, which assumes current law stays the same. Move the sliders to raise or cut each part of the budget in every year, and watch what happens to deficits, interest, and the debt.</>}
+        lede={<>Start from the {cbo.vintage} for FY{years[0]}–FY{years.at(-1)}, {cbo.projAssumes}. Move the sliders to raise or cut each part of the budget in every year, and watch what happens to deficits, interest, and the debt.</>}
       />
       <div className="facts">
         {needTax != null && <div className="fact"><div className="fact-big">+{needTax.toFixed(0)}% taxes</div><p>Raising all federal revenue by about this much would balance the budget by FY{years.at(-1)}, with no spending cuts.</p></div>}
@@ -55,7 +55,7 @@ export default function Sandbox() {
       <div className="split">
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div className="chart-title">Your plan</div>
-          <p className="small muted" style={{ marginBottom: 6 }}>Percent change from CBO’s projection, in every year from FY{years[0]}.</p>
+          <p className="small muted" style={{ marginBottom: 6 }}>Percent change from the {cbo.projShort}, in every year from FY{years[0]}.</p>
           {LEVERS.map((l) => (
             <div className="range-row" key={l.id}>
               <label htmlFor={'lv-' + l.id}><span className="swatch" style={{ background: l.color }} />{l.label}</label>
@@ -71,7 +71,7 @@ export default function Sandbox() {
         </div>
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="grid-2">
-            <Stat label={`10-year deficits, FY${years[0]}–${String(years.at(-1)).slice(2)}`} value={money(tenMine)} note={`CBO baseline: ${money(tenBase)} · ${signedMoney(tenMine - tenBase)}`} />
+            <Stat label={`10-year deficits, FY${years[0]}–${String(years.at(-1)).slice(2)}`} value={money(tenMine)} note={`${cbo.projShort}: ${money(tenBase)} · ${signedMoney(tenMine - tenBase)}`} />
             <Stat label={<>Debt held by the public, FY{years.at(-1)}</>} value={pct(last.debt / last.gdp, 0) + ' of GDP'} note={`Baseline: ${pct(lastB.debt / lastB.gdp, 0)} · ${money(last.debt)}`} />
             <Stat label="Interest costs saved" value={money(intSaved)} note="Less borrowing means less interest over ten years." />
             <Stat label={`Deficit in FY${years.at(-1)}`} value={last.deficit <= 0 ? 'Balanced' : money(last.deficit)} note={last.deficit <= 0 ? `Surplus of ${money(-last.deficit)} · ${balancedYears} balanced year${balancedYears === 1 ? '' : 's'}` : `${pct(last.deficit / last.gdp)} of GDP`} />
@@ -79,29 +79,29 @@ export default function Sandbox() {
         </div>
       </div>
 
-      <Section id="paths" title="Deficits: your plan vs. CBO’s projection">
+      <Section id="paths" title={`Deficits: your plan vs. the ${cbo.projShort}`}>
         <div className="card">
           <ChartFrame
             title="Annual deficit"
-            legend={<Legend items={[{ label: 'CBO baseline', color: 'var(--c-deemph)', kind: 'line' }, { label: 'Your plan', color: 'var(--c-emph)', kind: 'line' }]} />}
+            legend={<Legend items={[{ label: cbo.projShort, color: 'var(--c-deemph)', kind: 'line' }, { label: 'Your plan', color: 'var(--c-emph)', kind: 'line' }]} />}
             sourceIds={[cbo.baselineSourceId]}
             table={{ columns: [{ key: 'fy', label: 'Fiscal year' }, { key: 'b', label: 'Baseline deficit', align: 'r' }, { key: 'm', label: 'Your plan', align: 'r' }, { key: 'd', label: 'Your debt (% GDP)', align: 'r' }], rows: mine.map((r, i) => ({ fy: `FY${r.fy}`, b: money(baseline[i].deficit), m: money(r.deficit), d: pct(r.debt / r.gdp, 0) })) }}
           >
             <TimeChart
-              label="Annual deficit under the CBO baseline and your plan"
+              label={`Annual deficit under the ${cbo.projShort} and your plan`}
               x={years}
               tipTitle={(y) => `FY${y}`}
               height={280}
               zeroLine
               series={[
-                { id: 'b', label: 'CBO baseline', color: 'var(--c-deemph)', kind: 'line', values: baseline.map((r) => r.deficit), width: 2.5 },
+                { id: 'b', label: cbo.projShort, color: 'var(--c-deemph)', kind: 'line', values: baseline.map((r) => r.deficit), width: 2.5 },
                 { id: 'm', label: 'Your plan', color: 'var(--c-emph)', kind: 'line', values: mine.map((r) => r.deficit) },
               ]}
             />
           </ChartFrame>
         </div>
         <p className="small muted">
-          How the model works: each slider scales that category by the same percentage in every year. Net interest is recalculated from the size of the debt, using CBO’s projected interest rates. It ignores how the changes would affect the economy, which CBO calls <Term id="dynamic">dynamic effects</Term>, so treat results as rough. Other mandatory includes income security, federal retirement, veterans’ benefits, and offsetting receipts.
+          How the model works: each slider scales that category by the same percentage in every year. Net interest is recalculated from the size of the debt, using the interest rates implied by the {cbo.projShort}. It ignores how the changes would affect the economy, which budget analysts call <Term id="dynamic">dynamic effects</Term>, so treat results as rough. Other mandatory includes income security, federal retirement, veterans’ benefits, and offsetting receipts.
         </p>
       </Section>
     </>

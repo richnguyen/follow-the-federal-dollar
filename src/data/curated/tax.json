@@ -1,1 +1,20 @@
-{}
+{
+  "year": 2026,
+  "standardDeduction": { "single": 16100, "married": 32200, "head": 24150 },
+  "brackets": {
+    "single": [[0, 0.10], [12400, 0.12], [50400, 0.22], [105700, 0.24], [201775, 0.32], [256225, 0.35], [640600, 0.37]],
+    "married": [[0, 0.10], [24800, 0.12], [100800, 0.22], [211400, 0.24], [403550, 0.32], [512450, 0.35], [768700, 0.37]],
+    "head": [[0, 0.10], [17700, 0.12], [67450, 0.22], [105700, 0.24], [201750, 0.32], [256200, 0.35], [640600, 0.37]]
+  },
+  "ssRate": 0.062,
+  "ssWageBase": 184500,
+  "medicareRate": 0.0145,
+  "addlMedicareRate": 0.009,
+  "addlMedicareThreshold": { "single": 200000, "married": 250000, "head": 200000 },
+  "sources": [
+    { "title": "Rev. Proc. 2025-32 (tax year 2026 brackets and standard deductions)", "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf" },
+    { "title": "IRS: Tax inflation adjustments for tax year 2026", "url": "https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill" },
+    { "title": "IRS Publication 15 (2026), Social Security wage base and Medicare tax rates", "url": "https://www.irs.gov/pub/irs-pdf/p15.pdf" },
+    { "title": "IRS Topic 560, Additional Medicare Tax thresholds", "url": "https://www.irs.gov/taxtopics/tc560" }
+  ]
+}

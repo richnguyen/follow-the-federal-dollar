@@ -38,7 +38,7 @@ const RECEIPT_IDS = [
 
 // Detect units: the full-year outlays must be in the trillions of dollars.
 function unitScale(rows) {
-  const tot = rows.find((r) => /^total outlays/i.test(r.classification_desc.trim()) && r.record_date.slice(5, 7) === '09');
+  const tot = rows.find((r) => r.record_type_cd === 'SL' && r.data_type_cd === 'T' && r.record_date.slice(5, 7) === '09' && Number(r.src_line_nbr) > 20);
   const v = Math.abs(num(tot?.current_fytd_rcpt_outly_amt) ?? 0);
   if (v > 1e12) return 1;
   if (v > 1e6) return 1e6;
@@ -64,23 +64,30 @@ function parse9(rows, col) {
     const kids = childrenOf(r.classification_id);
     return kids.length ? kids.reduce((s, k) => s + (amt(k) ?? 0), 0) : null;
   };
-  const iOut = rows.findIndex((r) => /^net outlays|^outlays/i.test(r.classification_desc.trim()));
+  // Sections are top-level header rows ("Receipts", "Net Outlays"); each ends with a "Total" child.
+  const recHead = rows.find((r) => r.parent_id === 'null' || r.parent_id == null ? /^receipts$/i.test(r.classification_desc.trim()) : false);
+  const outHead = rows.find((r) => (r.parent_id === 'null' || r.parent_id == null) && /outlays$/i.test(r.classification_desc.trim()));
+  if (!recHead || !outHead) throw new Error('MTS9: section headers not found for ' + rows[0]?.record_date);
   const receipts = [];
   const functions = [];
   let totalReceipts = null;
   let totalOutlays = null;
-  rows.forEach((r, i) => {
+  for (const r of childrenOf(recHead.classification_id)) {
     const name = r.classification_desc.trim();
-    if (/^total receipts/i.test(name)) totalReceipts = amt(r);
-    else if (/^total outlays/i.test(name)) totalOutlays = amt(r);
-    else if (iOut >= 0 && i < iOut) {
-      const m = RECEIPT_IDS.find(([re]) => re.test(name));
-      if (m && !receipts.find((x) => x.id === m[1])) receipts.push({ id: m[1], name: m[2], amount: amt(r) ?? 0 });
-    } else if (iOut >= 0 && i > iOut) {
-      const m = FUNCTION_CODES.find(([re]) => re.test(name));
-      if (m && !functions.find((x) => x.code === m[1])) functions.push({ code: m[1], name, amount: amt(r) ?? 0, category: FUNCTION_CATEGORY[m[1]] ?? 'other' });
-    }
-  });
+    if (/^total/i.test(name)) { totalReceipts = amt(r); continue; }
+    const m = RECEIPT_IDS.find(([re]) => re.test(name));
+    if (!m) throw new Error('MTS9: unknown receipt line ' + name);
+    receipts.push({ id: m[1], name: m[2], amount: amt(r) ?? 0 });
+  }
+  for (const r of childrenOf(outHead.classification_id)) {
+    const name = r.classification_desc.trim();
+    if (/^total/i.test(name)) { totalOutlays = amt(r); continue; }
+    const m = FUNCTION_CODES.find(([re]) => re.test(name));
+    if (!m) throw new Error('MTS9: unknown function line ' + name);
+    const prev = functions.find((x) => x.code === m[1]);
+    if (prev) prev.amount += amt(r) ?? 0;
+    else functions.push({ code: m[1], name, amount: amt(r) ?? 0, category: FUNCTION_CATEGORY[m[1]] ?? 'other' });
+  }
   return { receipts, functions, totalReceipts, totalOutlays };
 }
 
@@ -164,17 +171,38 @@ addSource({ id: 'mts5', title: DATASETS.mts5.title, publisher: 'U.S. Treasury, B
 // ---- MTS Table 4: social insurance receipts detail
 const payroll = [];
 {
+  // One row per trust fund / program, from the "Total -- …" lines (railroad retirement has none).
   const rows = [...T.mts4[accDate].rows].sort((a, b) => Number(a.src_line_nbr) - Number(b.src_line_nbr));
-  const start = rows.findIndex((r) => /social insurance/i.test(r.classification_desc));
-  const end = rows.findIndex((r, i) => i > start && /^excise taxes/i.test(r.classification_desc.trim()));
-  for (const r of rows.slice(start + 1, end > 0 ? end : start + 25)) {
-    const v = num(r.current_fytd_net_rcpt_amt);
+  const LABELS = [
+    [/Old-Age and Survivors Insurance/i, 'Social Security retirement & survivors (OASI)'],
+    [/Disability Insurance/i, 'Social Security disability (DI)'],
+    [/Hospital Insurance/i, 'Medicare hospital insurance (HI)'],
+    [/Unemployment Insurance/i, 'Unemployment insurance'],
+    [/Other Retirement/i, 'Federal employee retirement contributions'],
+  ];
+  for (const r of rows) {
     const name = r.classification_desc.trim();
-    if (v != null && !/^total/i.test(name) && Number(r.sequence_level_nbr ?? 3) >= 3) payroll.push({ name, amount: v * S9 });
+    if (!/^Total --/.test(name)) continue;
+    const m = LABELS.find(([re]) => re.test(name));
+    if (m) payroll.push({ name: m[1], amount: num(r.current_fytd_net_rcpt_amt) * S9 });
+  }
+  const rail = rows.find((r) => /^Railroad Retirement:?$/i.test(r.classification_desc.trim()));
+  if (rail) {
+    const amt = rows.filter((r) => r.parent_id === rail.classification_id).reduce((s, r) => s + (num(r.current_fytd_net_rcpt_amt) ?? 0), 0) * S9;
+    payroll.push({ name: 'Railroad retirement', amount: amt });
   }
   payroll.sort((a, b) => b.amount - a.amount);
+  const tot = rows.find((r) => /^Total -- Social Insurance/i.test(r.classification_desc.trim()));
+  const sum = payroll.reduce((s, p) => s + p.amount, 0);
+  if (tot && Math.abs(sum - num(tot.current_fytd_net_rcpt_amt) * S9) > 1e9) console.warn('[build] payroll detail does not sum to total');
   addSource({ id: 'mts4', title: DATASETS.mts4.title, publisher: 'U.S. Treasury, Bureau of the Fiscal Service', url: DATASETS.mts4.page, retrieved: T.mts4[accDate].retrieved });
 }
+
+// ---- Customs duties: gross collections vs refunds (MTS Table 4), each complete FY
+const customs = Object.keys(T.mts4).filter((d) => d.slice(5, 7) === '09').sort().map((d) => {
+  const r = T.mts4[d].rows.find((x) => /^customs duties/i.test(x.classification_desc.trim()));
+  return { fy: fyOf(d), gross: num(r.current_fytd_gross_rcpt_amt) * S9, refunds: num(r.current_fytd_refund_amt) * S9, net: num(r.current_fytd_net_rcpt_amt) * S9 };
+});
 
 // ---------------------------------------------------------------- Debt
 const penny = T.penny.rows.map((r) => ({ date: r.record_date, total: num(r.tot_pub_debt_out_amt), public: num(r.debt_held_public_amt), intragov: num(r.intragov_hold_amt) })).filter((r) => r.total);
@@ -221,7 +249,9 @@ addSource({ id: 'interest', title: DATASETS.interest.title, publisher: 'U.S. Tre
 addSource({ id: 'rates', title: DATASETS.rates.title, publisher: 'U.S. Treasury, Bureau of the Fiscal Service', url: DATASETS.rates.page, retrieved: T.rates.retrieved });
 
 // ---------------------------------------------------------------- USAspending
-const U = await raw('usaspending.bundle.json');
+const U = await raw('usaspending.bundle.json').catch(() => null);
+let geo = null;
+if (U) {
 const GEO_FY = U.fys[0];
 const PRIOR_FY = U.fys[1] ?? null;
 const TYPES = ['contracts', 'grants', 'directPayments', 'loans', 'other'];
@@ -273,29 +303,29 @@ for (const o of dist.values()) {
 }
 const natPop = states.reduce((s, x) => s + (x.population || 0), 0);
 const natTotal = states.reduce((s, x) => s + x.total, 0);
-const geo = { fy: GEO_FY, states, districts, national: { total: natTotal, population: natPop, perCapita: natTotal / natPop }, priorFY: PRIOR_FY };
+geo = { fy: GEO_FY, states, districts, national: { total: natTotal, population: natPop, perCapita: natTotal / natPop }, priorFY: PRIOR_FY };
 const geoReq = U.states[GEO_FY].grants;
 addSource({ id: 'usaspending-geo', title: 'Spending by Geography (award obligations by state and congressional district)', publisher: 'USAspending.gov (U.S. Treasury)', url: 'https://www.usaspending.gov/search', retrieved: geoReq.retrieved, note: 'API: /api/v2/search/spending_by_geography/' });
 addSource({ id: 'usaspending-cat', title: 'Spending by Category (awarding agency, assistance listing)', publisher: 'USAspending.gov (U.S. Treasury)', url: 'https://www.usaspending.gov/search', retrieved: geoReq.retrieved, note: 'API: /api/v2/search/spending_by_category/' });
+} else console.warn('[build] USAspending bundle missing; keeping existing geo.json');
 
 // ---------------------------------------------------------------- CBO, SSA, population
 const cbo = await buildCBO(addSource);
-const ssa = await buildSSA(addSource);
-const census = await raw('census.bundle.json').catch(() => null);
-const population = census?.population ?? { value: natPop, label: `${(natPop / 1e6).toFixed(1)} million (Census Bureau estimate used by USAspending.gov)`, sourceId: 'usaspending-geo' };
-const households = census?.households;
-if (!households) throw new Error('household count missing: run scripts/fetch-census.mjs');
-if (census) addSource(census.source);
+const ssa = await buildSSA(addSource).catch((e) => { console.warn('[build] SSA skipped: ' + e.message); return null; });
+const census = await raw('census.bundle.json');
+const population = census.population;
+const households = census.households;
+census.sources.forEach(addSource);
 
 const budget = {
-  latestFY, partialFY, annual, monthly, functionsByFY, receiptsByFY, monthlyBySource, payroll,
+  latestFY, partialFY, annual, monthly, functionsByFY, receiptsByFY, monthlyBySource, payroll, customs,
   population, households, mtsLatestDate: latestDate,
 };
 await writeJSON('src/data/generated/budget.json', budget);
 await writeJSON('src/data/generated/accounts.json', { fy: fyOf(accDate), root: accRoot });
 await writeJSON('src/data/generated/debt.json', debt);
-await writeJSON('src/data/generated/geo.json', geo);
+if (geo) await writeJSON('src/data/generated/geo.json', geo);
 await writeJSON('src/data/generated/cbo.json', cbo);
-await writeJSON('src/data/generated/ssa.json', ssa);
+if (ssa) await writeJSON('src/data/generated/ssa.json', ssa);
 await writeJSON('src/data/generated/sources.json', sources);
 console.log(`[build] FY${latestFY}: receipts ${(annual.at(-1).receipts / 1e12).toFixed(3)}T, outlays ${(annual.at(-1).outlays / 1e12).toFixed(3)}T, deficit ${(annual.at(-1).deficit / 1e12).toFixed(3)}T`);

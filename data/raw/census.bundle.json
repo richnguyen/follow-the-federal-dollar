@@ -1,0 +1,28 @@
+{
+ "population": {
+  "value": 341800000,
+  "label": "341.8 million residents on July 1, 2025 (Census Bureau, Vintage 2025 estimates)",
+  "sourceId": "census-pop"
+ },
+ "households": {
+  "value": 133999000,
+  "label": "134.0 million occupied homes, Third quarter 2026 (Census Bureau, Housing Vacancy Survey)",
+  "sourceId": "census-hvs"
+ },
+ "sources": [
+  {
+   "id": "census-pop",
+   "title": "Vintage 2025 national population estimate (press release)",
+   "publisher": "U.S. Census Bureau",
+   "url": "https://www.census.gov/newsroom/press-releases/2026/population-growth-slows.html",
+   "retrieved": "2026-11-03T23:23:31.988Z"
+  },
+  {
+   "id": "census-hvs",
+   "title": "Quarterly Residential Vacancies and Homeownership, Third quarter 2026, Table 3 (occupied housing units)",
+   "publisher": "U.S. Census Bureau",
+   "url": "https://www.census.gov/housing/hvs/files/currenthvspress.pdf",
+   "retrieved": "2026-11-03T23:23:31.988Z"
+  }
+ ]
+}

@@ -107,7 +107,7 @@ export default function App() {
                 </div>
               ))}
               <div className="sidebar-foot">
-                <span>Official data from the U.S. Treasury, CBO, SSA, and USAspending.gov.</span>
+                <span>Official data from the U.S. Treasury, OMB, the Census Bureau, the IRS, and USAspending.gov.</span>
                 <span className="mono" style={{ fontSize: '0.6875rem' }}>Treasury data through {budget.mtsLatestDate}</span>
               </div>
             </nav>

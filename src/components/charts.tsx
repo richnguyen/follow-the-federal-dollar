@@ -174,6 +174,8 @@ export interface TimeChartProps {
   overlay?: (s: { x: (i: number) => number; y: (v: number) => number; h: number; w: number; step: number }) => ReactNode;
   endLabels?: boolean;
   zeroLine?: boolean;
+  /** Explicit indices to label on the x-axis (otherwise evenly spaced). */
+  xTicks?: number[];
 }
 
 const M = { top: 12, right: 12, bottom: 28, left: 52 };
@@ -274,12 +276,15 @@ export function TimeChart(p: TimeChartProps) {
               <text className="tick-label" x={-8} y={y(t)} dy="0.32em" textAnchor="end">{yFmt(t)}</text>
             </g>
           ))}
-          {p.x.map((xv, i) =>
-            i % labelEvery === 0 || i === n - 1 ? (
-              (i === n - 1 && i % labelEvery !== 0 && (i % labelEvery) < labelEvery * 0.6) ? null :
-              <text key={i} className="tick-label" x={xc(i)} y={ih + 18} textAnchor="middle">{xLabel(xv, i)}</text>
-            ) : null,
-          )}
+          {(p.xTicks ?? (() => {
+            const t: number[] = [];
+            for (let i = 0; i < n; i += labelEvery) t.push(i);
+            // add the final x only if it won't crowd the previous label
+            if (t.at(-1) !== n - 1 && (n - 1 - t.at(-1)!) * step >= 44) t.push(n - 1);
+            return t;
+          })()).map((i) => (
+            <text key={i} className="tick-label" x={xc(i)} y={ih + 18} textAnchor="middle">{xLabel(p.x[i], i)}</text>
+          ))}
           {/* areas */}
           {p.series.filter((s) => s.kind === 'area').map((s) => {
             const st = stacks[s.id];

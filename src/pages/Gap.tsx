@@ -52,7 +52,7 @@ export default function Gap() {
         <div className="card">
           <ChartFrame
             title={`Federal spending and revenue, FY${first.fy}–FY${lastP.fy}, ${chartLabel}`}
-            sub={`Actual through FY${lastA.fy}; CBO’s ${cbo.vintage} projection after that, assuming current law stays the same.`}
+            sub={`Actual through FY${lastA.fy} (${cbo.historyBy} Historical Tables); after that, the ${cbo.vintage}, ${cbo.projAssumes}.`}
             legend={<Legend items={[
               { label: 'Mandatory programs + net interest', color: 'var(--c-emph)' },
               { label: 'Discretionary (defense + non-defense)', color: 'var(--c-deemph)' },
@@ -62,7 +62,7 @@ export default function Gap() {
             sourceIds={[cbo.historySourceId, cbo.baselineSourceId]}
             table={{
               columns: [{ key: 'fy', label: 'Fiscal year' }, { key: 'mi', label: 'Mandatory + interest', align: 'r' }, { key: 'd', label: 'Discretionary', align: 'r' }, { key: 'o', label: 'Total outlays', align: 'r' }, { key: 'r', label: 'Revenue', align: 'r' }, { key: 'k', label: 'Kind' }],
-              rows: rows.map((r, i) => ({ fy: `FY${r.fy}`, mi: fmt(mi[i]), d: fmt(disc[i]), o: fmt(val(r.outlays, r.gdp)), r: fmt(rev[i]), k: r.actual ? 'Actual' : 'CBO projection' })),
+              rows: rows.map((r, i) => ({ fy: `FY${r.fy}`, mi: fmt(mi[i]), d: fmt(disc[i]), o: fmt(val(r.outlays, r.gdp)), r: fmt(rev[i]), k: r.actual ? 'Actual' : cbo.projShort })),
             }}
           >
             <TimeChart
@@ -74,7 +74,7 @@ export default function Gap() {
               yFormat={axis}
               tipFormat={fmt}
               projectFrom={projIdx > 0 ? projIdx : undefined}
-              projectLabel="CBO projection"
+              projectLabel={cbo.projShort}
               series={[
                 { id: 'mi', label: 'Mandatory + interest', color: 'var(--c-emph)', kind: 'area', stack: 's', values: mi, fillOpacity: 0.9 },
                 { id: 'disc', label: 'Discretionary', color: 'var(--c-deemph)', kind: 'area', stack: 's', values: disc, fillOpacity: 1 },
@@ -110,7 +110,7 @@ export default function Gap() {
           </div>
           <div className="fact">
             <div className="fact-big">{overActual.length} years</div>
-            <p>since FY{first.fy} when autopilot spending plus interest cost more than all revenue{overActual.length ? `: ${summarizeYears(overActual)}` : ''}.{overProj.length ? ` CBO projects it again in ${summarizeYears(overProj)}.` : ''}</p>
+            <p>since FY{first.fy} when autopilot spending plus interest cost more than all revenue{overActual.length ? `: ${summarizeYears(overActual)}` : ''}.{overProj.length ? ` The ${cbo.projShort}s show it again in ${summarizeYears(overProj)}.` : ''}</p>
           </div>
           <div className="fact">
             <div className="fact-big">{pct(avgRev, 1)}</div>
@@ -119,13 +119,13 @@ export default function Gap() {
         </div>
       </Section>
 
-      <Section id="deficits" title="Every year’s deficit or surplus" sub="The government last ran a surplus in FY2001. Deficits jumped during the 2008–09 financial crisis and the COVID-19 pandemic, and stay large in CBO’s projections even without a recession.">
+      <Section id="deficits" title="Every year’s deficit or surplus" sub={`The government last ran a surplus in FY2001. Deficits jumped during the 2008–09 financial crisis and the COVID-19 pandemic, and stay large in the ${cbo.projShort}s even without a recession.`}>
         <div className="card">
           <ChartFrame
             title={`Surplus or deficit, ${chartLabel}`}
             legend={<Legend items={[{ label: 'Deficit', color: 'var(--div-pos)' }, { label: 'Surplus', color: 'var(--div-neg)' }]} />}
             sourceIds={[cbo.historySourceId, cbo.baselineSourceId]}
-            table={{ columns: [{ key: 'fy', label: 'Fiscal year' }, { key: 'v', label: 'Surplus (+) / deficit (−)', align: 'r' }, { key: 'k', label: 'Kind' }], rows: rows.map((r) => ({ fy: `FY${r.fy}`, v: fmt(-val(r.deficit, r.gdp)), k: r.actual ? 'Actual' : 'CBO projection' })) }}
+            table={{ columns: [{ key: 'fy', label: 'Fiscal year' }, { key: 'v', label: 'Surplus (+) / deficit (−)', align: 'r' }, { key: 'k', label: 'Kind' }], rows: rows.map((r) => ({ fy: `FY${r.fy}`, v: fmt(-val(r.deficit, r.gdp)), k: r.actual ? 'Actual' : cbo.projShort })) }}
           >
             <TimeChart
               label={`Federal surplus or deficit ${chartLabel}`}
@@ -136,7 +136,7 @@ export default function Gap() {
               tipFormat={fmt}
               zeroLine
               projectFrom={projIdx > 0 ? projIdx : undefined}
-              projectLabel="CBO projection"
+              projectLabel={cbo.projShort}
               series={[
                 { id: 'def', label: 'Deficit', color: 'var(--div-pos)', kind: 'bar', stack: 'b', values: rows.map((r) => (r.deficit > 0 ? -val(r.deficit, r.gdp) : null)) },
                 { id: 'sur', label: 'Surplus', color: 'var(--div-neg)', kind: 'bar', stack: 'b', values: rows.map((r) => (r.deficit <= 0 ? -val(r.deficit, r.gdp) : null)) },
@@ -159,7 +159,7 @@ export default function Gap() {
                   label={`${s.title} as a share of GDP`}
                   x={years}
                   height={180}
-                  yFormat={(v) => `${Math.round(v * 100)}%`}
+                  yFormat={(v) => `${+(v * 100).toFixed(1)}%`}
                   tipFormat={(v) => pct(v)}
                   tipTitle={(y, i) => `FY${y}${rows[i].actual ? '' : ' (projected)'}`}
                   projectFrom={projIdx > 0 ? projIdx : undefined}

@@ -215,7 +215,7 @@ export default function Overview() {
           </div>
           <div className="fact">
             <div className="fact-big">{money(mi)}</div>
-            <p>went to mandatory programs and interest ({bucket.short}). That is {mi > t.receipts ? 'more than' : pct(mi / t.receipts, 0) + ' of'} all the revenue the government collected, so {mi > t.receipts ? 'every dollar Congress votes on each year was effectively borrowed' : 'little revenue is left for everything Congress votes on each year'}.</p>
+            <p>went to mandatory programs and net interest in FY{bucket.y.fy}. That is {mi > bucket.y.revenues ? 'more than' : pct(mi / bucket.y.revenues, 0) + ' of'} the {money(bucket.y.revenues)} the government collected that year, so {mi > bucket.y.revenues ? 'every dollar Congress votes on each year was effectively borrowed' : 'almost nothing was left for everything Congress votes on each year; defense and other discretionary programs were mostly paid for with borrowed money'}.</p>
           </div>
           <div className="fact">
             <div className="fact-big">{money(ssAmt)}</div>

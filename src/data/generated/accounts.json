@@ -1,1 +1,3932 @@
-{}
+{
+ "fy": 2026,
+ "root": {
+  "name": "All agencies",
+  "amount": 7395801446391.649,
+  "children": [
+   {
+    "name": "Legislative Branch",
+    "amount": 7048846626.900001,
+    "children": [
+     {
+      "name": "Senate",
+      "amount": 1340590543.44,
+      "prior": 1308849893.25
+     },
+     {
+      "name": "House of Representatives",
+      "amount": 2009254505.94,
+      "prior": 1979731029.63
+     },
+     {
+      "name": "Joint Items",
+      "amount": 24062360.47,
+      "prior": 27263615.71
+     },
+     {
+      "name": "Capitol Police",
+      "amount": 854086085.21,
+      "prior": 811788898.15
+     },
+     {
+      "name": "Congressional Budget Office",
+      "amount": 72300073.13,
+      "prior": 71642629.7
+     },
+     {
+      "name": "Architect of the Capitol",
+      "amount": 897465341.62,
+      "prior": 952519121.19
+     },
+     {
+      "name": "Library of Congress",
+      "amount": 895782554.43,
+      "prior": 935031134.74
+     },
+     {
+      "name": "Government Publishing Office",
+      "amount": 35956085.88,
+      "prior": 172214563.71
+     },
+     {
+      "name": "Government Accountability Office",
+      "amount": 835570825.01,
+      "prior": 874100992.14
+     },
+     {
+      "name": "United States Tax Court",
+      "amount": 73727617.63,
+      "prior": 71982977.93
+     },
+     {
+      "name": "Other Legislative Branch Agencies",
+      "amount": 73932112.66,
+      "prior": 90867162.56
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -55866299.46,
+      "prior": -55930143.18
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -7983557.73,
+      "prior": -7093118.02
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -31621.33
+     }
+    ],
+    "prior": 7232968757.51
+   },
+   {
+    "name": "Judicial Branch",
+    "amount": 9985272807.999998,
+    "children": [
+     {
+      "name": "Supreme Court of the United States",
+      "amount": 181268102.85,
+      "prior": 156820599.4
+     },
+     {
+      "name": "Courts of Appeals, District Courts, and Other Judicial Services",
+      "amount": 10285673312.73,
+      "prior": 9834614487.78
+     },
+     {
+      "name": "Other",
+      "amount": 779979991.79,
+      "prior": 728030505.64
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -177624613.26,
+      "prior": -148897328.57
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -1084023986.11,
+      "prior": -811523540.77
+     }
+    ],
+    "prior": 9759044723.48
+   },
+   {
+    "name": "Department of Agriculture",
+    "amount": 216669564389.40997,
+    "children": [
+     {
+      "name": "Agricultural Research Service",
+      "amount": 1761028221.49,
+      "prior": 1910492122.95
+     },
+     {
+      "name": "National Institute of Food and Agriculture",
+      "amount": 1877683066.1299999,
+      "children": [
+       {
+        "name": "Research and Education Activities",
+        "amount": 1091598329.62,
+        "prior": 1172078644.53
+       },
+       {
+        "name": "Extension Activities",
+        "amount": 616857014.98,
+        "prior": 668747133.73
+       },
+       {
+        "name": "Other",
+        "amount": 169227721.53,
+        "prior": 178073440.53
+       }
+      ],
+      "prior": 2018899218.79
+     },
+     {
+      "name": "Animal and Plant Health Inspection Service",
+      "amount": 2355849961.61,
+      "prior": 2594332083.22
+     },
+     {
+      "name": "Food Safety and Inspection Service",
+      "amount": 1155027968.8,
+      "prior": 1243032619.23
+     },
+     {
+      "name": "Agricultural Marketing Service",
+      "amount": 1773551402.84,
+      "prior": 2631207677.34
+     },
+     {
+      "name": "Risk Management Agency",
+      "amount": 15528782811.13,
+      "children": [
+       {
+        "name": "Administrative and Operating Expenses",
+        "amount": 64224650.48,
+        "prior": 72179038.41
+       },
+       {
+        "name": "Federal Crop Insurance Corporation Fund",
+        "amount": 15464558160.65,
+        "prior": 13805189721.74
+       }
+      ],
+      "prior": 13877368760.15
+     },
+     {
+      "name": "Farm Service Agency",
+      "amount": 9471660301.82,
+      "children": [
+       {
+        "name": "Salaries and Expenses",
+        "amount": 1157407784.44,
+        "prior": 1245617397.14
+       },
+       {
+        "name": "USDA Supplemental Assistance",
+        "amount": 3217545.01,
+        "prior": 3475172.69
+       },
+       {
+        "name": "Agricultural Disaster Relief Fund",
+        "amount": -448.39,
+        "prior": -4457.35
+       },
+       {
+        "name": "Commodity Credit Corporation",
+        "amount": 6379266896.75,
+        "prior": 5590772783.97
+       },
+       {
+        "name": "Tobacco Trust Fund",
+        "amount": 4012340.63,
+        "prior": 5543937.3
+       },
+       {
+        "name": "Agricultural Credit Insurance Fund",
+        "amount": 895564923.44,
+        "prior": 914115728.14
+       },
+       {
+        "name": "Other",
+        "amount": 1032191259.94,
+        "prior": 2436845882.86
+       }
+      ],
+      "prior": 10196366444.750002
+     },
+     {
+      "name": "Natural Resources Conservation Service",
+      "amount": 5698293571.02,
+      "children": [
+       {
+        "name": "Conservation Operations",
+        "amount": 1293335607.81,
+        "prior": 1366046518.17
+       },
+       {
+        "name": "Farm Security and Rural Investment Programs",
+        "amount": 3834249449.63,
+        "prior": 4513700354.19
+       },
+       {
+        "name": "Other",
+        "amount": 570708513.58,
+        "prior": 457097726.68
+       }
+      ],
+      "prior": 6336844599.04
+     },
+     {
+      "name": "Rural Development",
+      "amount": 238577147.42,
+      "prior": 380085214.96
+     },
+     {
+      "name": "Rural Housing Service",
+      "amount": 3787899048.43,
+      "children": [
+       {
+        "name": "Rural Housing Insurance Fund",
+        "amount": 1208424597.07,
+        "prior": 1709646690.42
+       },
+       {
+        "name": "Rental Assistance Program",
+        "amount": 1916489668.92,
+        "prior": 1780110023.85
+       },
+       {
+        "name": "Other",
+        "amount": 662984782.44,
+        "prior": 654743904.73
+       }
+      ],
+      "prior": 4144500619
+     },
+     {
+      "name": "Rural Utilities Service",
+      "amount": 2028503892.2800002,
+      "children": [
+       {
+        "name": "Rural Electrification and Telecommunications Fund",
+        "amount": 604482507.65,
+        "prior": 663470568.45
+       },
+       {
+        "name": "Other",
+        "amount": 1424021384.63,
+        "prior": 1388139820.77
+       }
+      ],
+      "prior": 2051610389.22
+     },
+     {
+      "name": "Foreign Agricultural Service",
+      "amount": 1580201745.52,
+      "prior": 2010582075.28
+     },
+     {
+      "name": "Food and Nutrition Service",
+      "amount": 137040427117.23,
+      "children": [
+       {
+        "name": "Supplemental Nutrition Assistance Program",
+        "amount": 95392605255.93,
+        "prior": 106334580212.45
+       },
+       {
+        "name": "Child Nutrition Programs",
+        "amount": 33344390036.51,
+        "prior": 33374601786.64
+       },
+       {
+        "name": "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC)",
+        "amount": 7697701667.94,
+        "prior": 7960792504.29
+       },
+       {
+        "name": "Other",
+        "amount": 605730156.85,
+        "prior": 648483795.19
+       }
+      ],
+      "prior": 148318458298.57
+     },
+     {
+      "name": "Forest Service",
+      "amount": 12815595571.369999,
+      "children": [
+       {
+        "name": "National Forest System",
+        "amount": 2357384725.77,
+        "prior": 2378882258.46
+       },
+       {
+        "name": "Capital Improvement and Maintenance",
+        "amount": 516363726.78,
+        "prior": 321963871.24
+       },
+       {
+        "name": "Wildland Fire Management",
+        "amount": 6571487973.22,
+        "prior": 6274449939.03
+       },
+       {
+        "name": "Forest Service Permanent Appropriations",
+        "amount": 716527017.71,
+        "prior": 403813941.39
+       },
+       {
+        "name": "Other",
+        "amount": 2653832127.89,
+        "prior": 2803458652.6
+       }
+      ],
+      "prior": 12182568662.72
+     },
+     {
+      "name": "Other",
+      "amount": 23170137089.07,
+      "prior": 20182105281.33
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -3645091632.6,
+      "prior": -3673402122.73
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 31437105.85,
+      "prior": 1026822595.18
+     }
+    ],
+    "prior": 227431874538.99997
+   },
+   {
+    "name": "Department of Commerce",
+    "amount": 14837300292.269997,
+    "children": [
+     {
+      "name": "Economic Development Administration",
+      "amount": 1294468432.06,
+      "prior": 1293954244.89
+     },
+     {
+      "name": "Bureau of the Census",
+      "amount": 1338140060.45,
+      "prior": 1433960448.83
+     },
+     {
+      "name": "International Trade Administration",
+      "amount": 514993600.66,
+      "prior": 580263195.55
+     },
+     {
+      "name": "National Oceanic and Atmospheric Administration",
+      "amount": 7333482762.2,
+      "prior": 8158627282.5
+     },
+     {
+      "name": "National Institute of Standards and Technology",
+      "amount": 4018892711.12,
+      "prior": 16336441565.12
+     },
+     {
+      "name": "National Telecommunications and Information Administration",
+      "amount": 739747130.48,
+      "prior": 1443003696.95
+     },
+     {
+      "name": "Other",
+      "amount": -128927164.14,
+      "prior": 460268300.87
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -273588972.94,
+      "prior": 9854518.78
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 2307286.15,
+      "prior": -671765.93
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -2215553.77,
+      "prior": -4097123.24
+     }
+    ],
+    "prior": 29711604364.319996
+   },
+   {
+    "name": "Department of Defense--Military Programs",
+    "amount": 916836451162.9899,
+    "children": [
+     {
+      "name": "Military Personnel",
+      "amount": 223251909515.19998,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 77050199862.47,
+        "prior": 72764679118.29
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 67197775745.58,
+        "prior": 61951421726.8
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 52461368907.15,
+        "prior": 49224034693.92
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 26542565000,
+        "prior": 22588461000
+       }
+      ],
+      "prior": 206528596539.01
+     },
+     {
+      "name": "Operation and Maintenance",
+      "amount": 336047682064.62,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 71627562124.93,
+        "prior": 74866430780.71
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 88662907397.26,
+        "prior": 84963364792.21
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 80830602598.19,
+        "prior": 79311155469.28
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 94926609944.24,
+        "prior": 103256689130.41
+       }
+      ],
+      "prior": 342397640172.61
+     },
+     {
+      "name": "Procurement",
+      "amount": 176675485665.2,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 30070389276.18,
+        "prior": 27073113698.59
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 75103388693.17,
+        "prior": 68039480180.88
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 59300680171.99,
+        "prior": 55003136602.85
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 12201027523.86,
+        "prior": 11844549899.95
+       }
+      ],
+      "prior": 161960280382.27002
+     },
+     {
+      "name": "Research, Development, Test, and Evaluation",
+      "amount": 161095111322.44,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 16709369138.02,
+        "prior": 15980274525.49
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 27796593912.8,
+        "prior": 25668797039.39
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 65971384515.89,
+        "prior": 63241627526.54
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 50617763755.73,
+        "prior": 36538188097.86
+       }
+      ],
+      "prior": 141428887189.28
+     },
+     {
+      "name": "Military Construction",
+      "amount": 14231359604.89,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 2376316411.76,
+        "prior": 2089936649.99
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 4455655399.2,
+        "prior": 3952589056.49
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 3629170218.93,
+        "prior": 3936574524.61
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 3770217575,
+        "prior": 3172735285.58
+       }
+      ],
+      "prior": 13151835516.67
+     },
+     {
+      "name": "Family Housing",
+      "amount": 1756414574.7,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 593021213.32,
+        "prior": 657318769.39
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 641217913.37,
+        "prior": 514600716.07
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 388707756.25,
+        "prior": 401417148.94
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 133467691.76,
+        "prior": 211349956.67
+       }
+      ],
+      "prior": 1784686591.0700002
+     },
+     {
+      "name": "Revolving and Management Funds",
+      "amount": 5730290105.94,
+      "children": [
+       {
+        "name": "Department of the Navy",
+        "amount": 3747884.87,
+        "prior": 25339466.25
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 5726542221.07,
+        "children": [
+         {
+          "name": "Working Capital Fund",
+          "amount": 5456698763.65,
+          "prior": 2929330266.21
+         },
+         {
+          "name": "Other",
+          "amount": 269843457.42,
+          "prior": 89454306.79
+         }
+        ],
+        "prior": 3018784573
+       }
+      ],
+      "prior": 3044124039.25
+     },
+     {
+      "name": "Trust Funds",
+      "amount": 659886990.53,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": 40404495.37,
+        "prior": 33037187.38
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": 31404110.34,
+        "prior": 31540046.16
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": 6077150.54,
+        "prior": 3332166.59
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": 582001234.28,
+        "prior": 539366887.71
+       }
+      ],
+      "prior": 607276287.84
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -2425928727.65,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": -418805220.84,
+        "prior": -425375916.32
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": -171570239.4,
+        "prior": -156806252.6
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": -208557047.34,
+        "prior": -198068834
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": -1626996220.07,
+        "prior": -1453215686.78
+       }
+      ],
+      "prior": -2233466689.7
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -184601447.02,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": -94802355.98,
+        "prior": -41270714.17
+       },
+       {
+        "name": "Department of the Navy",
+        "amount": -45902671.26,
+        "prior": -83742232.94
+       },
+       {
+        "name": "Department of the Air Force",
+        "amount": -36848166.18,
+        "prior": -98230533.79
+       },
+       {
+        "name": "Defense Agencies",
+        "amount": -7048253.6,
+        "prior": -34018153.28
+       }
+      ],
+      "prior": -257261634.18
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -1158505.86,
+      "children": [
+       {
+        "name": "Department of the Army",
+        "amount": -1158505.86,
+        "prior": -960596.16
+       }
+      ],
+      "prior": -960596.16
+     }
+    ],
+    "prior": 868411637797.96
+   },
+   {
+    "name": "Department of Education",
+    "amount": 75226473850.21,
+    "children": [
+     {
+      "name": "Office of Elementary and Secondary Education",
+      "amount": 29292251243.43,
+      "children": [
+       {
+        "name": "Accelerating Achievement and Ensuring Equity",
+        "amount": 19125964544.9,
+        "prior": 20525300276.92
+       },
+       {
+        "name": "Impact Aid",
+        "amount": 1624884251.8,
+        "prior": 1638816465.72
+       },
+       {
+        "name": "Education Improvement Programs",
+        "amount": 6237537898.38,
+        "prior": 6490695323.36
+       },
+       {
+        "name": "Other",
+        "amount": 2303864548.35,
+        "prior": 14781914485.96
+       }
+      ],
+      "prior": 43436726551.96
+     },
+     {
+      "name": "Office of Innovation and Improvement",
+      "amount": 1237114543.26,
+      "prior": 1286997859.66
+     },
+     {
+      "name": "Office of English Language Acquisition",
+      "amount": 883934708.56,
+      "prior": 925754399.09
+     },
+     {
+      "name": "Office of Special Education and Rehabilitative Services",
+      "amount": 19666687252.550003,
+      "children": [
+       {
+        "name": "Special Education",
+        "amount": 15022217861.07,
+        "prior": 16272146718.52
+       },
+       {
+        "name": "Rehabilitation Services and Disability Research",
+        "amount": 4351320323.15,
+        "prior": 4520394717.64
+       },
+       {
+        "name": "Special Institutions for Persons with Disabilities",
+        "amount": 293149068.33,
+        "prior": 305130331.35
+       }
+      ],
+      "prior": 21097671767.51
+     },
+     {
+      "name": "Office of Vocational and Adult Education",
+      "amount": 2329909834.08,
+      "prior": 2542513595.06
+     },
+     {
+      "name": "Office of Postsecondary Education",
+      "amount": 4068741266.2999997,
+      "children": [
+       {
+        "name": "Higher Education",
+        "amount": 3714070917.91,
+        "prior": 3572209976.52
+       },
+       {
+        "name": "Other",
+        "amount": 354670348.39,
+        "prior": 363227694.93
+       }
+      ],
+      "prior": 3935437671.45
+     },
+     {
+      "name": "Office of Federal Student Aid",
+      "amount": 92903788398.06,
+      "children": [
+       {
+        "name": "Student Financial Assistance",
+        "amount": 41218255340.44,
+        "prior": 42051446015.95
+       },
+       {
+        "name": "Student Aid Administration",
+        "amount": 1645078768.34,
+        "prior": 2257071927.35
+       },
+       {
+        "name": "Federal Student Loan Reserve Fund",
+        "amount": 43298370.73,
+        "prior": -101066555.74
+       },
+       {
+        "name": "Federal Direct Student Loans",
+        "amount": 42216049177.18,
+        "prior": 64658105638
+       },
+       {
+        "name": "Federal Family Education Loans",
+        "amount": 7706376690.5,
+        "prior": 2323764658.07
+       },
+       {
+        "name": "Other",
+        "amount": 74730050.87,
+        "prior": 37763989.66
+       }
+      ],
+      "prior": 111227085673.29001
+     },
+     {
+      "name": "Institute of Education Sciences",
+      "amount": 514798523.04,
+      "prior": 673768384.44
+     },
+     {
+      "name": "Departmental Management",
+      "amount": 570586857.44,
+      "prior": 690229246.59
+     },
+     {
+      "name": "Other",
+      "amount": 25655636.78,
+      "prior": 101406729.28
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -76662344785.98,
+      "prior": -153107024958.21
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 395350372.69,
+      "prior": 1907231498.15
+     }
+    ],
+    "prior": 34717798418.27003
+   },
+   {
+    "name": "Department of Energy",
+    "amount": 52001025628.49,
+    "children": [
+     {
+      "name": "National Nuclear Security Administration",
+      "amount": 26192332286.469997,
+      "children": [
+       {
+        "name": "Naval Reactors",
+        "amount": 2098365115.23,
+        "prior": 1973631934.69
+       },
+       {
+        "name": "Weapons Activities",
+        "amount": 21143166594.78,
+        "prior": 18915181763.33
+       },
+       {
+        "name": "Defense Nuclear Nonproliferation",
+        "amount": 2444031172.1,
+        "prior": 2694834115.9
+       },
+       {
+        "name": "Other",
+        "amount": 506769404.36,
+        "prior": 518778704.72
+       }
+      ],
+      "prior": 24102426518.640003
+     },
+     {
+      "name": "Environmental and Other Defense Activities",
+      "amount": 8353777904.02,
+      "children": [
+       {
+        "name": "Defense Environmental Cleanup",
+        "amount": 7390113849.75,
+        "prior": 7630220231.61
+       },
+       {
+        "name": "Other Defense Activities",
+        "amount": 963548123.8,
+        "prior": 1126081436.7
+       },
+       {
+        "name": "Defense Nuclear Waste Disposal",
+        "amount": 115930.47,
+        "prior": 111188.02
+       }
+      ],
+      "prior": 8756412856.33
+     },
+     {
+      "name": "Energy Programs",
+      "amount": 20020972288.050003,
+      "children": [
+       {
+        "name": "Science",
+        "amount": 8431421538.56,
+        "prior": 8536367664.3
+       },
+       {
+        "name": "Energy Supply",
+        "amount": 3168912203.05,
+        "prior": 2816940272.4
+       },
+       {
+        "name": "Energy Efficiency and Renewable Energy",
+        "amount": 3598516769.98,
+        "prior": 4318053420.14
+       },
+       {
+        "name": "Fossil Energy Research and Development",
+        "amount": 701744315.93,
+        "prior": 957947341.04
+       },
+       {
+        "name": "Uranium Enrichment Decontamination and Decommissioning Fund",
+        "amount": 827196232.7,
+        "prior": 813248344.15
+       },
+       {
+        "name": "Advanced Technology Vehicles Manufacturing Loan Program",
+        "amount": 484550352.25,
+        "prior": 82887625.91
+       },
+       {
+        "name": "Title 17 Innovative Technology Loan Guarantee Program",
+        "amount": 227732202.13,
+        "prior": 156255229.35
+       },
+       {
+        "name": "Other",
+        "amount": 2580898673.45,
+        "prior": 3979863049.29
+       }
+      ],
+      "prior": 21661562946.58
+     },
+     {
+      "name": "Power Marketing Administration",
+      "amount": 548203228.57,
+      "prior": 437906515.41
+     },
+     {
+      "name": "Departmental Administration",
+      "amount": 253307407.68,
+      "prior": 387562979.4
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -1098805354.44,
+      "prior": -728366454.37
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -2264795599.15,
+      "prior": -2257322972.13
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -3966532.71,
+      "prior": -67946458.38
+     }
+    ],
+    "prior": 52292235931.48001
+   },
+   {
+    "name": "Department of Health and Human Services",
+    "amount": 2003813410605.7197,
+    "children": [
+     {
+      "name": "Food and Drug Administration",
+      "amount": 2538242424.73,
+      "prior": 3283647215.79
+     },
+     {
+      "name": "Health Resources and Services Administration",
+      "amount": 14675773445.64,
+      "prior": 15079598155.73
+     },
+     {
+      "name": "Indian Health Service",
+      "amount": 10087690109.83,
+      "prior": 8344251818.44
+     },
+     {
+      "name": "Centers for Disease Control and Prevention",
+      "amount": 9912373689.08,
+      "prior": 11404852194.91
+     },
+     {
+      "name": "National Institutes of Health",
+      "amount": 45629933425.84,
+      "prior": 47340988908.37
+     },
+     {
+      "name": "Substance Abuse and Mental Health Services Administration",
+      "amount": 7704004358.24,
+      "prior": 8336816076.88
+     },
+     {
+      "name": "Agency for Healthcare Research and Quality",
+      "amount": 284522765.15,
+      "prior": 367003574.95
+     },
+     {
+      "name": "Centers for Medicare and Medicaid Services",
+      "amount": 2732873583522.79,
+      "children": [
+       {
+        "name": "Grants to States for Medicaid",
+        "amount": 722976709337.78,
+        "prior": 668139435123.32
+       },
+       {
+        "name": "Payments to Health Care Trust Funds",
+        "amount": 685574347947.58,
+        "prior": 592024340703.37
+       },
+       {
+        "name": "Children's Health Insurance Fund",
+        "amount": 25040014261.96,
+        "prior": 23067369551.57
+       },
+       {
+        "name": "State Grants and Demonstrations",
+        "amount": 606373780.86,
+        "prior": 695047269.77
+       },
+       {
+        "name": "Federal Hospital Insurance Trust Fund",
+        "amount": 468276922757.69,
+        "children": [
+         {
+          "name": "Benefit Payments",
+          "amount": 464943865598.77,
+          "prior": 440869711321.99
+         },
+         {
+          "name": "Administrative Expenses",
+          "amount": 3333057158.92,
+          "prior": 3962988532.52
+         }
+        ],
+        "prior": 444832699854.51
+       },
+       {
+        "name": "Health Care Fraud and Abuse Control",
+        "amount": 2497349553.45,
+        "prior": 2630279585.79
+       },
+       {
+        "name": "Federal Supplementary Medical Insurance Trust Fund",
+        "amount": 816645992598.0399,
+        "children": [
+         {
+          "name": "Benefit Payments",
+          "amount": 612269181275.1,
+          "prior": 572533855911.09
+         },
+         {
+          "name": "Administrative Expenses",
+          "amount": 5909221849.08,
+          "prior": 6018894589.1
+         },
+         {
+          "name": "Medicare Prescription Drugs",
+          "amount": 198467589473.86,
+          "children": [
+           {
+            "name": "Benefit Payments",
+            "amount": 198467589473.86,
+            "prior": 163025011964.02
+           }
+          ],
+          "prior": 163025011964.02
+         }
+        ],
+        "prior": 741577762464.21
+       },
+       {
+        "name": "Other",
+        "amount": 11255873285.43,
+        "prior": 12002209455.05
+       }
+      ],
+      "prior": 2484969144007.59
+     },
+     {
+      "name": "Administration for Children and Families",
+      "amount": 71890019941.72,
+      "children": [
+       {
+        "name": "Temporary Assistance for Needy Families",
+        "amount": 17519116563.67,
+        "prior": 17713710683.78
+       },
+       {
+        "name": "Contingency Fund",
+        "amount": 582343720.11,
+        "prior": 560547870.33
+       },
+       {
+        "name": "Payments to States for Child Support Enforcement and Family Support Programs",
+        "amount": 5020645259.02,
+        "prior": 4968220347.41
+       },
+       {
+        "name": "Low Income Home Energy Assistance",
+        "amount": 4082132537.03,
+        "prior": 4378186377.43
+       },
+       {
+        "name": "Refugee and Entrant Assistance",
+        "amount": 4052789337.86,
+        "prior": 5822492333.62
+       },
+       {
+        "name": "Child Care Entitlement to States",
+        "amount": 3656325956.76,
+        "prior": 4032691259.44
+       },
+       {
+        "name": "Payments to States for the Child Care and Development Block Grant",
+        "amount": 9668377081.6,
+        "prior": 10779323099.85
+       },
+       {
+        "name": "Social Services Block Grant",
+        "amount": 1670886830.68,
+        "prior": 1551402150.06
+       },
+       {
+        "name": "Children and Families Services Programs",
+        "amount": 14369822739.19,
+        "prior": 15173755524.54
+       },
+       {
+        "name": "Payments to States for Foster Care and Adoption Assistance",
+        "amount": 10689644194.11,
+        "prior": 9986438229.11
+       },
+       {
+        "name": "Other",
+        "amount": 577935721.69,
+        "prior": 709501999.73
+       }
+      ],
+      "prior": 75676269875.3
+     },
+     {
+      "name": "Administration for Community Living",
+      "amount": 2308834175.04,
+      "prior": 3014610135.82
+     },
+     {
+      "name": "Departmental Management",
+      "amount": 5272604812.94,
+      "prior": 10774161598.95
+     },
+     {
+      "name": "Other",
+      "amount": 3330577193.76,
+      "prior": 2905511805.23
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -216141837558.86,
+      "prior": -194141434253.8
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -686552911700.18,
+      "children": [
+       {
+        "name": "Payments for Health Insurance for the Aged",
+        "amount": -635984725776.3,
+        "children": [
+         {
+          "name": "Federal Supplementary Medical Insurance Trust Fund",
+          "amount": -635984725776.3,
+          "prior": -549651604100.55
+         }
+        ],
+        "prior": -549651604100.55
+       },
+       {
+        "name": "Payments for Tax and Other Credits",
+        "amount": -49620822967.71,
+        "children": [
+         {
+          "name": "Federal Hospital Insurance Trust Fund",
+          "amount": -49620822967.71,
+          "prior": -42381389642.17
+         }
+        ],
+        "prior": -42381389642.17
+       },
+       {
+        "name": "Other",
+        "amount": -947362956.17,
+        "prior": -1045268845.35
+       }
+      ],
+      "prior": -593078262588.07
+     }
+    ],
+    "prior": 1884277158526.0898
+   },
+   {
+    "name": "Department of Homeland Security",
+    "amount": 109528448164.37,
+    "children": [
+     {
+      "name": "Departmental Management and Operations",
+      "amount": 7918961950.51,
+      "prior": 2499262405.46
+     },
+     {
+      "name": "Citizenship and Immigration Services",
+      "amount": 5749512188.69,
+      "prior": 6019176557.33
+     },
+     {
+      "name": "United States Secret Service",
+      "amount": 3819159602.97,
+      "prior": 3574936423.89
+     },
+     {
+      "name": "Transportation Security Administration",
+      "amount": 7901697679.4,
+      "prior": 8277087993.79
+     },
+     {
+      "name": "Immigration and Customs Enforcement",
+      "amount": 22426702253.51,
+      "prior": 10700363998.78
+     },
+     {
+      "name": "U.S. Customs and Border Protection",
+      "amount": 28923160698.85,
+      "prior": 21235343420.78
+     },
+     {
+      "name": "United States Coast Guard",
+      "amount": 13796793439.41,
+      "prior": 13821644633.32
+     },
+     {
+      "name": "National Protection and Programs Directorate",
+      "amount": 2004790601.8,
+      "prior": 2598656199.68
+     },
+     {
+      "name": "Federal Emergency Management Agency",
+      "amount": 32851975032.5,
+      "children": [
+       {
+        "name": "Disaster Relief",
+        "amount": 31777468119.34,
+        "prior": 51928818005.47
+       },
+       {
+        "name": "National Flood Insurance Fund",
+        "amount": -1293742339.74,
+        "prior": 7350941980.18
+       },
+       {
+        "name": "Other",
+        "amount": 2368249252.9,
+        "prior": 3327893243.59
+       }
+      ],
+      "prior": 62607653229.240005
+     },
+     {
+      "name": "Science and Technology",
+      "amount": 620633759.96,
+      "prior": 760187636.96
+     },
+     {
+      "name": "Domestic Nuclear Detection Office",
+      "amount": 188787543.72,
+      "prior": 384287172.88
+     },
+     {
+      "name": "Other",
+      "amount": 726291424.31,
+      "prior": 625387804.49
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -2484511225.24,
+      "prior": -1513566147.67
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 9374393.17,
+      "prior": 166791011.28
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -14924881179.19,
+      "prior": -16451649065.48
+     }
+    ],
+    "prior": 115305563274.73003
+   },
+   {
+    "name": "Department of Housing and Urban Development",
+    "amount": 68263373803.70999,
+    "children": [
+     {
+      "name": "Public and Indian Housing Programs",
+      "amount": 48675974379.85999,
+      "children": [
+       {
+        "name": "Tenant Based Rental Assistance",
+        "amount": 38963315898.14,
+        "prior": 38320405699.7
+       },
+       {
+        "name": "Housing Certificate Fund",
+        "amount": 3555924.38,
+        "prior": 365937.96
+       },
+       {
+        "name": "Public Housing Capital Fund",
+        "amount": 126166506.38,
+        "prior": 290093441.78
+       },
+       {
+        "name": "Public Housing Operating Fund",
+        "amount": 7913229127.15,
+        "prior": 8945187643.55
+       },
+       {
+        "name": "Revitalization of Severely Distressed Public Housing (Hope VI)",
+        "amount": 2860043.23,
+        "prior": 1809711.57
+       },
+       {
+        "name": "Native American Housing Block Grant",
+        "amount": 1234767079.74,
+        "prior": 1375195710.29
+       },
+       {
+        "name": "Other",
+        "amount": 432079800.84,
+        "prior": 425089240.52
+       }
+      ],
+      "prior": 49358147385.36999
+     },
+     {
+      "name": "Community Planning and Development",
+      "amount": 15770161330.040003,
+      "children": [
+       {
+        "name": "Housing Opportunities for Persons with AIDS",
+        "amount": 435090143.34,
+        "prior": 461505367.68
+       },
+       {
+        "name": "Community Development Fund",
+        "amount": 9506132725.62,
+        "prior": 9853004515.7
+       },
+       {
+        "name": "Home Investment Partnership Program",
+        "amount": 1770812455.67,
+        "prior": 1870736056.72
+       },
+       {
+        "name": "Neighborhood Stabilization Program",
+        "amount": 1836242.01,
+        "prior": 7821748.95
+       },
+       {
+        "name": "Homeless Assistance Grants",
+        "amount": 3540671734.28,
+        "prior": 3397431600.13
+       },
+       {
+        "name": "Other",
+        "amount": 515618029.12,
+        "prior": 648329803.39
+       }
+      ],
+      "prior": 16238829092.57
+     },
+     {
+      "name": "Housing Programs",
+      "amount": 4359848861.989996,
+      "children": [
+       {
+        "name": "Credit Accounts",
+        "amount": -15446160053.390003,
+        "children": [
+         {
+          "name": "FHA-Mutual Mortgage Insurance Fund, Program Account",
+          "amount": 3752186890.24,
+          "prior": 1641647087.77
+         },
+         {
+          "name": "FHA-Mutual Mortgage Insurance Capital Reserve Account",
+          "amount": -20353607252.24,
+          "prior": -32136167842.3
+         },
+         {
+          "name": "FHA-Mutual Mortgage and Cooperative Housing Insurance Fund, Liquidating Account",
+          "amount": -3321149.95,
+          "prior": -658522.37
+         },
+         {
+          "name": "FHA-General and Special Risk Fund, Program Account",
+          "amount": 1255633304.39,
+          "prior": 393291766.31
+         },
+         {
+          "name": "FHA-General and Special Risk Fund, Liquidating Account",
+          "amount": -47225424.84,
+          "prior": -46925153.63
+         },
+         {
+          "name": "Housing for the Elderly or Handicapped Fund, Liquidating Account",
+          "amount": -49826420.99,
+          "prior": -60254889.48
+         }
+        ],
+        "prior": -30209067553.699997
+       },
+       {
+        "name": "HUD Project-Based Rental Assistance",
+        "amount": 18348876574.32,
+        "prior": 17150652743.55
+       },
+       {
+        "name": "Home Ownership Preservation Equity Fund",
+        "amount": 6789097.54,
+        "prior": 214974.37
+       },
+       {
+        "name": "Housing for the Elderly",
+        "amount": 1093115995.07,
+        "prior": 963880777.61
+       },
+       {
+        "name": "Housing for Persons with Disabilities",
+        "amount": 294590739.92,
+        "prior": 269183482.81
+       },
+       {
+        "name": "Other Assisted Housing Programs",
+        "amount": 37430115.42,
+        "prior": 36733228.98
+       },
+       {
+        "name": "Other",
+        "amount": 25206393.11,
+        "prior": 71426510.54
+       }
+      ],
+      "prior": -11716975835.839996
+     },
+     {
+      "name": "Government National Mortgage Association",
+      "amount": -1386250708.7,
+      "children": [
+       {
+        "name": "Guarantees of Mortgage-Backed Securities",
+        "amount": -1386250708.7,
+        "prior": -4030826614.42
+       }
+      ],
+      "prior": -4030826614.42
+     },
+     {
+      "name": "Management and Administration",
+      "amount": 1913706570.36,
+      "prior": 2414273716.46
+     },
+     {
+      "name": "Other",
+      "amount": 454241807.97,
+      "prior": 413683683.99
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -1495159108.8799999,
+      "children": [
+       {
+        "name": "FHA-General and Special Risk Fund",
+        "amount": -1236507024.58,
+        "prior": -1869697456.26
+       },
+       {
+        "name": "Other",
+        "amount": -258652084.3,
+        "prior": -252595221.24
+       }
+      ],
+      "prior": -2122292677.5
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -13016428.93,
+      "prior": -5191133.95
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -16132900,
+      "prior": -16770500
+     }
+    ],
+    "prior": 50532877116.67999
+   },
+   {
+    "name": "Department of the Interior",
+    "amount": 15566809061.84,
+    "children": [
+     {
+      "name": "Land and Minerals Management",
+      "amount": 3753742175.95,
+      "children": [
+       {
+        "name": "Bureau of Land Management",
+        "amount": 1612117509.7,
+        "children": [
+         {
+          "name": "Management of Lands and Resources",
+          "amount": 1226348743.74,
+          "prior": 1446448955.53
+         },
+         {
+          "name": "Other",
+          "amount": 385768765.96,
+          "prior": 383126362.89
+         }
+        ],
+        "prior": 1829575318.42
+       },
+       {
+        "name": "Bureau of Ocean Energy Management",
+        "amount": 161546765.9,
+        "prior": 183108115.93
+       },
+       {
+        "name": "Office of Surface Mining Reclamation and Enforcement",
+        "amount": 1980077900.35,
+        "prior": 2073491267.94
+       }
+      ],
+      "prior": 4086174702.29
+     },
+     {
+      "name": "Water and Science",
+      "amount": 4810707534.870001,
+      "children": [
+       {
+        "name": "Bureau of Reclamation",
+        "amount": 3343771342.38,
+        "children": [
+         {
+          "name": "Water and Related Resources",
+          "amount": 2762254038.4,
+          "prior": 3017524394.19
+         },
+         {
+          "name": "Other",
+          "amount": 581517303.98,
+          "prior": 739804119.43
+         }
+        ],
+        "prior": 3757328513.62
+       },
+       {
+        "name": "Central Utah Project",
+        "amount": 30503727.32,
+        "prior": 29397892.17
+       },
+       {
+        "name": "United States Geological Survey",
+        "amount": 1436432465.17,
+        "prior": 1627272756.56
+       }
+      ],
+      "prior": 5413999162.35
+     },
+     {
+      "name": "Fish and Wildlife and Parks",
+      "amount": 8330446358.790001,
+      "children": [
+       {
+        "name": "United States Fish and Wildlife Service",
+        "amount": 3383992199.4,
+        "prior": 3841220509.87
+       },
+       {
+        "name": "National Park Service",
+        "amount": 4946454159.39,
+        "prior": 4783217757.52
+       }
+      ],
+      "prior": 8624438267.39
+     },
+     {
+      "name": "Indian Affairs",
+      "amount": 2947784703.82,
+      "children": [
+       {
+        "name": "Bureau of Indian Affairs and Bureau of Indian Education",
+        "amount": 2947784703.82,
+        "prior": 3272728271.5
+       }
+      ],
+      "prior": 3272728271.5
+     },
+     {
+      "name": "Departmental Offices",
+      "amount": 12422595256.47,
+      "children": [
+       {
+        "name": "Mineral Leasing and Associated Payments",
+        "amount": 6148410473.75,
+        "prior": 3632649789.88
+       },
+       {
+        "name": "Other",
+        "amount": 712810989.74,
+        "prior": 738281266.56
+       },
+       {
+        "name": "Insular Affairs",
+        "amount": 982478633.14,
+        "prior": 1167373024.3
+       },
+       {
+        "name": "Office of the Special Trustee for American Indians",
+        "amount": 277913151.69,
+        "prior": 271179164.82
+       },
+       {
+        "name": "Department-Wide Programs",
+        "amount": 4300982008.15,
+        "prior": 5174793921.29
+       }
+      ],
+      "prior": 10984277166.85
+     },
+     {
+      "name": "Other",
+      "amount": 1732950089.35,
+      "prior": 1854446021.73
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -16921000993.5,
+      "prior": -10368446350.67
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -1510416063.91,
+      "prior": -1465509666.25
+     }
+    ],
+    "prior": 22402107575.189995
+   },
+   {
+    "name": "Department of Justice",
+    "amount": 45336477058.26,
+    "children": [
+     {
+      "name": "General Administration",
+      "amount": 935264846.81,
+      "prior": 1334716792.14
+     },
+     {
+      "name": "Legal Activities and U.S. Marshals",
+      "amount": 15351401845.4,
+      "children": [
+       {
+        "name": "General Legal Activities",
+        "amount": 6091083054.08,
+        "prior": 4814451958.93
+       },
+       {
+        "name": "United States Attorneys",
+        "amount": 2526757978.33,
+        "prior": 2521713037.06
+       },
+       {
+        "name": "United States Marshals Service",
+        "amount": 1745553958.15,
+        "prior": 1765537807.06
+       },
+       {
+        "name": "Assets Forfeiture Fund",
+        "amount": 2501332596.49,
+        "prior": 1701257790.33
+       },
+       {
+        "name": "Other",
+        "amount": 2486674258.35,
+        "prior": 2755634969.65
+       }
+      ],
+      "prior": 13558595563.029999
+     },
+     {
+      "name": "Federal Bureau of Investigation",
+      "amount": 10722639762.13,
+      "prior": 11172602884.74
+     },
+     {
+      "name": "Drug Enforcement Administration",
+      "amount": 3197208845.3,
+      "prior": 3230614792.75
+     },
+     {
+      "name": "Bureau of Alcohol, Tobacco, Firearms, and Explosives",
+      "amount": 1617999153.66,
+      "prior": 1737466490.15
+     },
+     {
+      "name": "Federal Prison System",
+      "amount": 8741921660.64,
+      "prior": 9134212308.23
+     },
+     {
+      "name": "Office of Justice Programs",
+      "amount": 5004301766.21,
+      "children": [
+       {
+        "name": "State and Local Law Enforcement Assistance",
+        "amount": 1478122066.86,
+        "prior": 2334764722.67
+       },
+       {
+        "name": "Community Oriented Policing Services",
+        "amount": 495705881.08,
+        "prior": 604888381.26
+       },
+       {
+        "name": "Crime Victims Fund",
+        "amount": 1702539488.94,
+        "prior": 1945598857.03
+       },
+       {
+        "name": "Other",
+        "amount": 1327934329.33,
+        "prior": 1236266315.26
+       }
+      ],
+      "prior": 6121518276.22
+     },
+     {
+      "name": "Other",
+      "amount": 3876195424.19,
+      "prior": 1059655204.08
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -505399846.79,
+      "prior": -752180235.27
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -2654498918.91,
+      "prior": -753989124.2
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -950557480.38,
+      "prior": -895543259.45
+     }
+    ],
+    "prior": 44947669692.420006
+   },
+   {
+    "name": "Department of Labor",
+    "amount": 55183832215.66001,
+    "children": [
+     {
+      "name": "Employment and Training Administration",
+      "amount": 47221070601.66,
+      "children": [
+       {
+        "name": "Training and Employment Services",
+        "amount": 2548086305.45,
+        "prior": 1800966761.72
+       },
+       {
+        "name": "Office of Job Corps",
+        "amount": 1732833916.36,
+        "prior": 1850618771.4
+       },
+       {
+        "name": "Community Service Employment for Older Americans",
+        "amount": 347899748.63,
+        "prior": 336702379.92
+       },
+       {
+        "name": "Federal Unemployment Benefits and Allowances",
+        "amount": 13813858.62,
+        "prior": 35021480.11
+       },
+       {
+        "name": "Federal Additional Unemployment Compensation Program-Recovery Act",
+        "amount": 867130431.93,
+        "prior": -67564935.13
+       },
+       {
+        "name": "State Unemployment Insurance and Employment Service Operations",
+        "amount": -690360951.89,
+        "prior": 320238085.83
+       },
+       {
+        "name": "Payments to the Unemployment Trust Fund",
+        "amount": -63564262,
+        "prior": -4619259562.01
+       },
+       {
+        "name": "Program Administration",
+        "amount": 96994201.64,
+        "prior": 130824361.61
+       },
+       {
+        "name": "Unemployment Trust Fund",
+        "amount": 42038722838.920006,
+        "children": [
+         {
+          "name": "Federal-State Unemployment Insurance",
+          "amount": 36437759356.44,
+          "children": [
+           {
+            "name": "State Unemployment Benefits",
+            "amount": 36437759356.44,
+            "prior": 38022945769.3
+           }
+          ],
+          "prior": 38022945769.3
+         },
+         {
+          "name": "State Administrative Expenses",
+          "amount": 4831151802.14,
+          "prior": 3981873111.62
+         },
+         {
+          "name": "Federal Administrative Expenses",
+          "amount": 414526234.86,
+          "prior": 496934994.41
+         },
+         {
+          "name": "Other",
+          "amount": 355285445.48,
+          "prior": 484225056.07
+         }
+        ],
+        "prior": 42985978931.40001
+       },
+       {
+        "name": "Other",
+        "amount": 329514514,
+        "prior": 4714524135.13
+       }
+      ],
+      "prior": 47488050409.98
+     },
+     {
+      "name": "Pension Benefit Guaranty Corporation",
+      "amount": 1407527391.29,
+      "prior": -3917181951.6
+     },
+     {
+      "name": "Office of Workers' Compensation Programs",
+      "amount": 5330624044.83,
+      "children": [
+       {
+        "name": "Special Benefits",
+        "amount": 1151872312.62,
+        "prior": 1012494831.87
+       },
+       {
+        "name": "Energy Employees Occupational Illness Compensation Fund",
+        "amount": 3330935918.59,
+        "prior": 3084061361.81
+       },
+       {
+        "name": "Special Benefits for Disabled Coal Miners",
+        "amount": 31383132.45,
+        "prior": 35429802.64
+       },
+       {
+        "name": "Black Lung Disability Trust Fund",
+        "amount": 486246127.35,
+        "prior": 482000633.78
+       },
+       {
+        "name": "Other",
+        "amount": 330186553.82,
+        "prior": 358731804.74
+       }
+      ],
+      "prior": 4972718434.839999
+     },
+     {
+      "name": "Wage and Hour Division",
+      "amount": 297315074.57,
+      "prior": 314425575.55
+     },
+     {
+      "name": "Occupational Safety and Health Administration",
+      "amount": 604377541.41,
+      "prior": 628010998.62
+     },
+     {
+      "name": "Mine Safety and Health Administration",
+      "amount": 370964133.05,
+      "prior": 384860942.06
+     },
+     {
+      "name": "Bureau of Labor Statistics",
+      "amount": 526429061.69,
+      "prior": 691703013.88
+     },
+     {
+      "name": "Departmental Management",
+      "amount": 338984922.84,
+      "prior": 608594904.33
+     },
+     {
+      "name": "Other",
+      "amount": 347464278.51,
+      "prior": 402540270.22
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -673600388.72,
+      "prior": -794143226.47
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -587324445.47,
+      "prior": -396514530.08
+     }
+    ],
+    "prior": 50383064841.33
+   },
+   {
+    "name": "Department of State",
+    "amount": 28828477980.420002,
+    "children": [
+     {
+      "name": "Administration of Foreign Affairs",
+      "amount": 19976977964.13,
+      "children": [
+       {
+        "name": "Diplomatic and Consular Programs",
+        "amount": 9474084324.37,
+        "prior": 9988770366.37
+       },
+       {
+        "name": "Educational and Cultural Exchange Programs",
+        "amount": 628849446.85,
+        "prior": 821613406.74
+       },
+       {
+        "name": "Embassy Security, Construction, and Maintenance",
+        "amount": 2192591786.91,
+        "prior": 1860723815.64
+       },
+       {
+        "name": "Payment to Foreign Service Retirement and Disability Fund",
+        "amount": 584500000,
+        "prior": 655700000
+       },
+       {
+        "name": "Foreign Service Retirement and Disability Fund",
+        "amount": 1481871414.88,
+        "prior": 1229413019.66
+       },
+       {
+        "name": "Other",
+        "amount": 5615080991.12,
+        "prior": 6074490019.18
+       }
+      ],
+      "prior": 20630710627.59
+     },
+     {
+      "name": "International Organizations and Conferences",
+      "amount": 2248224196.72,
+      "prior": 453764846.41
+     },
+     {
+      "name": "Global Health and Child Survival",
+      "amount": 6124357660.21,
+      "prior": 7469147572.03
+     },
+     {
+      "name": "Migration and Refugee Assistance",
+      "amount": 2261684605.03,
+      "prior": 3245507260.26
+     },
+     {
+      "name": "International Narcotics Control and Law Enforcement",
+      "amount": 1151073187.44,
+      "prior": 1427498436.54
+     },
+     {
+      "name": "Other",
+      "amount": 2983759074.72,
+      "prior": 1841658687.69
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -5124081108.16,
+      "prior": -5918132789.25
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -793517599.67,
+      "prior": -787843782.72
+     }
+    ],
+    "prior": 28362310911.54
+   },
+   {
+    "name": "Department of Transportation",
+    "amount": 124270631233.59,
+    "children": [
+     {
+      "name": "Office of the Secretary",
+      "amount": 3102967715.03,
+      "prior": 2741888170.7
+     },
+     {
+      "name": "Federal Aviation Administration",
+      "amount": 25616375293.38,
+      "children": [
+       {
+        "name": "Operations",
+        "amount": 318048294.17,
+        "prior": 1219619173.45
+       },
+       {
+        "name": "Airport and Airway Trust Fund",
+        "amount": 20126616234.440002,
+        "children": [
+         {
+          "name": "Grants-In-Aid for Airports",
+          "amount": 3681854479.79,
+          "prior": 3740682533.57
+         },
+         {
+          "name": "Facilities and Equipment",
+          "amount": 3222518682.55,
+          "prior": 3200232500.85
+         },
+         {
+          "name": "Research, Engineering, and Development",
+          "amount": 181642441.1,
+          "prior": 224905333.76
+         },
+         {
+          "name": "Trust Fund Share of FAA Operations",
+          "amount": 13040600631,
+          "prior": 12513425519
+         }
+        ],
+        "prior": 19679245887.18
+       },
+       {
+        "name": "Other",
+        "amount": 5171710764.77,
+        "prior": 3906908130.85
+       }
+      ],
+      "prior": 24805773191.48
+     },
+     {
+      "name": "Federal Highway Administration",
+      "amount": 65950614452.729996,
+      "children": [
+       {
+        "name": "Highway Trust Fund",
+        "amount": 56298490765.52,
+        "children": [
+         {
+          "name": "Federal-Aid Highways",
+          "amount": 56296113518.24,
+          "prior": 56025434990.64
+         },
+         {
+          "name": "Other",
+          "amount": 2377247.28,
+          "prior": 13060904.93
+         }
+        ],
+        "prior": 56038495895.57
+       },
+       {
+        "name": "Other Programs",
+        "amount": 9652123687.21,
+        "prior": 8994081398.45
+       }
+      ],
+      "prior": 65032577294.020004
+     },
+     {
+      "name": "Federal Motor Carrier Safety Administration",
+      "amount": 955281881.34,
+      "prior": 1005856350.72
+     },
+     {
+      "name": "National Highway Traffic Safety Administration",
+      "amount": 1491155014.3,
+      "prior": 1485740957.92
+     },
+     {
+      "name": "Federal Railroad Administration",
+      "amount": 7088662861.75,
+      "children": [
+       {
+        "name": "Other",
+        "amount": 7088662861.75,
+        "prior": 6491462390.61
+       }
+      ],
+      "prior": 6491462390.61
+     },
+     {
+      "name": "Federal Transit Administration",
+      "amount": 21068434730.17,
+      "children": [
+       {
+        "name": "Formula Grants",
+        "amount": -1551,
+        "prior": 1341369
+       },
+       {
+        "name": "Capital Investment Grants",
+        "amount": 2271109954.79,
+        "prior": 2598306140.77
+       },
+       {
+        "name": "Transit Formula Grants",
+        "amount": 16056715552.15,
+        "prior": 16234354761.23
+       },
+       {
+        "name": "Other",
+        "amount": 2740610774.23,
+        "prior": 6513336886.35
+       }
+      ],
+      "prior": 25347339157.35
+     },
+     {
+      "name": "Maritime Administration",
+      "amount": -754356408.95,
+      "prior": 993292706.76
+     },
+     {
+      "name": "Other",
+      "amount": 572468957.56,
+      "prior": 545448334.52
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -640057736.08,
+      "prior": -675376268.51
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 3144130.72,
+      "children": [
+       {
+        "name": "Other",
+        "amount": 3144130.72,
+        "prior": -8511236.7
+       }
+      ],
+      "prior": -8511236.7
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -184059658.36,
+      "prior": -182709591.12
+     }
+    ],
+    "prior": 127582781457.75003
+   },
+   {
+    "name": "Department of the Treasury",
+    "amount": 1580963564396.7695,
+    "children": [
+     {
+      "name": "Departmental Offices",
+      "amount": 3977201481.31,
+      "children": [
+       {
+        "name": "Exchange Stabilization Fund",
+        "amount": -1685666449.13,
+        "prior": -1657731479.95
+       },
+       {
+        "name": "Housing and Economic Recovery Programs",
+        "amount": 8449705.52,
+        "prior": 2284917.67
+       },
+       {
+        "name": "ESF - Economic Stabilization Program",
+        "amount": 31936512.38,
+        "prior": 20420580.37
+       },
+       {
+        "name": "Air Carrier Worker Support",
+        "amount": -7195418.21,
+        "prior": -8797182.72
+       },
+       {
+        "name": "Coronavirus Relief Fund",
+        "amount": 2648803936.23,
+        "prior": 1462416669.21
+       },
+       {
+        "name": "Emergency Capital Investment Program",
+        "amount": 29386583.73,
+        "prior": 157223276.31
+       },
+       {
+        "name": "Emergency Rental Assistance",
+        "amount": -104314321.47,
+        "prior": -102803607.38
+       },
+       {
+        "name": "Transportation Services",
+        "amount": -65745.1,
+        "prior": -9205.38
+       },
+       {
+        "name": "Other",
+        "amount": 3055866677.36,
+        "prior": 4828311120.97
+       }
+      ],
+      "prior": 4701315089.1
+     },
+     {
+      "name": "Bureau of the Fiscal Service",
+      "amount": 22054348276.79,
+      "children": [
+       {
+        "name": "Payment to the Resolution Funding Corporation",
+        "amount": 919663271.34,
+        "prior": 919663271.34
+       },
+       {
+        "name": "Financial Agent Services",
+        "amount": 1758987640.85,
+        "prior": 1608828774.03
+       },
+       {
+        "name": "Interest Paid to Credit Financing Accounts",
+        "amount": 10492182814.55,
+        "prior": 12355544647.71
+       },
+       {
+        "name": "Claims, Judgements, and Relief Acts",
+        "amount": 6610108841.47,
+        "prior": 4351705516.78
+       },
+       {
+        "name": "Other",
+        "amount": 2273405708.58,
+        "prior": 6172855292
+       }
+      ],
+      "prior": 25408597501.859997
+     },
+     {
+      "name": "Federal Financing Bank",
+      "amount": -193950584.48,
+      "prior": -134774722.82
+     },
+     {
+      "name": "Alcohol and Tobacco Tax and Trade Bureau",
+      "amount": 553582210.0699999,
+      "children": [
+       {
+        "name": "Salaries and Expenses",
+        "amount": 147588723.24,
+        "prior": 154256263.94
+       },
+       {
+        "name": "Internal Revenue Collections for Puerto Rico",
+        "amount": 405993486.83,
+        "prior": 394951458.21
+       }
+      ],
+      "prior": 549207722.15
+     },
+     {
+      "name": "Bureau of Engraving and Printing",
+      "amount": 94805760.32,
+      "prior": -55398404.02
+     },
+     {
+      "name": "United States Mint",
+      "amount": -457604228.28,
+      "prior": 722816371.31
+     },
+     {
+      "name": "Internal Revenue Service",
+      "amount": 280977373896.34,
+      "children": [
+       {
+        "name": "Taxpayer Services",
+        "amount": 3797466971.62,
+        "prior": 4384663349.07
+       },
+       {
+        "name": "Enforcement",
+        "amount": 5325301713.62,
+        "prior": 7009479497.25
+       },
+       {
+        "name": "Operations Support",
+        "amount": 5202878549.38,
+        "prior": 6452673142.27
+       },
+       {
+        "name": "Build America Bond Payments, Recovery Act",
+        "amount": 1409852259.29,
+        "prior": 1664246363.22
+       },
+       {
+        "name": "Refundable Premium Tax Credits and Cost Sharing Reductions,Treasury",
+        "amount": -23127566765.1
+       },
+       {
+        "name": "Refundable Premium Tax Credits and Cost Sharing Reductions, HHS",
+        "amount": 149157194109.76
+       },
+       {
+        "name": "Payment Where Earned Income Credit Exceeds Liability for Tax",
+        "amount": 68491613303.08,
+        "prior": 66007446602.84
+       },
+       {
+        "name": "Payment Where Child Tax Credit Exceeds Liability for Tax",
+        "amount": 28609669265.7,
+        "prior": 26566761272.76
+       },
+       {
+        "name": "Payment Where American Opportunity Tax Credit Exceeds Liability for Tax",
+        "amount": 2817871666.53,
+        "prior": 2549205732.06
+       },
+       {
+        "name": "Refunding Internal Revenue Collections, Interest",
+        "amount": 10219934354.08,
+        "prior": 16818825873.09
+       },
+       {
+        "name": "Other",
+        "amount": 29073158468.38,
+        "prior": 30244910759.62
+       }
+      ],
+      "prior": 290958060463.11
+     },
+     {
+      "name": "Comptroller of the Currency",
+      "amount": -77724569.67,
+      "prior": -14199614.68
+     },
+     {
+      "name": "Interest on the Public Debt",
+      "amount": 1359953253416.8398,
+      "children": [
+       {
+        "name": "Interest on Treasury Debt Securities (Gross)",
+        "amount": 1359953253416.8398,
+        "children": [
+         {
+          "name": "Public Issues (Accrual Basis)",
+          "amount": 1068464267661.58,
+          "prior": 973673123955.84
+         },
+         {
+          "name": "Special Issues (Cash Basis)",
+          "amount": 291488985755.26,
+          "prior": 241940705798.55
+         }
+        ],
+        "prior": 1215613829754.39
+       }
+      ],
+      "prior": 1215613829754.39
+     },
+     {
+      "name": "Other",
+      "amount": 131237775.49,
+      "prior": -615551576.68
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -75761030915.1,
+      "prior": -68448908288.44
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -10287928122.86,
+      "prior": -9774788584.31
+     }
+    ],
+    "prior": 1458910205710.97
+   },
+   {
+    "name": "Department of Veterans Affairs",
+    "amount": 415574777773.02,
+    "children": [
+     {
+      "name": "Joint DOD-VA Medical Facility Demonstration Fund",
+      "amount": 755182213.08,
+      "prior": 750520588.62
+     },
+     {
+      "name": "Veterans Health Administration",
+      "amount": 113755226913.66,
+      "children": [
+       {
+        "name": "Veterans Choice Fund, Veterans Health Administration",
+        "amount": -18335.7,
+        "prior": -232136.15
+       },
+       {
+        "name": "Medical Services",
+        "amount": 92951651421.55,
+        "prior": 96968886826.02
+       },
+       {
+        "name": "Medical Support and Compliance",
+        "amount": 10438535383.03,
+        "prior": 11334076482.59
+       },
+       {
+        "name": "Medical Facilities",
+        "amount": 9353417575.89,
+        "prior": 8982492009.06
+       },
+       {
+        "name": "Other",
+        "amount": 1011640868.89,
+        "prior": 1227840783.79
+       }
+      ],
+      "prior": 118513063965.31
+     },
+     {
+      "name": "Benefits Programs",
+      "amount": 246493111723.81998,
+      "children": [
+       {
+        "name": "Public Enterprise Funds",
+        "amount": -117740113.22,
+        "children": [
+         {
+          "name": "Housing Accounts",
+          "amount": -418970.39,
+          "prior": -1776463.04
+         },
+         {
+          "name": "Other",
+          "amount": -117321142.83,
+          "prior": -545359417.78
+         }
+        ],
+        "prior": -547135880.8199999
+       },
+       {
+        "name": "Compensation and Pensions",
+        "amount": 223775604829.19,
+        "prior": 200670783364.35
+       },
+       {
+        "name": "Readjustment Benefits",
+        "amount": 18316104879.83,
+        "prior": 16288513778.13
+       },
+       {
+        "name": "Veterans Housing Benefit Program Fund",
+        "amount": 3714283519.86,
+        "prior": 6072114426.52
+       },
+       {
+        "name": "Insurance Funds",
+        "amount": 238083393.56,
+        "children": [
+         {
+          "name": "National Service Life",
+          "amount": 136169192,
+          "prior": 204308545.15
+         },
+         {
+          "name": "Veterans Special Life",
+          "amount": 101914201.56,
+          "prior": 120523495.02
+         }
+        ],
+        "prior": 324832040.17
+       },
+       {
+        "name": "Other",
+        "amount": 566775214.6,
+        "prior": 447775370.57
+       }
+      ],
+      "prior": 223256883098.92
+     },
+     {
+      "name": "Departmental Administration",
+      "amount": 61632746041.42,
+      "children": [
+       {
+        "name": "Construction",
+        "amount": 2108959776.56,
+        "prior": 1127371572.59
+       },
+       {
+        "name": "Information Technology Systems",
+        "amount": 6085425090.47,
+        "prior": 6397306003.31
+       },
+       {
+        "name": "General Operating Expenses",
+        "amount": -1104851.83,
+        "prior": 69002.07
+       },
+       {
+        "name": "Other",
+        "amount": 53439466026.22,
+        "prior": 36295740398.8
+       }
+      ],
+      "prior": 43820486976.770004
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -7032145546.110001,
+      "children": [
+       {
+        "name": "National Service Life",
+        "amount": -5437293.93,
+        "prior": -7789134.18
+       },
+       {
+        "name": "Other",
+        "amount": -7026708252.18,
+        "prior": -9719379489.16
+       }
+      ],
+      "prior": -9727168623.34
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -29343572.85,
+      "prior": -22598835.14
+     }
+    ],
+    "prior": 376591187171.13995
+   },
+   {
+    "name": "Corps of Engineers",
+    "amount": 10783829803.750002,
+    "children": [
+     {
+      "name": "Construction",
+      "amount": 2802203050.49,
+      "prior": 4504297559.26
+     },
+     {
+      "name": "Operation and Maintenance",
+      "amount": 3608866516.92,
+      "prior": 3526655041.28
+     },
+     {
+      "name": "Flood Control and Coastal Emergencies",
+      "amount": 532072331.74,
+      "prior": 462958842.92
+     },
+     {
+      "name": "Harbor Maintenance Trust Fund",
+      "amount": 2718662703.55,
+      "prior": 2201870353.96
+     },
+     {
+      "name": "Rivers and Harbors Contributed Funds",
+      "amount": 579245822.2,
+      "prior": 667618028.48
+     },
+     {
+      "name": "Other",
+      "amount": 1685525098.35,
+      "prior": 1566780460.1
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -1153411815.47,
+      "prior": -805506692.11
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 10666095.97,
+      "prior": -633393.2
+     }
+    ],
+    "prior": 12124040200.69
+   },
+   {
+    "name": "Other Defense Civil Programs",
+    "amount": 65484461559.48999,
+    "children": [
+     {
+      "name": "Military Retirement",
+      "amount": 244363479713.97,
+      "children": [
+       {
+        "name": "Payment to Military Retirement Fund",
+        "amount": 161413000000,
+        "prior": 154387000000
+       },
+       {
+        "name": "Military Retirement Fund",
+        "amount": 82950479713.97,
+        "prior": 80464778357.42
+       }
+      ],
+      "prior": 234851778357.41998
+     },
+     {
+      "name": "Retiree Health Care",
+      "amount": 32045385499.36,
+      "children": [
+       {
+        "name": "Payment to Department of Defense Medicare-Eligible Retiree Health Care Fund",
+        "amount": 18554000000,
+        "prior": 14569000000
+       },
+       {
+        "name": "Department of Defense Medicare-Eligible Retiree Health Care Fund",
+        "amount": 13491385499.36,
+        "prior": 12952656898.6
+       }
+      ],
+      "prior": 27521656898.6
+     },
+     {
+      "name": "Educational Benefits",
+      "amount": 156301780.79,
+      "prior": 158395301.47
+     },
+     {
+      "name": "Other",
+      "amount": 454773064.29,
+      "prior": 419585964.77
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -38506870.35,
+      "prior": -41618761.46
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -211496971628.57,
+      "prior": -186422238914.49
+     }
+    ],
+    "prior": 76487558846.31
+   },
+   {
+    "name": "Environmental Protection Agency",
+    "amount": 17365168363.239998,
+    "children": [
+     {
+      "name": "Science and Technology",
+      "amount": 577964398.87,
+      "prior": 780150366.49
+     },
+     {
+      "name": "Environmental Programs and Management",
+      "amount": 3069536133.83,
+      "prior": 3612499804.32
+     },
+     {
+      "name": "State and Tribal Assistance Grants",
+      "amount": 10786760442.05,
+      "prior": 29711638818.68
+     },
+     {
+      "name": "Hazardous Substance Superfund",
+      "amount": 2206133851.52,
+      "prior": 2171842213.64
+     },
+     {
+      "name": "Other",
+      "amount": 1227225301.64,
+      "prior": 1370982031.09
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -483232541.09,
+      "prior": -620614901.39
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 9902200.14,
+      "prior": -128053916.01
+     },
+     {
+      "name": "Offsetting Governmental Receipts",
+      "amount": -29121423.72,
+      "prior": -33639047.88
+     }
+    ],
+    "prior": 36976283292.94
+   },
+   {
+    "name": "Executive Office of the President",
+    "amount": -1233611351.3400002,
+    "children": [
+     {
+      "name": "The White House",
+      "amount": 76537224.52,
+      "prior": 72771443.32
+     },
+     {
+      "name": "Office of Management and Budget",
+      "amount": 124099330.52,
+      "prior": 124878526.31
+     },
+     {
+      "name": "Unanticipated Needs",
+      "amount": 10974797.79,
+      "prior": 35766246.12
+     },
+     {
+      "name": "Other",
+      "amount": -229874976.59,
+      "prior": 273478984.07
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -1201522178.64,
+      "prior": -1000577038.8
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -13825548.94,
+      "prior": -14798206.49
+     }
+    ],
+    "prior": -508480045.46999997
+   },
+   {
+    "name": "General Services Administration",
+    "amount": -974666395.59,
+    "children": [
+     {
+      "name": "Real Property Activities",
+      "amount": -775882330.54,
+      "prior": -324657091.54
+     },
+     {
+      "name": "Supply and Technology Activities",
+      "amount": -137751675.65,
+      "prior": -195623578.05
+     },
+     {
+      "name": "General Activities",
+      "amount": 186414296.04,
+      "prior": 372323615.04
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -235268536.09,
+      "prior": -207410067.27
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -12178149.35,
+      "prior": -19178377.83
+     }
+    ],
+    "prior": -374545499.65000004
+   },
+   {
+    "name": "International Assistance Programs",
+    "amount": 20389511693.799995,
+    "children": [
+     {
+      "name": "Millennium Challenge Corporation",
+      "amount": 566010476.6,
+      "prior": 779748930.19
+     },
+     {
+      "name": "International Security Assistance",
+      "amount": 11559745388.56,
+      "children": [
+       {
+        "name": "Foreign Military Financing Program",
+        "amount": 8508274850.75,
+        "prior": 6903657960.79
+       },
+       {
+        "name": "Economic Support Fund",
+        "amount": 1938878883.58,
+        "prior": 7479218197.48
+       },
+       {
+        "name": "Other",
+        "amount": 1155604145.29,
+        "prior": 1069173713.22
+       },
+       {
+        "name": "Proprietary Receipts from the Public",
+        "amount": -43012491.06,
+        "prior": -39495498.81
+       }
+      ],
+      "prior": 15412554372.68
+     },
+     {
+      "name": "Multilateral Assistance",
+      "amount": 1540144159.24,
+      "children": [
+       {
+        "name": "Contribution to the International Development Association",
+        "amount": 1066184000,
+        "prior": 1380256000
+       },
+       {
+        "name": "Other",
+        "amount": 480477061.7,
+        "prior": 1075404962.54
+       },
+       {
+        "name": "Proprietary Receipts from the Public",
+        "amount": -6516902.46,
+        "prior": -6964009.54
+       }
+      ],
+      "prior": 2448696953
+     },
+     {
+      "name": "Agency for International Development",
+      "amount": 7349686474.570001,
+      "children": [
+       {
+        "name": "Development Assistance Program",
+        "amount": 252986360.48,
+        "prior": 2487058365.93
+       },
+       {
+        "name": "Assistance for Europe, Eurasia and Central Asia",
+        "amount": 319795032.33,
+        "prior": 722368652.95
+       },
+       {
+        "name": "International Disaster Assistance",
+        "amount": 5201377038.7,
+        "prior": 5752974331.16
+       },
+       {
+        "name": "Operating Expenses",
+        "amount": 427977230.13,
+        "prior": 1645679827.92
+       },
+       {
+        "name": "Other",
+        "amount": 1513648961.33,
+        "prior": 1146532188.38
+       },
+       {
+        "name": "Proprietary Receipts from the Public",
+        "amount": -340520154.66,
+        "prior": -385562380.02
+       },
+       {
+        "name": "Intrabudgetary Transactions",
+        "amount": -25577993.74,
+        "prior": 2633522.94
+       }
+      ],
+      "prior": 11371684509.26
+     },
+     {
+      "name": "Overseas Private Investment Corporation",
+      "amount": 360163.12,
+      "children": [
+       {
+        "name": "Overseas Private Investment Corporation Accounts",
+        "amount": 360163.12,
+        "prior": 540761.17
+       }
+      ],
+      "prior": 540761.17
+     },
+     {
+      "name": "Peace Corps",
+      "amount": 417394400.65,
+      "children": [
+       {
+        "name": "Proprietary Receipts",
+        "amount": -1463078.42,
+        "prior": -1005995.01
+       }
+      ],
+      "prior": 450959225.96
+     },
+     {
+      "name": "International Monetary Programs",
+      "amount": -12354896.65,
+      "prior": 14440424.2
+     },
+     {
+      "name": "Military Sales Program",
+      "amount": -1267482209.7300034,
+      "children": [
+       {
+        "name": "Foreign Military Sales Trust Fund",
+        "amount": 59577315212.63,
+        "prior": 50826325372.04
+       },
+       {
+        "name": "Other",
+        "amount": -47861945.42,
+        "prior": 31416551.79
+       },
+       {
+        "name": "Proprietary Receipts from the Public",
+        "amount": -60796935476.94,
+        "prior": -64039317029.54
+       }
+      ],
+      "prior": -13181575105.71
+     },
+     {
+      "name": "Other",
+      "amount": 236007737.44,
+      "prior": -1566660.28
+     }
+    ],
+    "prior": 17295483410.470005
+   },
+   {
+    "name": "National Aeronautics and Space Administration",
+    "amount": 23357242203.53,
+    "children": [
+     {
+      "name": "Science",
+      "amount": 6460466687.89,
+      "prior": 7522590733.26
+     },
+     {
+      "name": "Aeronautics",
+      "amount": 795854123.16,
+      "prior": 973815773.05
+     },
+     {
+      "name": "Exploration",
+      "amount": 7927387702.12,
+      "prior": 7629904685.36
+     },
+     {
+      "name": "Cross Agency Support",
+      "amount": 2648068792.42,
+      "prior": 2914273747.89
+     },
+     {
+      "name": "Space Operations",
+      "amount": 3960214348.57,
+      "prior": 3960641935.1
+     },
+     {
+      "name": "Other",
+      "amount": 1568901526.47,
+      "prior": 1577688162.52
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -2302872.52,
+      "prior": -1563453.23
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -1348104.58,
+      "prior": -1190523.4
+     }
+    ],
+    "prior": 24576161060.55
+   },
+   {
+    "name": "National Science Foundation",
+    "amount": 8876811687.529999,
+    "children": [
+     {
+      "name": "Research and Related Activities",
+      "amount": 7071687909.09,
+      "prior": 7736542764.1
+     },
+     {
+      "name": "Education and Human Resources",
+      "amount": 1097501342.79,
+      "prior": 1410877939.89
+     },
+     {
+      "name": "Other",
+      "amount": 726952652.76,
+      "prior": 822583406.09
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -19330217.11,
+      "prior": -21125119.36
+     }
+    ],
+    "prior": 9948878990.72
+   },
+   {
+    "name": "Office of Personnel Management",
+    "amount": 135808863209.01999,
+    "children": [
+     {
+      "name": "Government Payment for Annuitants, Employees Health and Life Insurance Benefits",
+      "amount": 18432728910.12,
+      "prior": 16240887681.52
+     },
+     {
+      "name": "Payment to Civil Service Retirement and Disability Fund",
+      "amount": 48295328271,
+      "prior": 51630397285
+     },
+     {
+      "name": "Postal Service Retiree Health Benefits Fund",
+      "amount": 4982529263.12,
+      "prior": 4699609284.55
+     },
+     {
+      "name": "Civil Service Retirement and Disability Fund",
+      "amount": 115920245007.78,
+      "prior": 110249898494.68
+     },
+     {
+      "name": "Employees Life Insurance Fund",
+      "amount": -2991003442.08,
+      "prior": -2978670416.83
+     },
+     {
+      "name": "Employees and Retired Employees Health Benefits Fund",
+      "amount": -197038550.13,
+      "prior": 318991167.12
+     },
+     {
+      "name": "Other",
+      "amount": 181296248.68,
+      "prior": 329725645.17
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -699403.63,
+      "prior": -900934.73
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -48814523095.84,
+      "children": [
+       {
+        "name": "Postal Service Contributions",
+        "amount": -481088090.74,
+        "prior": -574919081.87
+       },
+       {
+        "name": "Civil Service Retirement and Disability Fund",
+        "amount": -48333435005.1,
+        "children": [
+         {
+          "name": "General Fund Contributions",
+          "amount": -48295328271,
+          "prior": -51630397285
+         },
+         {
+          "name": "Other",
+          "amount": -38106734.1,
+          "prior": -45544066.27
+         }
+        ],
+        "prior": -51675941351.27
+       }
+      ],
+      "prior": -52250860433.14
+     }
+    ],
+    "prior": 128239077773.34001
+   },
+   {
+    "name": "Small Business Administration",
+    "amount": 11826793776.219997,
+    "children": [
+     {
+      "name": "Salaries and Expenses",
+      "amount": 601338670.44,
+      "prior": 111128517.23
+     },
+     {
+      "name": "Business Loans Program",
+      "amount": 1376933480.06,
+      "prior": 940911345.62
+     },
+     {
+      "name": "Disaster Loans Program",
+      "amount": 12472067608.22,
+      "prior": 9501526685.01
+     },
+     {
+      "name": "Other",
+      "amount": 230241850.13,
+      "prior": 312870246.85
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -2876596673.95,
+      "prior": -10043126929.2
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": 22808841.32,
+      "prior": 13404753.31
+     }
+    ],
+    "prior": 836714618.8200002
+   },
+   {
+    "name": "Social Security Administration",
+    "amount": 1733853189988.1697,
+    "children": [
+     {
+      "name": "Payments to Social Security Trust Funds",
+      "amount": 57392215166.56,
+      "prior": 59766088271.2
+     },
+     {
+      "name": "Supplemental Security Income Program",
+      "amount": 70456540282.39,
+      "prior": 69472403895.59
+     },
+     {
+      "name": "Federal Old-Age and Survivors Insurance Trust Fund (Off-Budget)",
+      "amount": 1504618188439.8599,
+      "children": [
+       {
+        "name": "Benefit Payments",
+        "amount": 1494558724109.46,
+        "prior": 1411166565191.01
+       },
+       {
+        "name": "Administrative Expenses",
+        "amount": 3735144330.4,
+        "prior": 3629012611.61
+       },
+       {
+        "name": "Payment to Railroad Retirement Account",
+        "amount": 6324320000,
+        "prior": 5996420000
+       }
+      ],
+      "prior": 1420791997802.62
+     },
+     {
+      "name": "Federal Disability Insurance Trust Fund (Off-Budget)",
+      "amount": 162849905331.67,
+      "children": [
+       {
+        "name": "Benefit Payments",
+        "amount": 159902973901.26,
+        "prior": 157436422973.91
+       },
+       {
+        "name": "Administrative Expenses",
+        "amount": 2941004430.41,
+        "prior": 2763626709.43
+       },
+       {
+        "name": "Payment to Railroad Retirement Account",
+        "amount": 5927000,
+        "prior": -1431000
+       }
+      ],
+      "prior": 160198618683.34
+     },
+     {
+      "name": "Other",
+      "amount": 200821150.02,
+      "prior": 192193855.5
+     },
+     {
+      "name": "Proprietary Receipts from the Public",
+      "amount": -4275170615.25,
+      "children": [
+       {
+        "name": "On-Budget",
+        "amount": -3901436638.7,
+        "prior": -3834146699.57
+       },
+       {
+        "name": "Off-Budget",
+        "amount": -373733976.55,
+        "prior": -64829324.32
+       }
+      ],
+      "prior": -3898976023.8900003
+     },
+     {
+      "name": "Intrabudgetary Transactions",
+      "amount": -57389309767.08,
+      "children": [
+       {
+        "name": "Off-Budget",
+        "amount": -57389309767.08,
+        "prior": -60007107027.23
+       }
+      ],
+      "prior": -60007107027.23
+     }
+    ],
+    "prior": 1646515219457.1304
+   },
+   {
+    "name": "Independent Agencies",
+    "amount": 3028156362.670005,
+    "children": [
+     {
+      "name": "United States Agency for Global Media",
+      "amount": 569965975.83,
+      "prior": 763631662.49
+     },
+     {
+      "name": "Bureau of Consumer Financial Protection",
+      "amount": 545256852.55,
+      "prior": 2737147219.47
+     },
+     {
+      "name": "Corporation for National and Community Service",
+      "amount": 1018334403.34,
+      "prior": 1359188139.54
+     },
+     {
+      "name": "Corporation for Public Broadcasting",
+      "amount": 8022259.83,
+      "prior": 586222308.84
+     },
+     {
+      "name": "District of Columbia",
+      "amount": 1009479675.5,
+      "children": [
+       {
+        "name": "Courts",
+        "amount": 341544941.51,
+        "prior": 346725973.59
+       },
+       {
+        "name": "General and Special Payments",
+        "amount": 667934733.99,
+        "prior": 727534416.68
+       }
+      ],
+      "prior": 1074260390.27
+     },
+     {
+      "name": "Equal Employment Opportunity Commission",
+      "amount": 411234961.24,
+      "prior": 447917976.93
+     },
+     {
+      "name": "Export-Import Bank of the United States",
+      "amount": -24867185.37,
+      "prior": -112870934.38
+     },
+     {
+      "name": "Federal Communications Commission",
+      "amount": 10547464011.730001,
+      "children": [
+       {
+        "name": "Universal Service Fund",
+        "amount": 8616042766.43,
+        "prior": 8643063971.64
+       },
+       {
+        "name": "Spectrum Auction Program Account",
+        "amount": 263582.69,
+        "prior": 290952.04
+       },
+       {
+        "name": "Other",
+        "amount": 1931157662.61,
+        "prior": 2071268634.08
+       }
+      ],
+      "prior": 10714623557.76
+     },
+     {
+      "name": "Federal Deposit Insurance Corporation",
+      "amount": -22191862750.359997,
+      "children": [
+       {
+        "name": "Deposit Insurance Fund",
+        "amount": -22199236011.51,
+        "prior": -31162154345.71
+       },
+       {
+        "name": "FSLIC Resolution Fund",
+        "amount": -39526738.85,
+        "prior": -49531618.36
+       },
+       {
+        "name": "Office of Inspector General",
+        "amount": 46900000,
+        "prior": 47500000
+       }
+      ],
+      "prior": -31164185964.07
+     },
+     {
+      "name": "Federal Drug Control Programs",
+      "amount": 375923688.44,
+      "prior": 382971993.86
+     },
+     {
+      "name": "Federal Housing Finance Agency",
+      "amount": 276280880.09,
+      "prior": 360089066.39
+     },
+     {
+      "name": "Institute of Museum and Library Services",
+      "amount": 246084459.36,
+      "prior": 336861593.84
+     },
+     {
+      "name": "Intelligence Community Management Account",
+      "amount": 529972509.35,
+      "prior": 612535804.56
+     },
+     {
+      "name": "Legal Services Corporation",
+      "amount": 540000000,
+      "prior": 560000000
+     },
+     {
+      "name": "National Archives and Records Administration",
+      "amount": 424935832.55,
+      "prior": 508966395.29
+     },
+     {
+      "name": "National Credit Union Administration",
+      "amount": -1140768651.04,
+      "prior": -981662614.2
+     },
+     {
+      "name": "National Endowment for the Arts",
+      "amount": 152103814.46,
+      "prior": 233280981.53
+     },
+     {
+      "name": "National Endowment for the Humanities",
+      "amount": 73177390.63,
+      "prior": 197442362.39
+     },
+     {
+      "name": "National Labor Relations Board",
+      "amount": 281793294,
+      "prior": 309017282.78
+     },
+     {
+      "name": "Nuclear Regulatory Commission",
+      "amount": 108417963.7,
+      "prior": 170557072.24
+     },
+     {
+      "name": "Postal Service",
+      "amount": 1402790573.8300002,
+      "children": [
+       {
+        "name": "Off-Budget",
+        "amount": 1332730573.8300002,
+        "children": [
+         {
+          "name": "Public Enterprise Funds",
+          "amount": 1099804445.91,
+          "prior": 4811260801.34
+         },
+         {
+          "name": "Other",
+          "amount": 232926127.92,
+          "prior": 271796065.45
+         }
+        ],
+        "prior": 5083056866.79
+       },
+       {
+        "name": "Other",
+        "amount": 70060000,
+        "prior": 81450000
+       }
+      ],
+      "prior": 5164506866.79
+     },
+     {
+      "name": "Railroad Retirement Board",
+      "amount": 5111207359.1,
+      "children": [
+       {
+        "name": "Federal Windfall Subsidy",
+        "amount": 3986248.06,
+        "prior": 4961505.45
+       },
+       {
+        "name": "Federal Payments to the Railroad Retirement Accounts",
+        "amount": 806274420.44,
+        "prior": 863296084.58
+       },
+       {
+        "name": "Railroad Unemployment Insurance Trust Fund",
+        "amount": 123890825.5,
+        "children": [
+         {
+          "name": "Benefit Payments",
+          "amount": 103633183.75,
+          "prior": 86854125.8
+         },
+         {
+          "name": "Transfer To Administrative Funds",
+          "amount": 20445900,
+          "prior": 19282975
+         },
+         {
+          "name": "Other",
+          "amount": -188258.25,
+          "prior": -89261.11
+         }
+        ],
+        "prior": 106047839.69
+       },
+       {
+        "name": "Rail Industry Pension Fund",
+        "amount": 5968070861.380001,
+        "children": [
+         {
+          "name": "Benefit Payments",
+          "amount": 5868718241.89,
+          "prior": 5837048911.12
+         },
+         {
+          "name": "Advances from FOASDI Fund",
+          "amount": 13273.93,
+          "prior": 17580
+         },
+         {
+          "name": "OASDI Certifications",
+          "amount": -819057.53,
+          "prior": -1945924.5
+         },
+         {
+          "name": "Transfer to Administrative Funds",
+          "amount": 97738554,
+          "prior": 96782084
+         },
+         {
+          "name": "Other",
+          "amount": 2419849.09,
+          "prior": 556707.84
+         }
+        ],
+        "prior": 5932459358.46
+       },
+       {
+        "name": "National Railroad Retirement Investment Trust",
+        "amount": 1423659614.3,
+        "children": [
+         {
+          "name": "Administrative Expenses",
+          "amount": 62659614.3,
+          "prior": 56643105.03
+         },
+         {
+          "name": "Transfers to the Railroad Retirement Trust Funds from the National Railroad Retirement Investment Trust",
+          "amount": 1361000000,
+          "prior": 1367000000
+         }
+        ],
+        "prior": 1423643105.03
+       },
+       {
+        "name": "Railroad Social Security Equivalent Benefit Account",
+        "amount": 8997895347.07,
+        "children": [
+         {
+          "name": "Benefit Payments",
+          "amount": 8973716078.46,
+          "prior": 8940155617.41
+         },
+         {
+          "name": "Transfer To Administrative Funds",
+          "amount": 22815546,
+          "prior": 23934941
+         },
+         {
+          "name": "Other",
+          "amount": 1363722.61,
+          "prior": 8973402.93
+         }
+        ],
+        "prior": 8973063961.34
+       },
+       {
+        "name": "Proprietary Receipts from the Public",
+        "amount": -3713374259.56,
+        "prior": -2621118921.07
+       },
+       {
+        "name": "Intrabudgetary Transactions",
+        "amount": -8499195698.09,
+        "children": [
+         {
+          "name": "Payments from Other Funds to the Railroad Retirement Trust Funds",
+          "amount": -6330247000,
+          "prior": -5994989000
+         },
+         {
+          "name": "Other",
+          "amount": -2168948698.09,
+          "prior": -2231992929.16
+         }
+        ],
+        "prior": -8226981929.16
+       }
+      ],
+      "prior": 6455371004.32
+     },
+     {
+      "name": "Securities and Exchange Commission",
+      "amount": -499610699.87,
+      "prior": -1318602034.07
+     },
+     {
+      "name": "Smithsonian Institution",
+      "amount": 1273047706.36,
+      "prior": 1375412197.95
+     },
+     {
+      "name": "Tennessee Valley Authority",
+      "amount": -1447263334.54,
+      "prior": 2560711072.97
+     },
+     {
+      "name": "Other",
+      "amount": 3427035371.96,
+      "prior": 3454874990.46
+     }
+    ],
+    "prior": 6788268393.950003
+   },
+   {
+    "name": "Undistributed Offsetting Receipts",
+    "amount": -372699041560.47,
+    "children": [
+     {
+      "name": "Other Interest",
+      "amount": -6872157.22,
+      "prior": -7845747.35
+     },
+     {
+      "name": "Employer Share, Employee Retirement",
+      "amount": -143061619447.79,
+      "children": [
+       {
+        "name": "Department of Health and Human Services",
+        "amount": -6017000000,
+        "children": [
+         {
+          "name": "Federal Hospital Insurance Trust Fund",
+          "amount": -6017000000,
+          "children": [
+           {
+            "name": "Federal Employer Contributions",
+            "amount": -5337000000,
+            "prior": -5192000000
+           },
+           {
+            "name": "Postal Service Employer Contributions",
+            "amount": -680000000,
+            "prior": -766000000
+           }
+          ],
+          "prior": -5958000000
+         }
+        ],
+        "prior": -5958000000
+       },
+       {
+        "name": "Department of State",
+        "amount": -391854129.78,
+        "children": [
+         {
+          "name": "Foreign Service Retirement and Disability Fund",
+          "amount": -391854129.78,
+          "prior": -454726483.32
+         }
+        ],
+        "prior": -454726483.32
+       },
+       {
+        "name": "Other Defense Civil Programs",
+        "amount": -62500369627.58,
+        "children": [
+         {
+          "name": "Military Retirement Fund",
+          "amount": -49271044781.58,
+          "prior": -45759924683.16
+         },
+         {
+          "name": "Department of Defense Medicare-Eligible Retiree Health Care Fund",
+          "amount": -13229324846,
+          "prior": -11376828635
+         }
+        ],
+        "prior": -57136753318.16
+       },
+       {
+        "name": "Office of Personnel Management",
+        "amount": -49364752298.4,
+        "children": [
+         {
+          "name": "Civil Service Retirement and Disability Fund",
+          "amount": -49364752298.4,
+          "prior": -56527683088.07
+         }
+        ],
+        "prior": -56527683088.07
+       },
+       {
+        "name": "Social Security Administration",
+        "amount": -24785000000,
+        "children": [
+         {
+          "name": "Federal Old-Age and Survivors Insurance Trust Fund",
+          "amount": -21187000000,
+          "children": [
+           {
+            "name": "Federal Employer Contributions",
+            "amount": -21187000000,
+            "prior": -20832000000
+           }
+          ],
+          "prior": -20832000000
+         },
+         {
+          "name": "Federal Disability Insurance Trust Fund",
+          "amount": -3598000000,
+          "children": [
+           {
+            "name": "Federal Employer Contributions",
+            "amount": -3598000000,
+            "prior": -3538000000
+           }
+          ],
+          "prior": -3538000000
+         }
+        ],
+        "prior": -24370000000
+       },
+       {
+        "name": "Other",
+        "amount": -2643392.03,
+        "prior": -3363969.26
+       }
+      ],
+      "prior": -144450526858.81
+     },
+     {
+      "name": "Interest Received by Trust Funds",
+      "amount": -217670747484.96,
+      "children": [
+       {
+        "name": "Judicial Branch",
+        "amount": -40916415.05,
+        "children": [
+         {
+          "name": "Judicial Survivors Annuity Fund",
+          "amount": -40916415.05,
+          "prior": -34067911.67
+         }
+        ],
+        "prior": -34067911.67
+       },
+       {
+        "name": "Department of Health and Human Services",
+        "amount": -14924747369.119999,
+        "children": [
+         {
+          "name": "Federal Hospital Insurance Trust Fund",
+          "amount": -10020847527.25,
+          "prior": -8347247839.2
+         },
+         {
+          "name": "Federal Supplementary Medical Insurance Trust Fund",
+          "amount": -4903899841.87,
+          "prior": -3792277851.86
+         }
+        ],
+        "prior": -12139525691.06
+       },
+       {
+        "name": "Department of Homeland Security",
+        "amount": -456874561.84000003,
+        "children": [
+         {
+          "name": "Oil Spill Liability Trust Fund",
+          "amount": -354542351.29,
+          "prior": -348794947.57
+         },
+         {
+          "name": "Other",
+          "amount": -102332210.55,
+          "prior": -143801977.63
+         }
+        ],
+        "prior": -492596925.2
+       },
+       {
+        "name": "Department of Labor",
+        "amount": -2950790569.07,
+        "children": [
+         {
+          "name": "Unemployment Trust Fund",
+          "amount": -2950790569.07,
+          "prior": -2826032472.59
+         }
+        ],
+        "prior": -2826032472.59
+       },
+       {
+        "name": "Department of State",
+        "amount": -844503438.28,
+        "children": [
+         {
+          "name": "Foreign Service Retirement and Disability Fund",
+          "amount": -844503438.28,
+          "prior": -748826241.53
+         }
+        ],
+        "prior": -748826241.53
+       },
+       {
+        "name": "Department of Transportation",
+        "amount": -2884763320.96,
+        "children": [
+         {
+          "name": "Airport and Airway Trust Fund",
+          "amount": -639753393.37,
+          "prior": -525454507.82
+         },
+         {
+          "name": "Highway Trust Fund",
+          "amount": -2245009927.59,
+          "prior": -3922674903.78
+         }
+        ],
+        "prior": -4448129411.6
+       },
+       {
+        "name": "Department of Veterans Affairs",
+        "amount": -9715764.040000001,
+        "children": [
+         {
+          "name": "National Service Life Insurance Fund",
+          "amount": -9672360.47,
+          "prior": -13088718.67
+         },
+         {
+          "name": "United States Government Life Insurance Fund",
+          "amount": -43403.57,
+          "prior": -37386.1
+         }
+        ],
+        "prior": -13126104.77
+       },
+       {
+        "name": "Corps of Engineers",
+        "amount": -433024398.13,
+        "prior": -515324428.3
+       },
+       {
+        "name": "Other Defense Civil Programs",
+        "amount": -92697731416.57999,
+        "children": [
+         {
+          "name": "Military Retirement Fund",
+          "amount": -92669377673.93,
+          "prior": -65736353539.27
+         },
+         {
+          "name": "Educational Benefits Fund",
+          "amount": -19936913.59,
+          "prior": -20404823.19
+         },
+         {
+          "name": "Armed Forces Retirement Home",
+          "amount": -8416829.06,
+          "prior": -8766967.41
+         }
+        ],
+        "prior": -65765525329.87
+       },
+       {
+        "name": "Environmental Protection Agency",
+        "amount": -511068116.1,
+        "prior": -560899138.6
+       },
+       {
+        "name": "Office of Personnel Management",
+        "amount": -33076543044.63,
+        "children": [
+         {
+          "name": "Civil Service Retirement and Disability Fund",
+          "amount": -33076543044.63,
+          "prior": -29416170032.66
+         }
+        ],
+        "prior": -29416170032.66
+       },
+       {
+        "name": "Social Security Administration",
+        "amount": -68171447378.78,
+        "children": [
+         {
+          "name": "Federal Old-Age and Survivors Insurance Trust Fund",
+          "amount": -59858202188.46,
+          "prior": -63705506004.41
+         },
+         {
+          "name": "Federal Disability Insurance Trust Fund",
+          "amount": -8313245190.32,
+          "prior": -6320015473.93
+         }
+        ],
+        "prior": -70025521478.34
+       },
+       {
+        "name": "Independent Agencies",
+        "amount": -154241908.59,
+        "children": [
+         {
+          "name": "Railroad Retirement Board",
+          "amount": -83459056.23,
+          "prior": -63772125.13
+         },
+         {
+          "name": "Other",
+          "amount": -70782852.36,
+          "prior": -91781527.9
+         }
+        ],
+        "prior": -155553653.03
+       },
+       {
+        "name": "Other",
+        "amount": -514379783.79,
+        "prior": -405798170.85
+       }
+      ],
+      "prior": -187547096990.07
+     },
+     {
+      "name": "Rents and Royalties on the Outer Continental Shelf Lands",
+      "amount": -8386245505.18,
+      "prior": -5745225254.23
+     },
+     {
+      "name": "Sale of Major Assets",
+      "amount": -2776515.32,
+      "prior": -31383414.89
+     },
+     {
+      "name": "Spectrum Auction Proceeds",
+      "amount": -3570780450
+     }
+    ],
+    "prior": -337782078265.35
+   }
+  ]
+ }
+}

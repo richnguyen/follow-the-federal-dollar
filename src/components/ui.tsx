@@ -149,7 +149,7 @@ export function DataTable({ spec, maxHeight = 420 }: { spec: TableSpec; maxHeigh
 }
 
 export function SourceNote({ ids }: { ids: string[] }) {
-  const items = ids.map((id) => SOURCE_BY_ID[id]).filter(Boolean);
+  const items = [...new Set(ids)].map((id) => SOURCE_BY_ID[id]).filter(Boolean);
   if (!items.length) return null;
   return (
     <span className="cite">

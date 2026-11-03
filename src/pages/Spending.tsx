@@ -3,7 +3,7 @@ import { BarList, TimeChart, Treemap, type TreeNode } from '../components/charts
 import { ChartFrame, DataTable, Legend, PageHead, Section, Seg, Term } from '../components/ui';
 import { accounts, budget, programs } from '../data';
 import { CATEGORIES, CATEGORY_BY_ID } from '../lib/categories';
-import { categoryTotals, findNode, flattenAccounts } from '../lib/derive';
+import { benefitPrograms, categoryTotals, findNode, flattenAccounts } from '../lib/derive';
 import { money, pct, signedPct } from '../lib/format';
 import { useUnits } from '../lib/units';
 import { UnitsToggle } from './Overview';
@@ -251,11 +251,8 @@ function DefenseVsSocial({ fy }: { fy: number }) {
           )}
           {(ssa || hhs) && (
             <div className="card">
-              <ChartFrame title="Inside the biggest social programs" sub={`Social Security Administration and Health and Human Services, FY${fy}`} sourceIds={['mts5']}>
-                <BarList
-                  items={[...toItems(ssa, 'var(--c-ss)'), ...toItems(hhs, 'var(--c-health)')].sort((a, b) => b.value - a.value).slice(0, 8)}
-                  format={u.fmt}
-                />
+              <ChartFrame title="The biggest benefit programs" sub={`Benefit payments from individual Treasury accounts, FY${fy}`} sourceIds={['mts5']}>
+                <BarList items={benefitPrograms().slice(0, 10)} format={u.fmt} />
               </ChartFrame>
             </div>
           )}

@@ -1,1 +1,74 @@
-[]
+[
+ {
+  "id": "mts9",
+  "title": "Monthly Treasury Statement, Table 9: Summary of Receipts by Source, and Outlays by Function",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/summary-of-receipts-by-source-and-outlays-by-function-of-the-u-s-government",
+  "retrieved": "2026-11-03T23:21:15.874Z",
+  "note": "API: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/mts/mts_table_9"
+ },
+ {
+  "id": "mts5",
+  "title": "Monthly Treasury Statement, Table 5: Outlays of the U.S. Government (by agency and account)",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/outlays-of-the-u-s-government",
+  "retrieved": "2026-11-03T23:21:17.388Z"
+ },
+ {
+  "id": "mts4",
+  "title": "Monthly Treasury Statement, Table 4: Receipts of the U.S. Government",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/receipts-of-the-u-s-government",
+  "retrieved": "2026-11-03T23:21:17.583Z"
+ },
+ {
+  "id": "penny",
+  "title": "Debt to the Penny",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/debt-to-the-penny",
+  "retrieved": "2026-11-03T23:21:18.139Z"
+ },
+ {
+  "id": "debtHist",
+  "title": "Historical Debt Outstanding",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/historical-debt-outstanding/historical-debt-outstanding",
+  "retrieved": "2026-11-03T23:21:18.357Z"
+ },
+ {
+  "id": "interest",
+  "title": "Interest Expense on the Public Debt Outstanding",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/interest-expense-debt-outstanding/interest-expense-on-the-public-debt-outstanding",
+  "retrieved": "2026-11-03T23:21:19.151Z"
+ },
+ {
+  "id": "rates",
+  "title": "Average Interest Rates on U.S. Treasury Securities",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/average-interest-rates-treasury-securities/average-interest-rates-on-u-s-treasury-securities",
+  "retrieved": "2026-11-03T23:21:19.817Z"
+ },
+ {
+  "id": "omb-hist",
+  "title": "Historical Tables, Budget of the U.S. Government, Fiscal Year 2027 (Tables 1.1, 2.1, 7.1, 8.1, 10.1)",
+  "publisher": "White House Office of Management and Budget",
+  "url": "https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/",
+  "retrieved": "2026-11-03T23:25:18Z",
+  "note": "Files: https://www.whitehouse.gov/wp-content/uploads/2026/04/hist08z1_fy2027.xlsx and companions"
+ },
+ {
+  "id": "census-pop",
+  "title": "Vintage 2025 national population estimate (press release)",
+  "publisher": "U.S. Census Bureau",
+  "url": "https://www.census.gov/newsroom/press-releases/2026/population-growth-slows.html",
+  "retrieved": "2026-11-03T23:23:31.988Z"
+ },
+ {
+  "id": "census-hvs",
+  "title": "Quarterly Residential Vacancies and Homeownership, Third quarter 2026, Table 3 (occupied housing units)",
+  "publisher": "U.S. Census Bureau",
+  "url": "https://www.census.gov/housing/hvs/files/currenthvspress.pdf",
+  "retrieved": "2026-11-03T23:23:31.988Z"
+ }
+]

@@ -56,6 +56,8 @@ export interface BudgetData {
   monthlyBySource: { date: string; fy: number; fm: number; values: Partial<Record<RevenueId, number>> }[];
   /** Social insurance receipts detail (MTS Table 4) for the latest FY. */
   payroll: { name: string; amount: number }[];
+  /** Customs duties: gross collections, refunds, and net (MTS Table 4), by fiscal year. */
+  customs: { fy: number; gross: number; refunds: number; net: number }[];
   population: { value: number; label: string; sourceId: string };
   households: { value: number; label: string; sourceId: string };
   mtsLatestDate: string;
@@ -117,6 +119,11 @@ export interface CBOData {
   baseline: CBOYear[];
   historySourceId: string;
   baselineSourceId: string;
+  /** Who made the projection ("CBO" or "OMB"), a short label, and what it assumes. */
+  projBy: string;
+  projShort: string;
+  projAssumes: string;
+  historyBy: string;
 }
 
 export type AwardType = 'contracts' | 'grants' | 'directPayments' | 'loans' | 'other';

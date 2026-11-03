@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BarList, TimeChart } from '../components/charts';
-import { ChartFrame, Legend, PageHead, Section, Term } from '../components/ui';
+import { ChartFrame, Legend, PageHead, Section, Stat, Term } from '../components/ui';
 import { budget, fyTotals } from '../data';
 import { REVENUE, REVENUE_BY_ID } from '../lib/categories';
 import { money, monthShort, pct, signedPct } from '../lib/format';
@@ -22,6 +22,8 @@ export default function Revenue() {
   const cNow = amt(budget.latestFY, 'customs') ?? 0;
   const cPrev = amt(budget.latestFY - 1, 'customs') ?? 0;
   const cPrev2 = amt(budget.latestFY - 2, 'customs') ?? 0;
+  const cust = budget.customs.find((c) => c.fy === budget.latestFY);
+  const custPrev = budget.customs.find((c) => c.fy === budget.latestFY - 1);
 
   return (
     <>
@@ -95,8 +97,18 @@ export default function Revenue() {
         id="tariffs"
         eyebrow="Spotlight"
         title="Tariff revenue"
-        sub={<>Customs duties are taxes on imports, paid by the business that brings the goods into the country. Much of that cost can be passed on to buyers through higher prices. Collections were {money(cPrev2)} in FY{budget.latestFY - 2}, {money(cPrev)} in FY{budget.latestFY - 1}, and {money(cNow)} in FY{budget.latestFY}, after new tariffs took effect in 2025.</>}
+        sub={<>Customs duties are taxes on imports, paid by the business that brings the goods into the country; much of that cost can be passed on to buyers through higher prices. Net collections were {money(cPrev2)} in FY{budget.latestFY - 2}, {money(cPrev)} in FY{budget.latestFY - 1}, and {money(cNow)} in FY{budget.latestFY}.</>}
       >
+        {cust && (
+          <div className="grid-3">
+            <div className="card"><Stat label={`Collected, FY${cust.fy}`} value={money(cust.gross)} note="Gross customs duties paid by importers." /></div>
+            <div className="card"><Stat label={`Refunded, FY${cust.fy}`} value={money(cust.refunds)} note={custPrev ? `Up from ${money(custPrev.refunds)} in FY${custPrev.fy}.` : undefined} /></div>
+            <div className="card"><Stat label={`Kept (net), FY${cust.fy}`} value={money(cust.net)} note="What counts as federal revenue." /></div>
+          </div>
+        )}
+        <p className="small" style={{ maxWidth: 'var(--measure)', color: 'var(--ink-2)' }}>
+          On February 20, 2026, the Supreme Court ruled in <a href="https://www.supremecourt.gov/opinions/25pdf/24-1287_4gcj.pdf" target="_blank" rel="noreferrer"><em>Learning Resources, Inc. v. Trump</em></a> that the International Emergency Economic Powers Act does not authorize the President to impose tariffs. Tariffs collected under that law are being refunded to importers, which is why net customs receipts in the Treasury’s monthly statements fell below zero in mid-2026: refunds paid out exceeded new duties collected.
+        </p>
         <div className="card">
           <ChartFrame title="Customs duties collected each month" sub={`FY${budget.latestFY - 2} through FY${budget.latestFY}`} sourceIds={['mts9']}
             table={{ columns: [{ key: 'm', label: 'Month' }, { key: 'v', label: 'Customs duties', align: 'r' }], rows: customsMonths.map((m) => ({ m: `${monthShort(m.date)} ${m.date.slice(0, 4)}`, v: money(m.values.customs ?? 0) })) }}
@@ -104,7 +116,9 @@ export default function Revenue() {
             <TimeChart
               label="Monthly customs duties"
               x={customsMonths.map((m) => m.date)}
-              xLabel={(d) => { const s = String(d); return s.slice(5, 7) === '10' ? `Oct ’${s.slice(2, 4)}` : s.slice(5, 7) === '04' ? 'Apr' : ''; }}
+              xLabel={(d) => { const s = String(d); return s.slice(5, 7) === '10' ? `Oct ’${s.slice(2, 4)}` : `Apr ’${s.slice(2, 4)}`; }}
+              xTicks={customsMonths.map((m, i) => (['10', '04'].includes(m.date.slice(5, 7)) ? i : -1)).filter((i) => i >= 0)}
+              zeroLine
               tipTitle={(d) => `${monthShort(String(d))} ${String(d).slice(0, 4)}`}
               height={240}
               series={[{ id: 'customs', label: 'Customs duties', color: 'var(--c-income)', kind: 'bar', values: customsMonths.map((m) => m.values.customs ?? null) }]}
