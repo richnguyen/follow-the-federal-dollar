@@ -1,0 +1,267 @@
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { GLOSSARY_BY_ID, SOURCE_BY_ID } from '../data';
+
+// ---------- width measurement ----------
+export function useWidth<T extends HTMLElement>(initial = 720) {
+  const ref = useRef<T>(null);
+  const [w, setW] = useState(initial);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setW(el.clientWidth || initial);
+    const ro = new ResizeObserver((entries) => {
+      const cw = Math.round(entries[0].contentRect.width);
+      if (cw > 0) setW(cw);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [initial]);
+  return [ref, w] as const;
+}
+
+// ---------- tooltip ----------
+interface TipState { content: ReactNode; x: number; y: number }
+const TipCtx = createContext<{ show: (c: ReactNode, x: number, y: number) => void; hide: () => void }>({ show: () => {}, hide: () => {} });
+
+export function TooltipProvider({ children }: { children: ReactNode }) {
+  const [tip, setTip] = useState<TipState | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ left: 0, top: 0 });
+  const show = useCallback((content: ReactNode, x: number, y: number) => setTip({ content, x, y }), []);
+  const hide = useCallback(() => setTip(null), []);
+  useLayoutEffect(() => {
+    if (!tip || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let left = tip.x + 14;
+    let top = tip.y + 14;
+    if (left + r.width > vw - 8) left = Math.max(8, tip.x - r.width - 14);
+    if (top + r.height > vh - 8) top = Math.max(8, tip.y - r.height - 14);
+    setPos({ left, top });
+  }, [tip]);
+  useEffect(() => {
+    if (!tip) return;
+    const off = () => setTip(null);
+    window.addEventListener('scroll', off, { passive: true });
+    return () => window.removeEventListener('scroll', off);
+  }, [tip]);
+  return (
+    <TipCtx.Provider value={{ show, hide }}>
+      {children}
+      {tip &&
+        createPortal(
+          <div ref={ref} className="tooltip" role="status" style={{ left: pos.left, top: pos.top }}>
+            {tip.content}
+          </div>,
+          document.body,
+        )}
+    </TipCtx.Provider>
+  );
+}
+
+export const useTooltip = () => useContext(TipCtx);
+
+/** Point to anchor a tooltip at for keyboard focus (element's top-right). */
+export function focusPoint(el: Element) {
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top };
+}
+
+export function TipTitle({ children }: { children: ReactNode }) {
+  return <div className="tooltip-title">{children}</div>;
+}
+
+export function TipRow({ color, label, value, line = true }: { color?: string; label: ReactNode; value: ReactNode; line?: boolean }) {
+  return (
+    <div className="tooltip-row">
+      {color ? (
+        <span style={{ width: 12, height: line ? 2 : 10, borderRadius: line ? 2 : 3, background: color, display: 'inline-block' }} />
+      ) : (
+        <span />
+      )}
+      <span className="k">{label}</span>
+      <span className="v">{value}</span>
+    </div>
+  );
+}
+
+// ---------- chart frame with table twin ----------
+export interface TableSpec {
+  columns: { key: string; label: string; align?: 'r'; wrap?: boolean }[];
+  rows: Record<string, ReactNode>[];
+}
+
+export function ChartFrame({
+  title, sub, legend, children, table, sourceIds, note, actions,
+}: {
+  title: ReactNode; sub?: ReactNode; legend?: ReactNode; children: ReactNode; table?: TableSpec;
+  sourceIds?: string[]; note?: ReactNode; actions?: ReactNode;
+}) {
+  const [showTable, setShowTable] = useState(false);
+  return (
+    <figure className="chart" style={{ margin: 0 }}>
+      <div className="chart-head">
+        <div style={{ minWidth: 0, flex: '1 1 320px' }}>
+          <div className="chart-title">{title}</div>
+          {sub && <div className="chart-sub">{sub}</div>}
+        </div>
+        {actions}
+      </div>
+      {legend}
+      <div className="chart-body">{showTable && table ? <DataTable spec={table} /> : children}</div>
+      <figcaption className="chart-foot">
+        <span>{sourceIds && sourceIds.length > 0 && <SourceNote ids={sourceIds} />}{note && <> {note}</>}</span>
+        {table && (
+          <button className="link-btn" onClick={() => setShowTable((s) => !s)} aria-pressed={showTable}>
+            {showTable ? 'Show chart' : 'Show as table'}
+          </button>
+        )}
+      </figcaption>
+    </figure>
+  );
+}
+
+export function DataTable({ spec, maxHeight = 420 }: { spec: TableSpec; maxHeight?: number }) {
+  return (
+    <div className="table-wrap" style={{ maxHeight, overflowY: 'auto' }}>
+      <table className="data">
+        <thead>
+          <tr>
+            {spec.columns.map((c) => (
+              <th key={c.key} className={c.align}>{c.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {spec.rows.map((r, i) => (
+            <tr key={i}>
+              {spec.columns.map((c) => (
+                <td key={c.key} className={[c.align, c.wrap ? 'wrap' : ''].join(' ')}>{r[c.key]}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function SourceNote({ ids }: { ids: string[] }) {
+  const items = ids.map((id) => SOURCE_BY_ID[id]).filter(Boolean);
+  if (!items.length) return null;
+  return (
+    <span className="cite">
+      Source:{' '}
+      {items.map((s, i) => (
+        <span key={s.id}>
+          {i > 0 && '; '}
+          <a href={s.url} target="_blank" rel="noreferrer">{s.publisher}, {s.title}</a>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+export function Legend({ items }: { items: { label: ReactNode; color: string; kind?: 'rect' | 'line' | 'hatch' }[] }) {
+  return (
+    <div className="legend" role="list">
+      {items.map((it, i) => (
+        <span key={i} className="legend-item" role="listitem">
+          {it.kind === 'line' ? (
+            <span className="legend-line" style={{ background: it.color }} />
+          ) : it.kind === 'hatch' ? (
+            <span className="swatch" style={{ background: `repeating-linear-gradient(135deg, ${it.color} 0 2px, transparent 2px 4px)`, boxShadow: `inset 0 0 0 1px ${it.color}` }} />
+          ) : (
+            <span className="swatch" style={{ background: it.color }} />
+          )}
+          {it.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ---------- small controls ----------
+export function Seg<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
+  return (
+    <div className="seg" role="group" aria-label={label}>
+      {options.map((o) => (
+        <button key={o.value} type="button" aria-pressed={o.value === value} onClick={() => onChange(o.value)}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function Stat({ label, value, note, color }: { label: ReactNode; value: ReactNode; note?: ReactNode; color?: string }) {
+  return (
+    <div className="stat">
+      <div className="stat-label">{color && <span className="swatch" style={{ background: color }} />}{label}</div>
+      <div className="stat-value">{value}</div>
+      {note && <div className="stat-note">{note}</div>}
+    </div>
+  );
+}
+
+// ---------- glossary term popover ----------
+export function Term({ id, children }: { id: string; children?: ReactNode }) {
+  const g = GLOSSARY_BY_ID[id];
+  const [open, setOpen] = useState<{ x: number; y: number } | null>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  if (!g) return <>{children}</>;
+  const place = () => {
+    const r = btn.current!.getBoundingClientRect();
+    setOpen({ x: Math.min(r.left, window.innerWidth - 336), y: r.bottom + 6 });
+  };
+  return (
+    <>
+      <button
+        ref={btn}
+        type="button"
+        className="term"
+        aria-describedby={open ? `term-${id}` : undefined}
+        onMouseEnter={place}
+        onMouseLeave={() => setOpen(null)}
+        onFocus={place}
+        onBlur={() => setOpen(null)}
+        onClick={() => (open ? setOpen(null) : place())}
+      >
+        {children ?? g.term}
+      </button>
+      {open &&
+        createPortal(
+          <div id={`term-${id}`} role="tooltip" className="term-pop" style={{ left: Math.max(8, open.x), top: open.y }}>
+            <b>{g.term}</b>
+            {g.def}
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
+export function Section({ id, eyebrow, title, sub, children }: { id?: string; eyebrow?: string; title: ReactNode; sub?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="section" id={id} aria-labelledby={id ? id + '-t' : undefined}>
+      <div className="section-head">
+        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+        <h2 className="section-title" id={id ? id + '-t' : undefined}>{title}</h2>
+        {sub && <p className="section-sub">{sub}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+export function PageHead({ eyebrow, title, lede }: { eyebrow: string; title: ReactNode; lede?: ReactNode }) {
+  return (
+    <header className="page-head">
+      <div className="eyebrow">{eyebrow}</div>
+      <h1 className="page-title">{title}</h1>
+      {lede && <p className="lede">{lede}</p>}
+    </header>
+  );
+}
