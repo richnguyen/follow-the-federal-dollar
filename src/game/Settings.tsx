@@ -38,11 +38,11 @@ export function ReadingSettings({ compact = false }: { compact?: boolean }) {
         </div>
       )}
       {n.supported && !compact && (
-        <p className="small muted">{n.recorded
-          ? 'Uncle Sam’s lines were recorded with Kokoro, an open-source neural voice model, so he sounds the same on every device.'
+        <p className="small muted"><strong>Now speaking with:</strong> {n.using}. {n.recorded
+          ? 'His lines were recorded with Kokoro, an open-source neural voice model, in a male American voice, so he sounds the same on every device.'
           : n.voice && !isMaleVoice(n.voice)
-            ? `Using ${n.voice.name}, a voice from your device. Your device has no male U.S. English voice; adding one in your system’s speech settings makes it available here.`
-            : 'Device voices vary in quality; the natural and enhanced ones sound most like a person.'}</p>
+            ? 'This device has no male English voice, so a female one is standing in. Choose Uncle Sam’s own voice above for his real voice.'
+            : 'Device voices vary in quality. Choose Uncle Sam’s own voice above for his recorded voice.'}</p>
       )}
       {hapticsSupported && <label className="switch"><input type="checkbox" checked={s.haptics} onChange={(e) => j.setSettings({ haptics: e.target.checked })} /> Gentle vibration on answers and wins (this device supports it)</label>}
       <label className="switch"><input type="checkbox" checked={s.freeRoam} onChange={(e) => j.setSettings({ freeRoam: e.target.checked })} /> Free roam: unlock every level</label>

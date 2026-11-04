@@ -83,11 +83,15 @@ const isUS = (v: SpeechSynthesisVoice) => /^en[-_]US/i.test(v.lang);
 export const isMaleVoice = (v: SpeechSynthesisVoice) => !FEMALE.test(v.name) && MALE.test(v.name);
 export const usableVoice = (v: SpeechSynthesisVoice) => /^en/i.test(v.lang) && !ROBOTIC.test(v.name);
 
+// Uncle Sam is a man: any male English voice beats a female one, then American beats other
+// accents, then modern (natural, neural, enhanced) beats older voices. A female voice is used
+// only if the device has no male English voice at all.
 function score(v: SpeechSynthesisVoice) {
-  let s = isUS(v) ? 20 : 2;
-  if (/natural|neural|online|enhanced|premium|siri/i.test(v.name)) s += 12; // modern voices first
-  if (FEMALE.test(v.name)) s -= 8;
-  else if (MALE.test(v.name)) s += 6;
+  let s = 0;
+  if (FEMALE.test(v.name)) s -= 100;
+  else if (MALE.test(v.name)) s += 50;
+  if (isUS(v)) s += 20;
+  if (/natural|neural|online|enhanced|premium|siri/i.test(v.name)) s += 10;
   return s;
 }
 export function pickVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
@@ -100,6 +104,8 @@ interface Narrator {
   voices: SpeechSynthesisVoice[];
   voice: SpeechSynthesisVoice | null;
   speakingId: string | null;
+  /** What visitors hear right now, for the settings panel. */
+  using: string;
   speak: (id: string, text: string, mood?: Mood) => void;
   stop: (id?: string) => void;
   /** Browsers allow sound only after the person has interacted with the page. */
@@ -119,6 +125,9 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
   const current = useRef<string | null>(null);
   const token = useRef(0);
   const audio = useRef<HTMLAudioElement | null>(null);
+  const unlocked = useRef(false);
+  const retry = useRef<(() => void) | null>(null);
+  const speakRef = useRef<(id: string, text: string, mood?: Mood) => void>(() => {});
   const recorded = hasRecordings && settings.voice === 'auto';
 
   useEffect(() => {
@@ -127,10 +136,16 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
       a.preload = 'auto';
       (a as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
       audio.current = a;
+      // Mobile Safari lets an audio element play on its own only after it has played once during
+      // a tap, so the narrator's element plays a silent sound on the first tap.
       const unlock = () => {
-        new Audio(SILENT).play().catch(() => {});
-        window.removeEventListener('pointerdown', unlock);
-        window.removeEventListener('keydown', unlock);
+        if (unlocked.current || current.current) return;
+        a.src = SILENT;
+        a.play().then(() => {
+          unlocked.current = true;
+          window.removeEventListener('pointerdown', unlock);
+          window.removeEventListener('keydown', unlock);
+        }).catch(() => {});
       };
       window.addEventListener('pointerdown', unlock);
       window.addEventListener('keydown', unlock);
@@ -200,18 +215,28 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
           a.play().catch(() => res(false));
         });
         if (token.current !== my) return;
-        if (!ok) break; // the browser blocked sound until the next tap
+        if (!ok) {
+          // The browser blocked sound until the next tap: say the line then, with the same voice.
+          const again = () => { window.removeEventListener('pointerdown', again, true); if (retry.current === again) { retry.current = null; speakRef.current(id, text, mood); } };
+          if (retry.current) window.removeEventListener('pointerdown', retry.current, true);
+          retry.current = again;
+          window.addEventListener('pointerdown', again, true);
+          break;
+        }
       }
       finish(my);
     })();
   }, [recorded, speakDevice, halt, finish]);
+
+  speakRef.current = speak;
 
   const canAutoplay = useCallback(() => {
     const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
     return ua ? ua.hasBeenActive : true;
   }, []);
 
-  return <Ctx.Provider value={{ supported: hasRecordings || synth, recorded, voices, voice, speakingId, speak, stop, canAutoplay }}>{children}</Ctx.Provider>;
+  const using = recorded ? 'Uncle Sam’s recorded voice' : voice ? `${voice.name}, a voice on this device` : 'no voice available';
+  return <Ctx.Provider value={{ supported: hasRecordings || synth, recorded, voices, voice, speakingId, using, speak, stop, canAutoplay }}>{children}</Ctx.Provider>;
 }
 
 export function useNarrator() {

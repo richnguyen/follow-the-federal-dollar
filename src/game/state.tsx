@@ -17,7 +17,7 @@ export interface JourneyState {
   started: string | null;
   marks: string[]; // things the player has done outside the levels (documents opened, pages read, shares)
   medals: string[]; // medals already awarded (so each is announced once)
-  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string; haptics: boolean };
+  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string; haptics: boolean; voiceV?: number };
 }
 
 const DEFAULT: JourneyState = {
@@ -30,7 +30,7 @@ const DEFAULT: JourneyState = {
   started: null,
   marks: [],
   medals: [],
-  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto', haptics: true },
+  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto', haptics: true, voiceV: 2 },
 };
 
 // Version 1 numbered seven chapter levels and three separate budget-desk missions. Version 2 folds
@@ -72,6 +72,8 @@ const Ctx = createContext<Journey | null>(null);
 export function JourneyProvider({ children }: { children: ReactNode }) {
   const [st, setSt] = useState<JourneyState>(() => {
     const s = migrate(load<Partial<JourneyState>>('journey', {}));
+    // Voice choices made before Uncle Sam had his recorded voice go back to it once.
+    if (s.settings && (s.settings.voiceV ?? 1) < 2) s.settings = { ...s.settings, voice: 'auto', voiceV: 2 };
     return { ...DEFAULT, ...s, v: 2, stars: { ...(s.stars ?? {}) }, marks: [...(s.marks ?? [])], medals: [...(s.medals ?? [])], settings: { ...DEFAULT.settings, ...(s.settings ?? {}) } };
   });
   const update = (f: (p: JourneyState) => JourneyState) => setSt((p) => { const n = f(p); save('journey', n); return n; });
