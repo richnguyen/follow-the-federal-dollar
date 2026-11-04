@@ -34,6 +34,7 @@
   --seq-100: #cde2fb; --seq-200: #9ec5f4; --seq-300: #6da7ec; --seq-400: #3987e5;
   --seq-500: #256abf; --seq-600: #184f95; --seq-700: #0d366b;
   --div-neg: #2a78d6; --div-pos: #e34948; --div-mid: #f0efec;
+  --seq-ink-0: #0b0b0b; --seq-ink-1: #0b0b0b; --seq-ink-2: #0b0b0b; --seq-ink-3: #ffffff; --seq-ink-4: #ffffff; --seq-ink-5: #ffffff; --seq-ink-6: #ffffff;
 
   /* status (reserved) */
   --good: #0ca30c; --good-text: #006300; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
@@ -66,6 +67,7 @@
     --seq-100: #15304f; --seq-200: #184f95; --seq-300: #1c5cab; --seq-400: #256abf;
     --seq-500: #3987e5; --seq-600: #6da7ec; --seq-700: #b7d3f6;
     --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
+    --seq-ink-0: #ffffff; --seq-ink-1: #ffffff; --seq-ink-2: #ffffff; --seq-ink-3: #ffffff; --seq-ink-4: #ffffff; --seq-ink-5: #0b0b0b; --seq-ink-6: #0b0b0b;
     --good-text: #0ca30c;
     color-scheme: dark;
   }
@@ -80,6 +82,7 @@
   --seq-100: #15304f; --seq-200: #184f95; --seq-300: #1c5cab; --seq-400: #256abf;
   --seq-500: #3987e5; --seq-600: #6da7ec; --seq-700: #b7d3f6;
   --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
+  --seq-ink-0: #ffffff; --seq-ink-1: #ffffff; --seq-ink-2: #ffffff; --seq-ink-3: #ffffff; --seq-ink-4: #ffffff; --seq-ink-5: #0b0b0b; --seq-ink-6: #0b0b0b;
   --good-text: #0ca30c;
   color-scheme: dark;
 }
@@ -382,8 +385,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 .source-list { display: flex; flex-direction: column; gap: 0; }
 .source { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.source-title { font-weight: 600; }
-.source-meta { font-size: var(--step--1); color: var(--muted); }
+.source-title { font-weight: 600; overflow-wrap: anywhere; }
+.source-meta { font-size: var(--step--1); color: var(--muted); overflow-wrap: anywhere; }
+@media (max-width: 640px) { .source { grid-template-columns: minmax(0, 1fr); } }
+.cite, .chart-foot { overflow-wrap: anywhere; }
 
 .cite { font-size: 0.75rem; color: var(--muted); }
 .cite a { color: var(--muted); }

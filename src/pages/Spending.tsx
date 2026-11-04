@@ -8,7 +8,6 @@ import { money, pct, signedPct } from '../lib/format';
 import { useUnits } from '../lib/units';
 import { UnitsToggle } from './Overview';
 
-const TREE_COLORS = ['var(--c-ss)', 'var(--c-medicare)', 'var(--c-health)', 'var(--c-income)', 'var(--c-veterans)', 'var(--c-other)', 'var(--c-defense)', 'var(--c-interest)'];
 
 export default function Spending() {
   const years = Object.keys(budget.functionsByFY).map(Number).sort((a, b) => b - a);
@@ -119,22 +118,29 @@ function AccountsView({ fy }: { fy: number }) {
   const flat = useMemo(() => flattenAccounts(accounts.root), []);
   const matches = useMemo(() => {
     const s = q.trim().toLowerCase();
-    const list = s ? flat.filter((f) => f.path.join(' ').toLowerCase().includes(s)) : flat;
+    // Common names and acronyms people search for, mapped to the Treasury's official account names.
+    const ALIASES: Record<string, string> = {
+      fema: 'federal emergency management', nasa: 'national aeronautics', snap: 'supplemental nutrition assistance',
+      'food stamps': 'supplemental nutrition assistance', nih: 'national institutes of health', pell: 'student financial assistance',
+      'student aid': 'student financial assistance', irs: 'internal revenue service', va: 'veterans affairs',
+      pentagon: 'department of defense', dod: 'department of defense', cdc: 'disease control', faa: 'federal aviation',
+      epa: 'environmental protection', fbi: 'federal bureau of investigation', ice: 'immigration and customs enforcement',
+      cbp: 'customs and border protection', tsa: 'transportation security', 'head start': 'children and families',
+      amtrak: 'national railroad passenger', wic: 'women, infants, and children', 'social security': 'social security',
+      eitc: 'earned income credit', 'child tax credit': 'child tax credit', obamacare: 'premium tax credit', aca: 'premium tax credit',
+    };
+    const terms = [s, ...(ALIASES[s] ? [ALIASES[s]] : [])];
+    const list = s ? flat.filter((f) => { const t = f.path.join(' ').toLowerCase(); return terms.some((x) => t.includes(x)); }) : flat;
     return [...list].sort((a, b) => b.node.amount - a.node.amount).slice(0, 60);
   }, [q, flat]);
   if (!available) {
     return <div className="empty">Agency and account detail is available for FY{accounts.fy}. Switch the fiscal year to FY{accounts.fy} to explore it.</div>;
   }
-  const colorIdx = (n: TreeNode) => {
-    const top = path[0] ?? n;
-    const i = (root.children ?? []).findIndex((c) => c.name === top.name);
-    return TREE_COLORS[(i < 0 ? 0 : i) % TREE_COLORS.length];
-  };
   return (
     <Section
       id="accounts"
       title={`FY${fy}: every agency and account`}
-      sub={<>Box size is proportional to net outlays. Click a box to open it. Totals are <Term id="net-outlays">net outlays</Term> from the Monthly Treasury Statement, Table 5.</>}
+      sub={<>Box size is proportional to net outlays. Click a box to open it. Totals are <Term id="net-outlays">net outlays</Term> from the Monthly Treasury Statement, Table 5. The Treasury’s box includes gross interest on the debt; the interest paid to federal trust funds is subtracted under Undistributed Offsetting Receipts.</>}
     >
       <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <nav className="crumbs" aria-label="Treemap level">
@@ -157,14 +163,15 @@ function AccountsView({ fy }: { fy: number }) {
             root={node}
             total={root.amount}
             format={u.fmt}
-            colorFor={(n, i) => (path.length === 0 ? TREE_COLORS[i % TREE_COLORS.length] : colorIdx(n))}
+            colorFor={() => 'var(--c-emph)'}
+            ink="var(--accent-ink)"
             onDrill={(n) => setPath([...path, n])}
           />
         </ChartFrame>
       </div>
       <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div className="field" style={{ maxWidth: 420 }}>
-          <label htmlFor="acct-q">Search every account (for example “Medicaid”, “FEMA”, “Pell”, “highway”)</label>
+          <label htmlFor="acct-q">Search every account (for example “Medicaid”, “FEMA”, “Pell”, “NASA”, “highway”)</label>
           <input id="acct-q" className="input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Type a program, agency, or account" />
         </div>
         <DataTable
@@ -174,7 +181,7 @@ function AccountsView({ fy }: { fy: number }) {
               n: m.node.name,
               p: m.path.slice(0, -1).join(' › '),
               a: u.fmt(m.node.amount),
-              s: pct(m.node.amount / root.amount, 3),
+              s: pct(m.node.amount / root.amount, Math.abs(m.node.amount / root.amount) < 0.01 ? 2 : 1),
               c: m.node.prior ? signedPct(m.node.amount / m.node.prior - 1) : '—',
             })),
           }}

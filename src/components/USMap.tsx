@@ -8,7 +8,7 @@ import { focusPoint, TipRow, TipTitle, useTooltip } from './ui';
 // Sequential (one hue, light → dark) choropleth of a per-capita value. Territories outside the
 // Albers USA projection are drawn as tiles so every jurisdiction stays selectable.
 const RAMP = ['var(--seq-100)', 'var(--seq-200)', 'var(--seq-300)', 'var(--seq-400)', 'var(--seq-500)', 'var(--seq-600)', 'var(--seq-700)'];
-const INK = ['#0b0b0b', '#0b0b0b', '#0b0b0b', '#ffffff', '#ffffff', '#ffffff', '#ffffff'];
+const INK = [0, 1, 2, 3, 4, 5, 6].map((i) => `var(--seq-ink-${i})`);
 const TERRITORIES = ['11', '72', '78', '66', '60', '69'];
 
 export interface MapDatum { fips: string; abbr: string; name: string; value: number; extra?: string }
@@ -24,7 +24,8 @@ export function USMap({
     return fc.features as { id: string; properties: { name: string } }[];
   }, []);
   const path = useMemo(() => geoPath(), []);
-  const q = useMemo(() => scaleQuantile<number>().domain(data.filter((d) => d.fips !== '11' && Number(d.fips) < 60).map((d) => d.value)).range([0, 1, 2, 3, 4, 5, 6]), [data]);
+  const stateVals = useMemo(() => data.filter((d) => d.fips !== '11' && Number(d.fips) < 60).map((d) => d.value), [data]);
+  const q = useMemo(() => scaleQuantile<number>().domain(stateVals).range([0, 1, 2, 3, 4, 5, 6]), [stateVals]);
   const thresholds = q.quantiles();
   const tip = (d: MapDatum) => (
     <>
@@ -85,7 +86,7 @@ export function USMap({
         <span>Lower</span>
         <span className="ramp" aria-hidden="true">{RAMP.map((c) => <span key={c} style={{ background: c }} />)}</span>
         <span>Higher {valueLabel.toLowerCase()}</span>
-        <span className="muted">({format(Math.min(...data.map((d) => d.value)))} to {format(Math.max(...data.map((d) => d.value)))}; 7 equal-count groups{thresholds.length ? '' : ''})</span>
+        <span className="muted">(50 states range from {format(Math.min(...stateVals))} to {format(Math.max(...stateVals))}, shaded in 7 equal-size groups; DC and territories use the same scale)</span>
       </div>
     </div>
   );

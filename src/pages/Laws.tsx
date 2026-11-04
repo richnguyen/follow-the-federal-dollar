@@ -42,7 +42,7 @@ export default function Laws() {
         lede={<>Deficits don’t just happen. They are written into law. Before major bills pass, the Congressional Budget Office (CBO) and the Joint Committee on Taxation (JCT) estimate how much each will change deficits over the next ten years. Here are the biggest of the past quarter century.</>}
       />
       <div className="facts">
-        <div className="fact"><div className="fact-big">{bn(added)}</div><p>in larger deficits from the {laws.filter((l) => l.deficitEffect > 0).length} deficit-increasing laws listed here, as officially estimated when each was enacted.</p></div>
+        <div className="fact"><div className="fact-big">{bn(added)}</div><p>in larger deficits from the {laws.filter((l) => l.deficitEffect > 0).length} deficit-increasing laws listed here, adding up each one’s official estimate at enactment. Their ten-year windows overlap, so treat this as a rough total.</p></div>
         <div className="fact"><div className="fact-big">{bn(cut)}</div><p>in smaller deficits from the {laws.filter((l) => l.deficitEffect < 0).length} deficit-reducing laws listed.</p></div>
         {addPres.length > 1 && <div className="fact"><div className="fact-big">{addPres.length} presidents</div><p>signed the deficit-increasing laws listed here ({addPres.join(', ')}). Tax cuts, emergency relief, and spending increases have come from both parties.</p></div>}
       </div>

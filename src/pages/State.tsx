@@ -10,7 +10,7 @@ import { load, save } from '../lib/storage';
 
 const TYPES: { id: AwardType; label: string; color: string; ink: string; blurb: string }[] = [
   { id: 'grants', label: 'Grants', color: 'var(--c-ss)', ink: '#fff', blurb: 'Money to state and local governments, schools, hospitals, and nonprofits, such as Medicaid and highway funds.' },
-  { id: 'directPayments', label: 'Direct payments', color: 'var(--c-medicare)', ink: '#fff', blurb: 'Payments to individuals and businesses, such as Medicare reimbursements, crop insurance, and some benefits.' },
+  { id: 'directPayments', label: 'Direct payments', color: 'var(--c-medicare)', ink: '#fff', blurb: 'Payments to people and businesses, such as Social Security benefits, SNAP food aid, and farm payments.' },
   { id: 'contracts', label: 'Contracts', color: 'var(--c-health)', ink: '#0b0b0b', blurb: 'Purchases of goods and services, from fighter jets to IT support.' },
   { id: 'loans', label: 'Loans', color: 'var(--c-income)', ink: '#0b0b0b', blurb: 'The estimated cost to taxpayers (subsidy cost) of federal loans, not the face value.' },
   { id: 'other', label: 'Other assistance', color: 'var(--c-veterans)', ink: '#fff', blurb: 'Insurance and other financial assistance.' },
@@ -79,7 +79,7 @@ export default function StatePage({ param }: { param: string | null }) {
 
       <div className="split">
         <div className="card">
-          <ChartFrame title={`Federal awards ${metric === 'perCapita' ? 'per person' : 'in total'}, FY${geo.fy}`} sub="Darker states received more. Select a state to see where its money came from." sourceIds={['usaspending-geo']}
+          <ChartFrame title={`Federal awards ${metric === 'perCapita' ? 'per person' : 'in total'}, FY${geo.fy}`} sub="Shading follows the scale below the map; states nearer the “Higher” end received more. Select a state to see where its money came from." sourceIds={['usaspending-geo']}
             table={{
               columns: [{ key: 'n', label: 'State' }, { key: 't', label: 'Total awards', align: 'r' }, { key: 'p', label: 'Per person', align: 'r' }, { key: 'pop', label: 'Population', align: 'r' }],
               rows: [...states].sort((a, b) => b.perCapita - a.perCapita).map((x) => ({ n: x.name, t: money(x.total), p: dollars(x.perCapita), pop: x.population ? x.population.toLocaleString() : '—' })),

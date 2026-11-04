@@ -367,8 +367,8 @@ export function TimeChart(p: TimeChartProps) {
 export interface TreeNode { name: string; amount: number; prior?: number; children?: TreeNode[] }
 
 export function Treemap({
-  root, colorFor, height = 460, onDrill, format = money, total,
-}: { root: TreeNode; colorFor: (n: TreeNode, i: number) => string; height?: number; onDrill?: (n: TreeNode) => void; format?: (v: number) => string; total: number }) {
+  root, colorFor, height = 460, onDrill, format = money, total, ink = '#fff',
+}: { root: TreeNode; colorFor: (n: TreeNode, i: number) => string; height?: number; onDrill?: (n: TreeNode) => void; format?: (v: number) => string; total: number; ink?: string }) {
   const [ref, width] = useWidth<HTMLDivElement>(800);
   const { show, hide } = useTooltip();
   const h = Math.min(height, Math.max(320, width * 0.62));
@@ -418,10 +418,10 @@ export function Treemap({
                 style={{ cursor: canDrill ? 'pointer' : 'default' }}
               />
               {showLabel && (
-                <text x={8} y={18} fill="#fff" fontSize={12} fontWeight={650}>{name}</text>
+                <text x={8} y={18} fill={ink} fontSize={12} fontWeight={650}>{name}</text>
               )}
               {showVal && (
-                <text x={8} y={34} fill="#fff" fontSize={11.5} opacity={0.92} style={{ fontVariantNumeric: 'tabular-nums' }}>{format(n.amount)} · {pct(n.amount / total, 1)}</text>
+                <text x={8} y={34} fill={ink} fontSize={11.5} opacity={0.92} style={{ fontVariantNumeric: 'tabular-nums' }}>{format(n.amount)} · {pct(n.amount / total, 1)}</text>
               )}
             </g>
           );
