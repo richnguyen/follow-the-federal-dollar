@@ -190,13 +190,13 @@ export interface OptimizeResult {
   mixRelaxed?: boolean;
 }
 
-const allowed = (o: PlanContext['options'][number], p: Protect) =>
+export const allowed = (o: PlanContext['options'][number], p: Protect) =>
   !(p.retirees && o.econ.tags.includes('retirees')) &&
   !(p.lowIncome && o.econ.tags.includes('lowIncome')) &&
   !(p.investment && o.econ.tags.includes('investment'));
 
 /** Unclamped distance from the goal in the final year, in dollars (negative = goal beaten). */
-function shortfall(goal: Goal, sim: SimYear[], startRatio: number) {
+export function shortfall(goal: Goal, sim: SimYear[], startRatio: number) {
   const last = sim.at(-1)!;
   if (goal === 'balance') return last.deficit;
   if (goal === 'deficit3') return last.deficit - 0.03 * last.gdp;
@@ -268,4 +268,9 @@ export function optimize(ctx: PlanContext, goal: Goal, protect: Protect, gradual
   const met = goalMet(goal, sim, ctx.startRatio);
   const steps = ids.map((id) => ({ id, reason: mixRelaxed ? 'mix relaxed: no allowed combination met both the goal and the mix rule' : 'part of the least-cost combination' }));
   return { ids, met, sim, revenueShare: shares(ids), steps, mixRelaxed };
+}
+
+/** Total economic cost of a set of options: harm per dollar times ten-year dollars (as in optimize). */
+export function planCost(ctx: PlanContext, ids: string[]) {
+  return ctx.options.filter((o) => ids.includes(o.id)).reduce((s, o) => s + Math.max(0.01, score(o.econ)) * o.savings10, 0);
 }
