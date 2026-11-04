@@ -1,1 +1,419 @@
-{}
+{
+ "years": [
+  {
+   "fy": 1998,
+   "resolution": true,
+   "crs": 6,
+   "onTime": 1,
+   "shutdownDays": 0,
+   "final": "One bill was on time. The other 12 passed one at a time by November 26, 1997, with six short CRs filling the gaps.",
+   "notes": "There were 13 regular bills at the time."
+  },
+  {
+   "fy": 1999,
+   "resolution": false,
+   "crs": 6,
+   "onTime": 1,
+   "shutdownDays": 0,
+   "final": "One bill was on time. Four more passed separately in October 1998. The last eight were combined in an omnibus law on October 21, 1998.",
+   "notes": "There were 13 regular bills at the time. Only the House set budget levels, using a \"deeming\" resolution."
+  },
+  {
+   "fy": 2000,
+   "resolution": true,
+   "crs": 7,
+   "onTime": 4,
+   "shutdownDays": 0,
+   "final": "Four bills were on time. Four more passed in October 1999. The last five were combined in a package signed November 29, 1999.",
+   "notes": "There were 13 regular bills at the time."
+  },
+  {
+   "fy": 2001,
+   "resolution": true,
+   "crs": 21,
+   "onTime": 2,
+   "shutdownDays": 0,
+   "final": "Two bills were on time. The rest passed one at a time or in a package signed December 21, 2000.",
+   "notes": "There were 13 regular bills at the time. The 21 CRs are a record. Many lasted only a day or two."
+  },
+  {
+   "fy": 2002,
+   "resolution": true,
+   "crs": 8,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. All 13 passed one at a time, the last on January 10, 2002.",
+   "notes": "There were 13 regular bills at the time."
+  },
+  {
+   "fy": 2003,
+   "resolution": false,
+   "crs": 8,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. Two passed in October 2002. The other 11 were combined in an omnibus signed February 20, 2003.",
+   "notes": "There were 13 regular bills at the time."
+  },
+  {
+   "fy": 2004,
+   "resolution": true,
+   "crs": 5,
+   "onTime": 3,
+   "shutdownDays": 0,
+   "final": "Three bills were on time. Three more passed separately that fall. The last seven were combined in an omnibus signed January 23, 2004.",
+   "notes": "There were 13 regular bills at the time."
+  },
+  {
+   "fy": 2005,
+   "resolution": false,
+   "crs": 3,
+   "onTime": 1,
+   "shutdownDays": 0,
+   "final": "One bill was on time. Three more passed in October 2004. The last nine were combined in an omnibus signed December 8, 2004.",
+   "notes": "There were 13 regular bills at the time. The House approved a final budget deal, but the Senate never voted on it."
+  },
+  {
+   "fy": 2006,
+   "resolution": true,
+   "crs": 3,
+   "onTime": 2,
+   "shutdownDays": 0,
+   "final": "Two of the 11 bills were on time. The other nine passed one at a time, the last two on December 30, 2005.",
+   "notes": "There were 11 regular bills at the time."
+  },
+  {
+   "fy": 2007,
+   "resolution": false,
+   "crs": 4,
+   "onTime": 1,
+   "shutdownDays": 0,
+   "final": "One of the 11 bills was on time, and one more passed in October 2006. The other nine were put on a full-year CR in February 2007.",
+   "notes": "There were 11 regular bills at the time. The CR count includes the full-year CR."
+  },
+  {
+   "fy": 2008,
+   "resolution": true,
+   "crs": 4,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. Defense passed in November 2007. The other 11 were combined in an omnibus signed December 26, 2007.",
+   "notes": "From this year on there are 12 regular bills."
+  },
+  {
+   "fy": 2009,
+   "resolution": true,
+   "crs": 2,
+   "onTime": 3,
+   "shutdownDays": 0,
+   "final": "Three bills were on time, in the same September 30, 2008 law as the first CR. The other nine were combined in an omnibus signed March 11, 2009."
+  },
+  {
+   "fy": 2010,
+   "resolution": true,
+   "crs": 2,
+   "onTime": 1,
+   "shutdownDays": 0,
+   "final": "One bill was on time. Four more passed in October 2009. Six were combined in a package signed December 16, 2009, and Defense passed on December 19, 2009.",
+   "notes": "The on-time bill (Legislative Branch) was signed on October 1, 2009. CRS counts bills signed by October 1 as on time."
+  },
+  {
+   "fy": 2011,
+   "resolution": false,
+   "crs": 8,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. After seven short CRs, an April 15, 2011 law passed the Defense bill and put the other 11 on a full-year CR.",
+   "notes": "The CR count includes the full-year CR."
+  },
+  {
+   "fy": 2012,
+   "resolution": false,
+   "crs": 5,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. Three passed in a November 2011 package. The other nine were combined in an omnibus signed December 23, 2011."
+  },
+  {
+   "fy": 2013,
+   "resolution": false,
+   "crs": 2,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. A March 26, 2013 law passed five bills and put the other seven on a full-year CR.",
+   "notes": "The CR count includes the full-year CR."
+  },
+  {
+   "fy": 2014,
+   "resolution": false,
+   "crs": 4,
+   "onTime": 0,
+   "shutdownDays": 16,
+   "final": "No bills were on time. A 16-day shutdown ended on October 17, 2013, with a CR. All 12 bills were then combined in an omnibus signed January 17, 2014.",
+   "notes": "The shutdown ran October 1 to 16, 2013. Two of the four CRs were narrow ones for military pay and military survivor benefits."
+  },
+  {
+   "fy": 2015,
+   "resolution": false,
+   "crs": 5,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. Eleven passed in a December 2014 package. Homeland Security followed in March 2015 after two more short CRs."
+  },
+  {
+   "fy": 2016,
+   "resolution": true,
+   "crs": 3,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. All 12 were combined in an omnibus signed December 18, 2015."
+  },
+  {
+   "fy": 2017,
+   "resolution": true,
+   "crs": 3,
+   "onTime": 1,
+   "shutdownDays": 0,
+   "final": "One bill (Military Construction and Veterans Affairs) was on time. The other 11 were combined in an omnibus signed May 5, 2017.",
+   "notes": "The budget resolution was adopted in January 2017, more than three months into the fiscal year."
+  },
+  {
+   "fy": 2018,
+   "resolution": true,
+   "crs": 5,
+   "onTime": 0,
+   "shutdownDays": 3,
+   "final": "No bills were on time. After a 3-day shutdown in January 2018, all 12 were combined in an omnibus signed March 23, 2018.",
+   "notes": "The shutdown ran January 20 to 22, 2018. CRS counts 2 full days. Funding also ran out for a few hours on February 9, 2018. OMB called that a technical lapse, so it is not counted here. The budget resolution was adopted in October 2017, after the year began."
+  },
+  {
+   "fy": 2019,
+   "resolution": false,
+   "crs": 3,
+   "onTime": 5,
+   "shutdownDays": 35,
+   "final": "Five bills were enacted on time. The other seven passed in a February 15, 2019 package after a 35-day partial shutdown.",
+   "notes": "The partial shutdown ran December 22, 2018 to January 25, 2019. CRS counts 34 full days. The 35 here includes the day it ended."
+  },
+  {
+   "fy": 2020,
+   "resolution": false,
+   "crs": 2,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. All 12 passed in two packages signed December 20, 2019."
+  },
+  {
+   "fy": 2021,
+   "resolution": true,
+   "crs": 5,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. All 12 were combined with COVID-19 relief in an omnibus signed December 27, 2020.",
+   "notes": "The budget resolution was adopted in February 2021, more than four months into the fiscal year."
+  },
+  {
+   "fy": 2022,
+   "resolution": true,
+   "crs": 4,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. All 12 were combined in an omnibus signed March 15, 2022."
+  },
+  {
+   "fy": 2023,
+   "resolution": false,
+   "crs": 3,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. All 12 were combined in an omnibus signed December 29, 2022."
+  },
+  {
+   "fy": 2024,
+   "resolution": false,
+   "crs": 4,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. Six passed in a package signed March 9, 2024. The other six passed in a package signed March 23, 2024."
+  },
+  {
+   "fy": 2025,
+   "resolution": true,
+   "crs": 3,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "No bills were on time. After two short CRs, a March 15, 2025 law put all 12 bills on a full-year CR.",
+   "notes": "The budget resolution was adopted in April 2025, more than six months into the fiscal year. The CR count includes the full-year CR."
+  },
+  {
+   "fy": 2026,
+   "resolution": true,
+   "crs": 3,
+   "onTime": 0,
+   "shutdownDays": 123,
+   "final": "After a 43-day shutdown, a November 12, 2025 law passed three bills and a CR. Three more bills passed on January 23, 2026, and five more on February 3, 2026, after a short lapse. Homeland Security passed on April 30, 2026, after a 76-day lapse. That bill left out ICE and the Border Patrol, which got money in a June 10, 2026 reconciliation law.",
+   "notes": "The 123 days add up three separate lapses: the whole government from October 1 to November 12, 2025 (43 days); agencies in six unfinished bills from January 31 to February 3, 2026 (4 days); and the Department of Homeland Security alone from February 14 to April 30, 2026 (76 days). CRS counts full days: 42, 3, and 75. The third CR is a short part of the April 30 law that covered the Homeland Security lapse after the fact. The budget resolution, adopted in April 2026, set up the reconciliation process used for the June 2026 law that funded ICE and the Border Patrol.",
+   "lapses": [
+    {
+     "days": 43,
+     "broad": true,
+     "scope": "All agencies funded by the 12 bills",
+     "start": "2025-10-01",
+     "end": "2025-11-12"
+    },
+    {
+     "days": 4,
+     "broad": true,
+     "scope": "Agencies in the six bills still unfinished",
+     "start": "2026-01-31",
+     "end": "2026-02-03"
+    },
+    {
+     "days": 76,
+     "broad": false,
+     "scope": "Department of Homeland Security only",
+     "start": "2026-02-14",
+     "end": "2026-04-30"
+    }
+   ]
+  },
+  {
+   "fy": 2027,
+   "resolution": false,
+   "crs": 1,
+   "onTime": 0,
+   "shutdownDays": 0,
+   "final": "Not final yet. A CR signed September 2, 2026 funds all 12 bills through December 11, 2026.",
+   "notes": "This fiscal year is still in progress. Figures are as of November 3, 2026. The House adopted a budget resolution on July 22, 2026. No Senate vote on one was found."
+  }
+ ],
+ "current": [
+  {
+   "fy": 2026,
+   "status": "Final. All 12 bills became law by April 30, 2026, after three funding lapses. Three bills passed on November 12, 2025, three on January 23, 2026, five on February 3, 2026, and Homeland Security on April 30, 2026. ICE and the Border Patrol were left out of the Homeland Security bill. A reconciliation law signed June 10, 2026 funded them.",
+   "asOf": "2026-11-03",
+   "source": {
+    "title": "CRS, Appropriations Status Table: FY2026",
+    "url": "https://www.congress.gov/crs-appropriations-status-table/2026"
+   }
+  },
+  {
+   "fy": 2027,
+   "status": "A stopgap CR (P.L. 119-103, signed September 2, 2026) funds all 12 bills, mostly at FY2026 levels, through December 11, 2026. None of the 12 regular bills has become law. Congress must pass them or another CR by then, or funding lapses on December 12, 2026. The House adopted a budget resolution in July 2026. The Senate has not.",
+   "asOf": "2026-11-03",
+   "source": {
+    "title": "CRS, Overview of Continuing Appropriations for FY2027 (Division A of P.L. 119-103) (R49353)",
+    "url": "https://www.congress.gov/crs-product/R49353"
+   }
+  }
+ ],
+ "sources": [
+  {
+   "title": "CRS, Continuing Resolutions: Overview of Components and Practices (R46595)",
+   "url": "https://www.congress.gov/crs-product/R46595"
+  },
+  {
+   "title": "CRS, Federal Funding Gaps: A Brief Overview (RS20348)",
+   "url": "https://www.congress.gov/crs-product/RS20348"
+  },
+  {
+   "title": "CRS, Past Government Shutdowns: Key Resources (R41759)",
+   "url": "https://www.congress.gov/crs-product/R41759"
+  },
+  {
+   "title": "CRS, Shutdown of the Federal Government: Causes, Processes, and Effects (RL34680)",
+   "url": "https://www.congress.gov/crs-product/RL34680"
+  },
+  {
+   "title": "CRS, Congressional Budget Resolutions: Historical Information (RL30297)",
+   "url": "https://www.congress.gov/crs-product/RL30297"
+  },
+  {
+   "title": "CRS, Deeming Resolutions: Budget Enforcement in the Absence of a Budget Resolution (R44296)",
+   "url": "https://www.congress.gov/crs-product/R44296"
+  },
+  {
+   "title": "CRS, The Congressional Budget Resolution: Frequently Asked Questions (R48284)",
+   "url": "https://www.congress.gov/crs-product/R48284"
+  },
+  {
+   "title": "CRS, H.Con.Res. 14: The Budget Resolution for FY2025 (R48532)",
+   "url": "https://www.congress.gov/crs-product/R48532"
+  },
+  {
+   "title": "CRS, S.Con.Res. 33: The FY2026 Budget Resolution (R48917)",
+   "url": "https://www.congress.gov/crs-product/R48917"
+  },
+  {
+   "title": "CRS, Overview of Continuing Appropriations for FY2026 (Division A of P.L. 119-37) (R48765)",
+   "url": "https://www.congress.gov/crs-product/R48765"
+  },
+  {
+   "title": "CRS, Appropriations Status Table: FY2026",
+   "url": "https://www.congress.gov/crs-appropriations-status-table/2026"
+  },
+  {
+   "title": "CRS, Department of Homeland Security Appropriations: FY2026 State of Play (R48874)",
+   "url": "https://www.congress.gov/crs-product/R48874"
+  },
+  {
+   "title": "CRS, Lapses in DHS Appropriations: History and Plans (R49105)",
+   "url": "https://www.congress.gov/crs-product/R49105"
+  },
+  {
+   "title": "CRS, Overview of Continuing Appropriations for FY2027 (Division A of P.L. 119-103) (R49353)",
+   "url": "https://www.congress.gov/crs-product/R49353"
+  },
+  {
+   "title": "CRS, Appropriations Status Table: FY2027",
+   "url": "https://www.congress.gov/crs-appropriations-status-table"
+  },
+  {
+   "title": "Congress.gov, H.Con.Res. 113: FY2027 budget resolution (House-adopted)",
+   "url": "https://www.congress.gov/bill/119th-congress/house-concurrent-resolution/113"
+  },
+  {
+   "title": "Public Law 119-37 (November 12, 2025)",
+   "url": "https://www.congress.gov/119/plaws/publ37/PLAW-119publ37.pdf"
+  },
+  {
+   "title": "Congress.gov, H.R. 6938: CJS, Energy and Water, and Interior Appropriations Act, 2026 (P.L. 119-74)",
+   "url": "https://www.congress.gov/bill/119th-congress/house-bill/6938/all-info"
+  },
+  {
+   "title": "Public Law 119-75, Consolidated Appropriations Act, 2026 (February 3, 2026)",
+   "url": "https://www.congress.gov/119/plaws/publ75/PLAW-119publ75.pdf"
+  },
+  {
+   "title": "Public Law 119-86, Homeland Security and Further Additional Continuing Appropriations Act, 2026 (April 30, 2026)",
+   "url": "https://www.congress.gov/119/plaws/publ86/PLAW-119publ86.pdf"
+  },
+  {
+   "title": "Public Law 119-98 (June 10, 2026)",
+   "url": "https://www.congress.gov/119/plaws/publ98/PLAW-119publ98.pdf"
+  },
+  {
+   "title": "Public Law 119-103, Continuing Appropriations and Extensions Act, 2027 (September 2, 2026)",
+   "url": "https://www.congress.gov/119/plaws/publ103/PLAW-119publ103.pdf"
+  },
+  {
+   "title": "Congress.gov, H.R. 2638 (110th Congress): Consolidated Security, Disaster Assistance, and Continuing Appropriations Act, 2009 (P.L. 110-329)",
+   "url": "https://www.congress.gov/bill/110th-congress/house-bill/2638"
+  },
+  {
+   "title": "Public Law 111-68, Legislative Branch Appropriations Act, 2010 (October 1, 2009)",
+   "url": "https://www.congress.gov/111/plaws/publ68/PLAW-111publ68.pdf"
+  },
+  {
+   "title": "U.S. Senate, Vote-aramas (budget resolution and reconciliation votes)",
+   "url": "https://www.senate.gov/legislative/votearama.htm"
+  }
+ ],
+ "lastAllOnTime": {
+  "fy": 1997,
+  "note": "CRS reports that all regular appropriations acts were enacted on time in only four years since the current budget process began: FY1977, FY1989, FY1995, and FY1997.",
+  "source": {
+   "title": "CRS, Continuing Resolutions: Overview of Components and Practices (R46595)",
+   "url": "https://www.congress.gov/crs-product/R46595"
+  }
+ }
+}

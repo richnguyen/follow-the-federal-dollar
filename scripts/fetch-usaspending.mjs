@@ -32,11 +32,20 @@ export const STATES = [
 
 const fyPeriod = (fy) => [{ start_date: `${fy - 1}-10-01`, end_date: `${fy}-09-30` }];
 
-async function geography(fy, layer, awardCodes) {
+// Medicare (Parts A, B, D) assistance listings. USAspending records these payments where the
+// insurer or claims processor is located, so they are fetched separately and excluded from
+// state comparisons.
+export const MEDICARE_PROGRAMS = ['93.770', '93.773', '93.774'];
+
+async function geography(fy, layer, awardCodes, programNumbers) {
   const body = {
     scope: 'place_of_performance',
     geo_layer: layer,
-    filters: { time_period: fyPeriod(fy), ...(awardCodes ? { award_type_codes: awardCodes } : {}) },
+    filters: {
+      time_period: fyPeriod(fy),
+      ...(awardCodes ? { award_type_codes: awardCodes } : {}),
+      ...(programNumbers ? { program_numbers: programNumbers } : {}),
+    },
     subawards: false,
   };
   return getJSON('usaspending', `${BASE}/search/spending_by_geography/`, { body, label: `geo ${layer} ${fy}` });
@@ -52,7 +61,7 @@ async function category(fy, cat, location, limit = 10) {
 }
 
 export async function fetchUSAspending({ fys, districtDetail = true }) {
-  const out = { fys, states: {}, districts: {}, stateDetail: {}, districtDetail: {} };
+  const out = { fys, states: {}, districts: {}, medicare: {}, stateDetail: {}, districtDetail: {} };
   for (const fy of fys) {
     console.log(`[usaspending] FY${fy} geography by award type…`);
     out.states[fy] = {};
@@ -61,6 +70,10 @@ export async function fetchUSAspending({ fys, districtDetail = true }) {
       out.states[fy][key] = await geography(fy, 'state', g.codes);
       out.districts[fy][key] = await geography(fy, 'district', g.codes);
     }
+    out.medicare[fy] = {
+      state: await geography(fy, 'state', null, MEDICARE_PROGRAMS),
+      district: await geography(fy, 'district', null, MEDICARE_PROGRAMS),
+    };
   }
   const fy = fys[0];
   console.log(`[usaspending] FY${fy} per-state agencies and programs (${STATES.length} states)…`);
@@ -82,7 +95,7 @@ export async function fetchUSAspending({ fys, districtDetail = true }) {
     await pool(list, 4, async (code) => {
       const loc = { country: 'USA', state: byFips[code.slice(0, 2)], district_original: code.slice(2) };
       try {
-        out.districtDetail[code] = { programs: await category(fy, 'cfda', loc, 6), agencies: await category(fy, 'awarding_agency', loc, 6) };
+        out.districtDetail[code] = { programs: await category(fy, 'cfda', loc, 8) };
       } catch (e) {
         console.warn(`[usaspending]   district ${code}: ${e.message}`);
       }

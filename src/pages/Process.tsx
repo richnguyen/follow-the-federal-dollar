@@ -11,8 +11,11 @@ export default function ProcessPage() {
   const onTimeYears = years.filter((y) => y.onTime === 12).map((y) => y.fy);
   const noResolution = years.filter((y) => !y.resolution).length;
   const shutdowns = years.filter((y) => y.shutdownDays > 0);
-  const longest = shutdowns.reduce((m, y) => (y.shutdownDays > (m?.shutdownDays ?? 0) ? y : m), shutdowns[0]);
-  const lastOnTime = onTimeYears.at(-1);
+  const lapseCount = years.reduce((a, y) => a + (y.lapses?.length ?? (y.shutdownDays > 0 ? 1 : 0)), 0);
+  // Longest single shutdown that affected most of the government.
+  const broad = years.flatMap((y) => (y.lapses ?? (y.shutdownDays > 0 ? [{ days: y.shutdownDays, broad: true, scope: '', start: '', end: '' }] : [])).filter((l) => l.broad).map((l) => ({ fy: y.fy, days: l.days })));
+  const longest = broad.reduce((m, l) => (l.days > (m?.days ?? 0) ? l : m), broad[0]);
+  const lastOnTime = onTimeYears.at(-1) ?? process.lastAllOnTime?.fy;
   return (
     <>
       <PageHead
@@ -32,19 +35,19 @@ export default function ProcessPage() {
             <div className="step-when">By April 15</div>
             <div className="step-title">Congress adopts a <Term id="budget-resolution">budget resolution</Term></div>
             <p className="small">A blueprint setting total spending, revenue, and deficit targets. It is not signed by the President and does not spend money.</p>
-            <div className="step-real">Skipped in {noResolution} of the {years.length} years shown. When adopted, it is often mainly to unlock <Term id="reconciliation">reconciliation</Term>.</div>
+            <div className="step-real">Not adopted in {noResolution} of the {years.length} years shown. Several recent ones were adopted mainly to allow a <Term id="reconciliation">reconciliation</Term> bill.</div>
           </div>
           <div className="step">
             <div className="step-when">By October 1</div>
             <div className="step-title">12 <Term id="appropriations">appropriations</Term> bills become law</div>
             <p className="small">Each funds a group of agencies, from Defense to Agriculture. Together they make up <Term id="discretionary">discretionary</Term> spending.</p>
-            <div className="step-real">All 12 on time only {onTimeYears.length ? `in FY${onTimeYears.join(', FY')}` : 'never'} in this period{lastOnTime ? '' : ''}.</div>
+            <div className="step-real">{onTimeYears.length ? `All on time only in FY${onTimeYears.join(', FY')} in this period.` : `Not once in this period. The last time was FY${lastOnTime}.`}</div>
           </div>
           <div className="step">
             <div className="step-when">If not done</div>
             <div className="step-title">Stopgaps or a shutdown</div>
             <p className="small">A continuing resolution extends last year’s funding temporarily. With no CR, agencies without funding must shut down nonessential work.</p>
-            <div className="step-real">{totalCRs} continuing resolutions and {shutdowns.length} funding lapses since FY{years[0].fy}.</div>
+            <div className="step-real">{totalCRs} continuing resolutions and {lapseCount} funding lapses since FY{years[0].fy}.</div>
           </div>
         </div>
       </Section>
@@ -52,22 +55,23 @@ export default function ProcessPage() {
       <Section id="in-practice" title="In practice, year by year" sub="Each tile is a fiscal year. The large number counts the continuing resolutions Congress enacted for that year. Select a year for details.">
         <div className="fy-strip" role="list">
           {years.map((y) => (
+            <div role="listitem" key={y.fy} style={{ display: 'contents' }}>
             <button
               type="button"
-              key={y.fy}
-              role="listitem"
               className="fy-cell"
               data-sel={y.fy === sel}
               onClick={() => setSel(y.fy)}
-              aria-label={`FY${y.fy}: ${y.crs} continuing resolutions${y.shutdownDays ? `, ${y.shutdownDays}-day shutdown` : ''}${y.resolution ? ', budget resolution adopted' : ', no budget resolution'}`}
+              aria-pressed={y.fy === sel}
+              aria-label={`FY${y.fy}: ${y.crs} continuing resolutions${y.shutdownDays ? `, ${y.shutdownDays} days of funding lapses` : ''}${y.resolution ? ', budget resolution adopted' : ', no budget resolution'}`}
               style={{ textAlign: 'left', border: 0, font: 'inherit', color: 'inherit' }}
             >
               <span className="fy">FY{y.fy}</span>
               <span className="crs">{y.crs}</span>
               <span className="dots" aria-hidden="true">{Array.from({ length: Math.min(y.crs, 21) }, (_, i) => <i key={i} />)}</span>
-              {y.shutdownDays > 0 && <span className="flag flag-shutdown">Shutdown {y.shutdownDays}d</span>}
+              {y.shutdownDays > 0 && <span className="flag flag-shutdown">{y.lapses && y.lapses.length > 1 ? `${y.lapses.length} lapses, ${y.shutdownDays}d` : `Shutdown ${y.shutdownDays}d`}</span>}
               {y.onTime === 12 && <span className="flag flag-ok">All on time</span>}
             </button>
+            </div>
           ))}
         </div>
         <div className="card" aria-live="polite">
@@ -77,13 +81,18 @@ export default function ProcessPage() {
             <div className="stat"><div className="stat-label">Bills on time (of 12)</div><div className="stat-value">{s.onTime}</div></div>
             <div className="stat"><div className="stat-label">Budget resolution</div><div className="stat-value">{s.resolution ? 'Yes' : 'No'}</div></div>
           </div>
-          <p style={{ marginTop: 14 }}><strong>How it was finally funded:</strong> {s.final}{s.shutdownDays ? ` A funding lapse shut down affected agencies for ${s.shutdownDays} days.` : ''}</p>
+          <p style={{ marginTop: 14 }}><strong>How it was finally funded:</strong> {s.final}</p>
+          {s.lapses && s.lapses.length > 0 && (
+            <ul className="small" style={{ margin: '8px 0 0', paddingLeft: 18, color: 'var(--ink-2)' }}>
+              {s.lapses.map((l) => <li key={l.start}>{dateLabel(l.start)} to {dateLabel(l.end)}: {l.days} days, {l.scope.charAt(0).toLowerCase() + l.scope.slice(1)}</li>)}
+            </ul>
+          )}
           {s.notes && <p className="small muted" style={{ marginTop: 6 }}>{s.notes}</p>}
         </div>
         <div className="facts">
           <div className="fact"><div className="fact-big">{totalCRs}</div><p>continuing resolutions enacted for FY{years[0].fy}–FY{years.at(-1)!.fy}, an average of {(totalCRs / years.length).toFixed(1)} a year.</p></div>
-          {longest && <div className="fact"><div className="fact-big">{longest.shutdownDays} days</div><p>the longest shutdown in this period, during FY{longest.fy}.</p></div>}
-          <div className="fact"><div className="fact-big">{lastOnTime ? `FY${lastOnTime}` : 'Never'}</div><p>the last time Congress passed all 12 regular appropriations bills before the fiscal year began.</p></div>
+          {longest && <div className="fact"><div className="fact-big">{longest.days} days</div><p>the longest government-wide shutdown in this period, at the start of FY{longest.fy}.</p></div>}
+          <div className="fact"><div className="fact-big">{lastOnTime ? `FY${lastOnTime}` : 'Never'}</div><p>the last time Congress passed all its regular appropriations bills before the fiscal year began.{process.lastAllOnTime && !onTimeYears.length ? <> {process.lastAllOnTime.note} <a href={process.lastAllOnTime.source.url} target="_blank" rel="noreferrer">Source</a></> : null}</p></div>
         </div>
       </Section>
 

@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ROOT, writeJSON } from './lib/http.mjs';
 import { DATASETS } from './fetch-treasury.mjs';
-import { STATES } from './fetch-usaspending.mjs';
+import { MEDICARE_PROGRAMS, STATES } from './fetch-usaspending.mjs';
 import { buildCBO } from './build-cbo.mjs';
 import { buildSSA } from './build-ssa.mjs';
 
@@ -271,6 +271,16 @@ function geoRows(fy, layer) {
   for (const o of out.values()) o.total = TYPES.reduce((s, t) => s + o.byType[t], 0);
   return out;
 }
+const medMap = (fy, layer) => new Map((U.medicare?.[fy]?.[layer]?.data.results ?? []).map((r) => [r.shape_code, Number(r.aggregated_amount ?? 0)]));
+const medState = medMap(GEO_FY, 'state');
+const medStatePrior = PRIOR_FY ? medMap(PRIOR_FY, 'state') : new Map();
+const medDistrict = medMap(GEO_FY, 'district');
+const isMedicare = (code) => MEDICARE_PROGRAMS.includes(String(code));
+// Medicare is removed from HHS in agency lists (approximately: HHS awards minus Medicare awards).
+const agencyList = (res, medicare) => (res?.data.results ?? [])
+  .map((a) => ({ name: a.name, amount: /Health and Human Services/i.test(a.name) ? a.amount - medicare : a.amount }))
+  .filter((a) => a.amount > 0).sort((x, y) => y.amount - x.amount);
+const programList = (res) => (res?.data.results ?? []).filter((p) => !isMedicare(p.code)).map((p) => ({ code: p.code, name: p.name, amount: p.amount }));
 const st = geoRows(GEO_FY, 'state');
 const stPrior = PRIOR_FY ? geoRows(PRIOR_FY, 'state') : new Map();
 const states = [];
@@ -278,11 +288,17 @@ for (const [abbr, fips, name] of STATES) {
   const o = st.get(abbr);
   if (!o) { console.warn('[build] no USAspending row for', abbr); continue; }
   const det = U.stateDetail[abbr];
+  const medicare = medState.get(abbr) ?? 0;
+  // Medicare is reported as direct payments; take it out of that bucket and the total.
+  const byType = { ...o.byType, directPayments: o.byType.directPayments - medicare };
+  const total = o.total - medicare;
+  const prior = stPrior.get(abbr);
   states.push({
-    abbr, fips, name, population: o.population ?? 0, total: o.total, perCapita: o.population ? o.total / o.population : 0, byType: o.byType,
-    agencies: (det?.agencies.data.results ?? []).map((a) => ({ name: a.name, amount: a.amount })),
-    programs: (det?.programs.data.results ?? []).map((p) => ({ code: p.code, name: p.name, amount: p.amount })),
-    priorTotal: stPrior.get(abbr)?.total,
+    abbr, fips, name, population: o.population ?? 0, total, perCapita: o.population ? total / o.population : 0, byType,
+    medicare, totalWithMedicare: o.total,
+    agencies: agencyList(det?.agencies, medicare),
+    programs: programList(det?.programs),
+    priorTotal: prior ? prior.total - (medStatePrior.get(abbr) ?? 0) : undefined,
   });
 }
 const byFips = Object.fromEntries(STATES.map(([a, f]) => [f, a]));
@@ -294,16 +310,21 @@ for (const o of dist.values()) {
   if (!state || code.length !== 4) continue;
   const det = U.districtDetail[code];
   const n = code.slice(2);
+  const medicare = medDistrict.get(code) ?? 0;
+  const total = o.total - medicare;
   districts.push({
     code, state, label: n === '00' || n === '98' ? `${state} at-large` : `${state}-${n}`,
-    population: o.population ?? 0, total: o.total, perCapita: o.population ? o.total / o.population : 0, byType: o.byType,
-    programs: det?.programs?.data.results?.map((p) => ({ code: p.code, name: p.name, amount: p.amount })),
-    agencies: det?.agencies?.data.results?.map((a) => ({ name: a.name, amount: a.amount })),
+    population: o.population ?? 0, total, perCapita: o.population ? total / o.population : 0,
+    byType: { ...o.byType, directPayments: o.byType.directPayments - medicare },
+    medicare,
+    programs: det?.programs ? programList(det.programs) : undefined,
   });
 }
 const natPop = states.reduce((s, x) => s + (x.population || 0), 0);
 const natTotal = states.reduce((s, x) => s + x.total, 0);
-geo = { fy: GEO_FY, states, districts, national: { total: natTotal, population: natPop, perCapita: natTotal / natPop }, priorFY: PRIOR_FY };
+const natMedicare = states.reduce((s, x) => s + x.medicare, 0);
+geo = { fy: GEO_FY, states, districts, national: { total: natTotal, population: natPop, perCapita: natTotal / natPop, medicare: natMedicare }, priorFY: PRIOR_FY };
+console.log(`[build] geo FY${GEO_FY}: ${states.length} states, ${districts.length} districts, awards excl. Medicare ${(natTotal / 1e12).toFixed(3)}T, Medicare ${(natMedicare / 1e12).toFixed(3)}T`);
 const geoReq = U.states[GEO_FY].grants;
 addSource({ id: 'usaspending-geo', title: 'Spending by Geography (award obligations by state and congressional district)', publisher: 'USAspending.gov (U.S. Treasury)', url: 'https://www.usaspending.gov/search', retrieved: geoReq.retrieved, note: 'API: /api/v2/search/spending_by_geography/' });
 addSource({ id: 'usaspending-cat', title: 'Spending by Category (awarding agency, assistance listing)', publisher: 'USAspending.gov (U.S. Treasury)', url: 'https://www.usaspending.gov/search', retrieved: geoReq.retrieved, note: 'API: /api/v2/search/spending_by_category/' });

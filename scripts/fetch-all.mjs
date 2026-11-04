@@ -16,7 +16,8 @@ if (want('treasury')) {
   manifest.treasury = true;
 }
 if (want('usaspending')) {
-  const u = await fetchUSAspending({ fys: [2026, 2025] });
+  // FY2025 is the latest complete year: agencies are still reporting FY2026 awards.
+  const u = await fetchUSAspending({ fys: [2025, 2024] });
   await writeJSON('data/raw/usaspending.bundle.json', u);
   manifest.usaspending = true;
 }

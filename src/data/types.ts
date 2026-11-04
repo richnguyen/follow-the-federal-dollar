@@ -139,6 +139,9 @@ export interface StateRow {
   agencies: { name: string; amount: number }[];
   programs: { code: string; name: string; amount: number }[];
   priorTotal?: number;
+  /** Medicare awards recorded in this state (excluded from total; see State page). */
+  medicare: number;
+  totalWithMedicare: number;
 }
 
 export interface DistrictRow {
@@ -149,6 +152,7 @@ export interface DistrictRow {
   total: number;
   perCapita: number;
   byType: Record<AwardType, number>;
+  medicare: number;
   agencies?: { name: string; amount: number }[];
   programs?: { code: string; name: string; amount: number }[];
 }
@@ -157,7 +161,7 @@ export interface GeoData {
   fy: number;
   states: StateRow[];
   districts: DistrictRow[];
-  national: { total: number; population: number; perCapita: number };
+  national: { total: number; population: number; perCapita: number; medicare: number };
   priorFY: number | null;
 }
 
@@ -214,13 +218,16 @@ export interface ProcessYear {
   resolution: boolean; // a budget resolution was adopted by both chambers
   crs: number; // number of continuing resolutions enacted
   onTime: number; // regular appropriations acts (of 12) enacted by Oct 1
-  shutdownDays: number;
+  shutdownDays: number; // total days of funding lapses affecting the year
+  /** When a year had more than one lapse: each lapse, and whether it was government-wide. */
+  lapses?: { days: number; broad: boolean; scope: string; start: string; end: string }[];
   final: string; // how full-year funding was finally provided
   notes?: string;
 }
 
 export interface ProcessData {
   years: ProcessYear[];
+  lastAllOnTime?: { fy: number; note: string; source: { title: string; url: string } };
   current: { fy: number; status: string; asOf: string; source: { title: string; url: string } }[];
   sources: { title: string; url: string }[];
 }

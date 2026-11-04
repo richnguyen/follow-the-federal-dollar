@@ -49,8 +49,12 @@ export default function StatePage({ param }: { param: string | null }) {
       <PageHead
         eyebrow="Close to home"
         title="Federal money in your state"
-        lede={<>Federal grants, contracts, loans, and direct payments reach every state and congressional district. These figures come from <Term id="usaspending">USAspending.gov</Term>, the official database of federal awards, for FY{geo.fy}.</>}
+        lede={<>Federal grants, contracts, loans, and direct payments reach every state and congressional district. These figures come from <Term id="usaspending">USAspending.gov</Term>, the official database of federal awards, for FY{geo.fy}, the most recent complete year (agencies are still reporting FY{geo.fy + 1} awards).</>}
       />
+      <div className="callout">
+        <div className="callout-title">Why Medicare is left out of these figures</div>
+        <p>USAspending.gov records Medicare payments ({money(nat.medicare)} in FY{geo.fy}) where the insurance company or claims processor is based, not where patients live. That puts tens of billions of dollars in states like Minnesota, Kentucky, and North Dakota and far too little in others, so state and district figures here exclude Medicare. Social Security, Medicaid, veterans’ benefits, SNAP, and other programs are included.</p>
+      </div>
       <div className="toolbar">
         <div className="toolbar-item">
           <label htmlFor="st-sel">State or territory</label>
@@ -131,9 +135,9 @@ export default function StatePage({ param }: { param: string | null }) {
 
       <Section id="caveats" title="What these numbers include, and what they don’t">
         <div className="prose">
-          <p><strong>Included:</strong> federal grants, contracts, loans (at their estimated cost to taxpayers), direct payments, and other assistance recorded in USAspending.gov, assigned to the place where the money is used.</p>
-          <p><strong>Not fully included:</strong> some large benefit programs are reported only in aggregate or not by place, and federal employees’ salaries are not awards. Social Security and Medicare payments to individuals are partly reflected. So state totals add up to less than total federal spending ({money(nat.total)} in awards nationally vs. all outlays).</p>
-          <p><strong>Why some places rank high:</strong> states with large military bases, defense contractors, national labs, or many older residents, and small-population places like DC and Alaska, tend to receive more per person.</p>
+          <p><strong>Included:</strong> federal grants (such as Medicaid and highway funds), contracts, direct payments to people (such as Social Security and SNAP), loans at their estimated cost to taxpayers, and other assistance recorded in USAspending.gov, assigned to the place where the money is used. Together that is {money(nat.total)} in FY{geo.fy}.</p>
+          <p><strong>Left out:</strong> Medicare (explained above), federal employees’ pay, and interest on the debt, which are not recorded as awards by place. Amounts are award obligations, which are commitments to spend and can differ from what was paid out that year; some lines are negative where earlier awards were reduced.</p>
+          <p><strong>Why some places rank high:</strong> states with large military bases, defense contractors, or national labs, places with many older residents, and small-population places like DC tend to receive more per person. Per-person figures use the population counts USAspending.gov uses (2020 Census).</p>
         </div>
       </Section>
     </>

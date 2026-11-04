@@ -1,1 +1,588 @@
-{}
+{
+ "050": {
+  "category": "defense",
+  "plain": "Pay, training, housing, and health care for the armed forces, plus weapons, ships, aircraft, bases, and military operations. It also covers the Energy Department's nuclear weapons programs and cleanup of former weapons sites.",
+  "benefits": "Service members and their families get pay, housing, and health care. Defense companies, and the workers and towns that build equipment or host military bases, receive much of the rest.",
+  "examples": [
+   "Military pay and benefits",
+   "Operation and maintenance",
+   "Weapons procurement (ships, aircraft, vehicles)",
+   "Research and development",
+   "Defense Health Program (TRICARE)",
+   "Military construction and family housing",
+   "Nuclear weapons programs (Department of Energy)"
+  ],
+  "stats": [
+   {
+    "value": "1.27 million",
+    "label": "active-duty service members in the Army, Navy, Marine Corps, Air Force, and Space Force (2024)",
+    "source": {
+     "title": "Department of Defense (Military OneSource), 2024 Demographics Profile: Total DoD Military Community",
+     "url": "https://download.militaryonesource.mil/12038/MOS/Infographic/2024-demographics-total-dod-military-community.pdf"
+    }
+   },
+   {
+    "value": "754,403",
+    "label": "members of the Selected Reserve, including the National Guard (2024)",
+    "source": {
+     "title": "Department of Defense (Military OneSource), 2024 Demographics Profile: Total DoD Military Community",
+     "url": "https://download.militaryonesource.mil/12038/MOS/Infographic/2024-demographics-total-dod-military-community.pdf"
+    }
+   }
+  ]
+ },
+ "150": {
+  "category": "other",
+  "plain": "U.S. embassies and diplomats, foreign aid for health, food, development, and disaster relief, military aid to partner countries, and dues to international groups such as the United Nations. It also pays for passport and visa services. In 2025, most programs of the U.S. Agency for International Development moved to the State Department.",
+  "benefits": "Americans who travel or live abroad get passports and help from U.S. embassies and consulates. People in developing countries receive health, food, and disaster aid, and partner militaries receive U.S. equipment and training.",
+  "examples": [
+   "State Department diplomacy and embassies",
+   "Global health programs",
+   "Humanitarian and disaster assistance",
+   "Foreign Military Financing",
+   "Contributions to the United Nations",
+   "Passport and visa services"
+  ],
+  "stats": [
+   {
+    "value": "27.3 million",
+    "label": "U.S. passport books and cards issued, a record (FY2025)",
+    "source": {
+     "title": "U.S. Department of State, Bureau of Consular Affairs, Reports and Statistics",
+     "url": "https://travel.state.gov/content/travel/en/about-us/reports-and-statistics.html"
+    }
+   },
+   {
+    "value": "270+",
+    "label": "U.S. embassies, consulates, and other diplomatic missions around the world",
+    "source": {
+     "title": "U.S. Department of State, Careers: About",
+     "url": "https://careers.state.gov/about/"
+    }
+   }
+  ]
+ },
+ "250": {
+  "category": "other",
+  "plain": "NASA's space exploration, science missions, and aeronautics research, plus National Science Foundation grants for basic research in science and engineering. It also includes the Energy Department's Office of Science.",
+  "benefits": "Scientists, students, and universities in every state receive research grants. Companies that build NASA rockets, spacecraft, and instruments receive large contracts, and the public gets the discoveries and technology that come out of the research.",
+  "examples": [
+   "NASA exploration (Artemis program)",
+   "NASA science missions",
+   "NASA aeronautics research",
+   "National Science Foundation research grants",
+   "Department of Energy Office of Science"
+  ],
+  "stats": [
+   {
+    "value": "8,377",
+    "label": "new competitive research awards made by NSF, out of 43,532 proposals reviewed (FY2025)",
+    "source": {
+     "title": "National Science Foundation, Budget, Performance and Financial Reporting",
+     "url": "https://www.nsf.gov/about/budget"
+    }
+   },
+   {
+    "value": "1,621",
+    "label": "colleges, universities, and other institutions that received NSF funding (FY2025)",
+    "source": {
+     "title": "National Science Foundation, Budget, Performance and Financial Reporting",
+     "url": "https://www.nsf.gov/about/budget"
+    }
+   },
+   {
+    "value": "4",
+    "label": "astronauts who flew around the Moon on NASA's Artemis II, the first crewed lunar mission since 1972 (April 1 to 10, 2026)",
+    "source": {
+     "title": "NASA, Artemis II: NASA's First Crewed Lunar Flyby in 50 Years",
+     "url": "https://www.nasa.gov/mission/artemis-ii/"
+    }
+   }
+  ]
+ },
+ "270": {
+  "category": "other",
+  "plain": "Energy Department research on energy technologies, efficiency and weatherization grants, the Strategic Petroleum Reserve, and the Nuclear Regulatory Commission. It also includes the Tennessee Valley Authority, a federally owned power company that pays its own way through electricity sales.",
+  "benefits": "Households and businesses benefit from an emergency oil supply that can steady fuel markets during disruptions. Low-income families get help sealing and insulating their homes, and about 10 million people in seven Southeastern states get electricity from TVA through local utilities.",
+  "examples": [
+   "Strategic Petroleum Reserve",
+   "Weatherization Assistance Program",
+   "Energy research and development",
+   "Nuclear Regulatory Commission",
+   "Tennessee Valley Authority"
+  ],
+  "stats": [
+   {
+    "value": "282 million barrels",
+    "label": "of emergency crude oil in the Strategic Petroleum Reserve, about 40% of its 714-million-barrel capacity (October 16, 2026)",
+    "source": {
+     "title": "U.S. Department of Energy, SPR Quick Facts",
+     "url": "https://www.energy.gov/hgeo/opr/spr-quick-facts"
+    }
+   },
+   {
+    "value": "32,000",
+    "label": "low-income households' homes weatherized each year with Energy Department funds",
+    "source": {
+     "title": "U.S. Department of Energy, Weatherization Assistance Program",
+     "url": "https://www.energy.gov/cmei/scep/wap/weatherization-assistance-program"
+    }
+   }
+  ]
+ },
+ "300": {
+  "category": "other",
+  "plain": "Care of national parks, forests, and other public lands, wildfire fighting, clean air and water programs, flood control and water projects, and weather forecasting and ocean science.",
+  "benefits": "Visitors to national parks and forests, communities protected by levees and wildfire crews, and everyone who relies on National Weather Service forecasts. States and cities also get EPA grants for drinking water and sewer systems.",
+  "examples": [
+   "National Park Service",
+   "Forest Service and wildland firefighting",
+   "Environmental Protection Agency",
+   "Army Corps of Engineers civil works",
+   "NOAA and the National Weather Service",
+   "Bureau of Reclamation water projects"
+  ],
+  "stats": [
+   {
+    "value": "323 million",
+    "label": "recreation visits to national park sites (2025)",
+    "source": {
+     "title": "National Park Service, Public Interest in National Parks Remains Strong as Visits Top 323 Million in 2025 (March 13, 2026)",
+     "url": "https://www.nps.gov/orgs/1207/03-13-26-2025-visitation-statsitics.htm"
+    }
+   },
+   {
+    "value": "5.1 million acres",
+    "label": "burned in 77,850 wildfires nationwide (2025)",
+    "source": {
+     "title": "National Interagency Fire Center, Wildland Fire Summary and Statistics Annual Report 2025",
+     "url": "https://www.nifc.gov/sites/default/files/NICC/2-Predictive%20Services/Intelligence/Annual%20Reports/2025/annual_report_2025_0.pdf"
+    }
+   }
+  ]
+ },
+ "350": {
+  "category": "other",
+  "plain": "Farm price and income support payments, federal crop insurance, and loans to farmers, plus agricultural research and programs that protect crops and livestock from pests and disease. In 2026 it also included one-time Farmer Bridge Assistance payments to crop farmers.",
+  "benefits": "Farmers and ranchers receive payments and subsidized crop insurance, with most commodity payments going to growers of crops such as corn, soybeans, wheat, cotton, and rice. Consumers benefit from research and from efforts to keep plant and animal diseases out of the food supply.",
+  "examples": [
+   "Commodity Credit Corporation farm payments",
+   "Federal crop insurance",
+   "Farmer Bridge Assistance payments",
+   "Farm Service Agency loans",
+   "Agricultural Research Service",
+   "Animal and Plant Health Inspection Service"
+  ],
+  "stats": [
+   {
+    "value": "1.87 million",
+    "label": "farms in the United States (2025 estimate)",
+    "source": {
+     "title": "USDA National Agricultural Statistics Service, Farms and Land in Farms 2025 Summary (February 2026)",
+     "url": "https://www.nass.usda.gov/Publications/Todays_Reports/reports/fnlo0226.pdf"
+    }
+   },
+   {
+    "value": "48%",
+    "label": "of farms had less than $10,000 in sales, while 9.9% had $500,000 or more (2025)",
+    "source": {
+     "title": "USDA National Agricultural Statistics Service, Farms and Land in Farms 2025 Summary (February 2026)",
+     "url": "https://www.nass.usda.gov/Publications/Todays_Reports/reports/fnlo0226.pdf"
+    }
+   }
+  ]
+ },
+ "370": {
+  "category": "other",
+  "plain": "Federal Housing Administration mortgage insurance, deposit insurance that protects bank accounts, Small Business Administration loans, and the Postal Service. It also funds the Census Bureau and agencies that support business, such as the patent office and the National Institute of Standards and Technology. In FY2026 this category took in more than it spent, mainly because the FDIC's deposit insurance fund and FHA's mortgage insurance fund collected more in premiums and other income than they paid out.",
+  "benefits": "Home buyers with FHA-insured mortgages, many of them first-time buyers, and small business owners with SBA-backed loans. Anyone with money in an FDIC-insured bank is protected up to $250,000 per depositor, per bank, for each account ownership category.",
+  "examples": [
+   "FHA mortgage insurance",
+   "FDIC deposit insurance",
+   "SBA small business loans",
+   "Postal Service",
+   "Census Bureau",
+   "Patent and Trademark Office",
+   "National Institute of Standards and Technology"
+  ],
+  "stats": [
+   {
+    "value": "876,000+",
+    "label": "new FHA-insured home mortgages, about three-quarters of them for home purchases (FY2025)",
+    "source": {
+     "title": "HUD, FHA Annual Report to Congress on the Mutual Mortgage Insurance Fund, FY2025",
+     "url": "https://www.hud.gov/sites/dfiles/Housing/documents/2025FHAAnnualReportMMIFund.pdf"
+    }
+   },
+   {
+    "value": "85,000+",
+    "label": "small businesses that received SBA-backed 7(a) and 504 loans (FY2025)",
+    "source": {
+     "title": "U.S. Small Business Administration, 2025 Annual Report",
+     "url": "https://www.sba.gov/annual-report/"
+    }
+   }
+  ]
+ },
+ "400": {
+  "category": "other",
+  "plain": "Federal grants to states for highways, bridges, and public transit, the air traffic control system and airport grants, passenger rail including Amtrak, and much of the Coast Guard. It also funds highway, auto, rail, and pipeline safety programs.",
+  "benefits": "Everyone who drives, flies, ships goods, or rides transit uses these networks. Most highway and transit money goes to state and local governments, which hire construction firms to do the work.",
+  "examples": [
+   "Federal-aid highway program",
+   "Federal Transit Administration grants",
+   "Federal Aviation Administration and air traffic control",
+   "Airport Improvement Program",
+   "Amtrak and passenger rail grants",
+   "U.S. Coast Guard"
+  ],
+  "stats": [
+   {
+    "value": "44,360",
+    "label": "flights handled by FAA air traffic control on an average day (FY2024)",
+    "source": {
+     "title": "Federal Aviation Administration, Air Traffic By The Numbers",
+     "url": "https://www.faa.gov/air_traffic/by_the_numbers"
+    }
+   },
+   {
+    "value": "221,568 miles",
+    "label": "of roads in the National Highway System, which is 5% of public road miles but carries 55% of all travel (2024)",
+    "source": {
+     "title": "Federal Highway Administration, Our Nation's Highways 2026: Roads",
+     "url": "https://www.fhwa.dot.gov/policyinformation/pubs/our_nations_highways_2026/roads.cfm"
+    }
+   }
+  ]
+ },
+ "450": {
+  "category": "other",
+  "plain": "Disaster relief from FEMA, the National Flood Insurance Program, and grants that help communities pay for housing, roads, water systems, and economic development. It also includes USDA rural development programs.",
+  "benefits": "People and towns hit by hurricanes, floods, wildfires, and other disasters get help to recover and rebuild. States, cities, and counties use block grants for local projects, with most of the money required to benefit low- and moderate-income residents, and rural communities get loans and grants for water, housing, and businesses.",
+  "examples": [
+   "FEMA Disaster Relief Fund",
+   "National Flood Insurance Program",
+   "Community Development Block Grants",
+   "USDA Rural Development",
+   "Economic Development Administration",
+   "Appalachian Regional Commission"
+  ],
+  "stats": [
+   {
+    "value": "4.7 million",
+    "label": "flood insurance policyholders in the National Flood Insurance Program (2025)",
+    "source": {
+     "title": "FEMA, Flood Insurance",
+     "url": "https://www.fema.gov/flood-insurance"
+    }
+   },
+   {
+    "value": "1,200+",
+    "label": "state and local governments that receive yearly Community Development Block Grants",
+    "source": {
+     "title": "HUD, Community Development Block Grant 50th Anniversary Fact Sheet",
+     "url": "https://www.hud.gov/sites/dfiles/CPD/documents/CDBG-Toolkit-Comms-50th_Fact_Sheet.pdf"
+    }
+   }
+  ]
+ },
+ "500": {
+  "category": "other",
+  "plain": "Grants to schools that serve low-income students and students with disabilities, Pell Grants and federal student loans for college, job training and employment services, and social services such as Head Start and programs for older adults.",
+  "benefits": "Students from preschool through college, children with disabilities, and job seekers looking for new skills. Most money for K-12 schools flows through states to local school districts.",
+  "examples": [
+   "Pell Grants",
+   "Federal student loans",
+   "Title I grants to schools",
+   "Special education (IDEA) grants",
+   "Head Start",
+   "Workforce Innovation and Opportunity Act job training"
+  ],
+  "stats": [
+   {
+    "value": "7.2 million",
+    "label": "students received Pell Grants, averaging about $5,546 each (FY2025)",
+    "source": {
+     "title": "U.S. Department of Education, Federal Student Aid FY2025 Agency Financial Report: Management's Discussion and Analysis",
+     "url": "https://www.ed.gov/media/document/fy25-afr-federal-student-aid-113355.pdf"
+    }
+   },
+   {
+    "value": "8 million+",
+    "label": "children and youth with disabilities served under the Individuals with Disabilities Education Act (2024)",
+    "source": {
+     "title": "U.S. Department of Education, 2025 Annual Report to Congress on the Individuals with Disabilities Education Act",
+     "url": "https://sites.ed.gov/idea/2025-annual-report-to-congress-on-the-individuals-with-disabilities-education-act-idea/"
+    }
+   }
+  ]
+ },
+ "550": {
+  "category": "health",
+  "plain": "Medicaid and the Children's Health Insurance Program, tax credits that lower premiums for marketplace health plans, medical research at the National Institutes of Health, and public health agencies such as the CDC and FDA.",
+  "benefits": "About 1 in 5 Americans get coverage through Medicaid and CHIP, including low-income children and adults, pregnant women, people with disabilities, and many nursing-home residents. More than 23 million people signed up for marketplace plans for 2026, and premium tax credits lower the cost for most of them.",
+  "examples": [
+   "Medicaid",
+   "Children's Health Insurance Program (CHIP)",
+   "ACA marketplace premium tax credits",
+   "National Institutes of Health",
+   "Centers for Disease Control and Prevention",
+   "Food and Drug Administration"
+  ],
+  "stats": [
+   {
+    "value": "72.9 million",
+    "label": "people enrolled in Medicaid and CHIP, about half of them children (July 2026)",
+    "source": {
+     "title": "CMS, July 2026 Medicaid & CHIP Enrollment Data Highlights",
+     "url": "https://www.medicaid.gov/medicaid/program-information/medicaid-and-chip-enrollment-data/report-highlights"
+    }
+   },
+   {
+    "value": "23.1 million",
+    "label": "people who signed up for 2026 ACA marketplace health plans during open enrollment",
+    "source": {
+     "title": "CMS, Health Insurance Exchanges 2026 Open Enrollment Report",
+     "url": "https://www.cms.gov/files/document/health-insurance-exchanges-2026-open-enrollment-report.pdf"
+    }
+   }
+  ]
+ },
+ "570": {
+  "category": "medicare",
+  "plain": "Health insurance for people 65 and older and for younger people with long-term disabilities or kidney failure. It pays for hospital stays (Part A), doctor visits and outpatient care (Part B), and prescription drugs (Part D), including coverage through private Medicare Advantage plans.",
+  "benefits": "About 71 million people are enrolled. Roughly 9 in 10 are 65 or older, and the rest are younger people with disabilities. Hospitals, doctors, skilled nursing facilities, drug plans, and Medicare Advantage insurers receive the payments.",
+  "examples": [
+   "Medicare Part A (Hospital Insurance)",
+   "Medicare Part B (Medical Insurance)",
+   "Medicare Part D (prescription drugs)",
+   "Medicare Advantage (Part C)"
+  ],
+  "stats": [
+   {
+    "value": "70.7 million",
+    "label": "people enrolled in Medicare (July 2026)",
+    "source": {
+     "title": "CMS, Medicare Monthly Enrollment",
+     "url": "https://data.cms.gov/summary-statistics-on-beneficiary-enrollment/medicare-and-medicaid-reports/medicare-monthly-enrollment"
+    }
+   },
+   {
+    "value": "51.1%",
+    "label": "of enrollees are in Medicare Advantage or other health plans instead of Original Medicare (July 2026)",
+    "source": {
+     "title": "CMS, Medicare Monthly Enrollment",
+     "url": "https://data.cms.gov/summary-statistics-on-beneficiary-enrollment/medicare-and-medicaid-reports/medicare-monthly-enrollment"
+    }
+   },
+   {
+    "value": "81.1%",
+    "label": "of enrollees have Medicare Part D prescription drug coverage (July 2026)",
+    "source": {
+     "title": "CMS, Medicare Monthly Enrollment",
+     "url": "https://data.cms.gov/summary-statistics-on-beneficiary-enrollment/medicare-and-medicaid-reports/medicare-monthly-enrollment"
+    }
+   }
+  ]
+ },
+ "600": {
+  "category": "income",
+  "plain": "Help with food, income, and housing for people with low incomes, plus pensions for retired federal civilian and military workers and unemployment benefits. It includes SNAP, Supplemental Security Income, refundable tax credits such as the EITC and Child Tax Credit, school meals, WIC, and rental assistance.",
+  "benefits": "Low-income families, children, older adults, and people with disabilities receive most of this aid. About 1 in 8 Americans got SNAP food benefits in an average month of FY2025, and millions of retired federal and military workers receive pensions.",
+  "examples": [
+   "Supplemental Nutrition Assistance Program (SNAP)",
+   "Supplemental Security Income (SSI)",
+   "Earned Income Tax Credit",
+   "Child Tax Credit",
+   "Federal civilian and military retirement",
+   "Housing Choice Vouchers",
+   "School lunch and breakfast",
+   "Unemployment compensation"
+  ],
+  "stats": [
+   {
+    "value": "42.1 million",
+    "label": "people received SNAP food benefits in an average month (FY2025)",
+    "source": {
+     "title": "USDA Economic Research Service, SNAP Key Statistics and Research",
+     "url": "https://www.ers.usda.gov/topics/food-nutrition-assistance/supplemental-nutrition-assistance-program-snap/key-statistics-and-research"
+    }
+   },
+   {
+    "value": "7.3 million",
+    "label": "people received Supplemental Security Income, which averaged $736 a month (September 2026)",
+    "source": {
+     "title": "Social Security Administration, Monthly Statistical Snapshot, September 2026",
+     "url": "https://www.ssa.gov/policy/docs/quickfacts/stat_snapshot/"
+    }
+   },
+   {
+    "value": "24 million",
+    "label": "workers and families received the Earned Income Tax Credit, averaging about $2,894 (tax year 2024, as of December 2025)",
+    "source": {
+     "title": "IRS, Statistics for Tax Returns with the Earned Income Tax Credit (EITC)",
+     "url": "https://www.irs.gov/tax-professionals/eitc-central/statistics-for-tax-returns-with-the-earned-income-tax-credit-eitc"
+    }
+   }
+  ]
+ },
+ "650": {
+  "category": "ss",
+  "plain": "Monthly benefits for retired workers, people with disabilities who can no longer work, and the spouses, children, and survivors of workers who retired, became disabled, or died. Workers qualify by paying Social Security payroll taxes during their careers.",
+  "benefits": "About 71 million people, or about 1 in 5 Americans, receive benefits. Most are retired workers and their families. Others include about 8.4 million people receiving disability benefits and the surviving spouses and children of workers who died.",
+  "examples": [
+   "Retirement benefits (Old-Age and Survivors Insurance)",
+   "Social Security Disability Insurance",
+   "Survivors benefits",
+   "Benefits for spouses and children"
+  ],
+  "stats": [
+   {
+    "value": "71.3 million",
+    "label": "people receiving Social Security benefits (June 30, 2026)",
+    "source": {
+     "title": "SSA Office of the Chief Actuary, Fact Sheet on the OASDI Program, June 30, 2026",
+     "url": "https://www.ssa.gov/OACT/FACTS/"
+    }
+   },
+   {
+    "value": "$2,084",
+    "label": "average monthly benefit for a retired worker (June 2026)",
+    "source": {
+     "title": "SSA Office of the Chief Actuary, Fact Sheet on the OASDI Program, June 30, 2026",
+     "url": "https://www.ssa.gov/OACT/FACTS/"
+    }
+   },
+   {
+    "value": "88%",
+    "label": "of people 65 and older receive Social Security benefits (June 30, 2026 estimate)",
+    "source": {
+     "title": "SSA Office of the Chief Actuary, Fact Sheet on the OASDI Program, June 30, 2026",
+     "url": "https://www.ssa.gov/OACT/FACTS/"
+    }
+   }
+  ]
+ },
+ "700": {
+  "category": "veterans",
+  "plain": "Monthly disability compensation for veterans with injuries or illnesses connected to their service, pensions for low-income wartime veterans, VA hospitals and clinics, GI Bill education benefits, VA home loan guarantees, and national cemeteries.",
+  "benefits": "Veterans, their families, and survivors of service members and veterans. The number of veterans receiving disability compensation has grown in recent years, partly because the 2022 PACT Act expanded eligibility for veterans exposed to burn pits and other toxins.",
+  "examples": [
+   "Disability compensation",
+   "Veterans Pension",
+   "Veterans Health Administration",
+   "GI Bill education benefits",
+   "VA home loan guaranty",
+   "National cemeteries"
+  ],
+  "stats": [
+   {
+    "value": "6.3 million",
+    "label": "veterans receiving VA disability compensation (September 30, 2025)",
+    "source": {
+     "title": "VA, Veterans Benefits Administration Annual Benefits Report FY2025: Compensation",
+     "url": "https://www.benefits.va.gov/REPORTS/abr/docs/2025-compensation.pdf"
+    }
+   },
+   {
+    "value": "9.1 million",
+    "label": "veterans enrolled in VA health care, served at 170 medical centers and 1,193 outpatient sites",
+    "source": {
+     "title": "VA, Veterans Health Administration: About Us",
+     "url": "https://department.va.gov/vha/about-us/"
+    }
+   }
+  ]
+ },
+ "750": {
+  "category": "other",
+  "plain": "Federal law enforcement, including the FBI, DEA, U.S. Marshals, and ATF; border security and immigration enforcement by Customs and Border Protection and ICE; federal prisons; and the federal courts, prosecutors, and public defenders.",
+  "benefits": "These agencies investigate and prosecute federal crimes, guard borders and ports of entry, hold people in federal custody, and run the federal court system. State and local police departments and crime victim services also receive federal grants.",
+  "examples": [
+   "FBI",
+   "U.S. Customs and Border Protection",
+   "Immigration and Customs Enforcement",
+   "Federal Bureau of Prisons",
+   "Federal courts and public defenders",
+   "Justice Department grants to state and local law enforcement"
+  ],
+  "stats": [
+   {
+    "value": "153,182",
+    "label": "people in Federal Bureau of Prisons custody (March 18, 2026)",
+    "source": {
+     "title": "U.S. Department of Justice, Federal Prison System (BOP) FY 2027 Budget Request At A Glance",
+     "url": "https://www.justice.gov/jmd/media/1433131/dl?inline="
+    }
+   },
+   {
+    "value": "345,446",
+    "label": "new civil cases and criminal defendants in federal district courts (year ending March 31, 2025)",
+    "source": {
+     "title": "Administrative Office of the U.S. Courts, Federal Judicial Caseload Statistics 2025",
+     "url": "https://www.uscourts.gov/data-news/reports/statistical-reports/federal-judicial-caseload-statistics/federal-judicial-caseload-statistics-2025"
+    }
+   }
+  ]
+ },
+ "800": {
+  "category": "other",
+  "plain": "The basic costs of running the government: Congress, the White House, IRS and Treasury operations, federal buildings, and personnel management. It also includes payments to U.S. territories and to counties with federal land, which cannot be taxed locally.",
+  "benefits": "These offices serve the public indirectly. The IRS processes tax returns and sends refunds, and the Treasury makes federal payments and manages the government's cash and borrowing.",
+  "examples": [
+   "IRS tax processing and enforcement",
+   "Congress and the Government Accountability Office",
+   "Executive Office of the President",
+   "Treasury's Bureau of the Fiscal Service",
+   "General Services Administration",
+   "Payments in lieu of taxes to counties"
+  ],
+  "stats": [
+   {
+    "value": "271.4 million",
+    "label": "tax returns and other forms processed by the IRS, including about 162.8 million individual income tax returns (FY2025)",
+    "source": {
+     "title": "IRS, IRS Describes Agency's Activities in Fiscal Year 2025 Data Book",
+     "url": "https://www.irs.gov/newsroom/irs-describes-agencys-activities-in-fiscal-year-2025-data-book"
+    }
+   },
+   {
+    "value": "116.9 million",
+    "label": "tax refunds issued to individuals (FY2025)",
+    "source": {
+     "title": "IRS, IRS Describes Agency's Activities in Fiscal Year 2025 Data Book",
+     "url": "https://www.irs.gov/newsroom/irs-describes-agencys-activities-in-fiscal-year-2025-data-book"
+    }
+   }
+  ]
+ },
+ "900": {
+  "category": "interest",
+  "plain": "Interest the government pays to people and institutions that lend it money by buying Treasury securities, minus interest it earns on its own loans and cash. Interest paid to Social Security and other federal trust funds is left out because it is a payment from one part of the government to another.",
+  "benefits": "The interest goes to whoever holds Treasury debt. More than half is held by U.S. investors such as pension funds, banks, mutual funds, insurance companies, state and local governments, and individuals. The Federal Reserve holds about 1 in 7 dollars of this debt, and foreign investors and governments hold roughly 3 in 10.",
+  "examples": [
+   "Interest on Treasury bills, notes, and bonds",
+   "Interest on Treasury Inflation-Protected Securities (TIPS)",
+   "Interest on savings bonds",
+   "Interest the government earns (subtracted)"
+  ],
+  "stats": [
+   {
+    "value": "$9.3 trillion",
+    "label": "in Treasury securities held by foreign investors and governments, led by Japan and the United Kingdom (August 2026)",
+    "source": {
+     "title": "U.S. Treasury, Treasury International Capital Table 5: Major Foreign Holders of Treasury Securities",
+     "url": "https://ticdata.treasury.gov/resource-center/data-chart-center/tic/Documents/slt_table5.html"
+    }
+   },
+   {
+    "value": "$4.6 trillion",
+    "label": "in Treasury securities held by the Federal Reserve (October 28, 2026)",
+    "source": {
+     "title": "Federal Reserve, H.4.1 Factors Affecting Reserve Balances (October 29, 2026)",
+     "url": "https://www.federalreserve.gov/releases/h41/current/"
+    }
+   }
+  ]
+ }
+}

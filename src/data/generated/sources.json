@@ -50,6 +50,22 @@
   "retrieved": "2026-11-03T23:21:19.817Z"
  },
  {
+  "id": "usaspending-geo",
+  "title": "Spending by Geography (award obligations by state and congressional district)",
+  "publisher": "USAspending.gov (U.S. Treasury)",
+  "url": "https://www.usaspending.gov/search",
+  "retrieved": "2026-11-03T23:23:59.770Z",
+  "note": "API: /api/v2/search/spending_by_geography/"
+ },
+ {
+  "id": "usaspending-cat",
+  "title": "Spending by Category (awarding agency, assistance listing)",
+  "publisher": "USAspending.gov (U.S. Treasury)",
+  "url": "https://www.usaspending.gov/search",
+  "retrieved": "2026-11-03T23:23:59.770Z",
+  "note": "API: /api/v2/search/spending_by_category/"
+ },
+ {
   "id": "omb-hist",
   "title": "Historical Tables, Budget of the U.S. Government, Fiscal Year 2027 (Tables 1.1, 2.1, 7.1, 8.1, 10.1)",
   "publisher": "White House Office of Management and Budget",
