@@ -1,34 +1,50 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Citizen voting, backed by the claude.ai artifact's shared database (`db` capability).
 // Each voter keeps one ballot document at votes/<their id>; everyone who can open the page
-// reads all ballots to count them. On the standalone site (no window.claude) voting is hidden.
+// reads all ballots to count them. On the standalone site (no window.claude) voting with others
+// is unavailable; choices are still kept locally so the game can continue.
 
 export type Choice = 1 | -1;
-export interface Ballot { options: Record<string, Choice>; plan: string | null; updated: string }
+export interface Ballot {
+  options: Record<string, Choice>; // support / oppose on policy cards
+  plan: string | null; // favorite ready-made plan
+  issues: Record<string, string>; // single-choice questions, e.g. { goal: 'stabilize' }
+  updated: string;
+}
 export interface Tally { support: number; oppose: number }
 
 export interface VoteState {
-  available: boolean; // the page can reach the shared store
-  canVote: boolean | null; // null = not told; keep controls and let a refused write decide
+  available: boolean;
+  canVote: boolean | null;
   loading: boolean;
-  stale: boolean; // store not reached within 10 s
+  stale: boolean;
   error: string | null;
   mine: Ballot;
   voters: number;
   options: Record<string, Tally>;
   plans: Record<string, number>;
+  issues: Record<string, Record<string, number>>;
 }
 
-const EMPTY: Ballot = { options: {}, plan: null, updated: '' };
+const EMPTY: Ballot = { options: {}, plan: null, issues: {}, updated: '' };
+
+type Votes = VoteState & {
+  voteOption: (id: string, choice: Choice) => void;
+  votePlan: (plan: string) => void;
+  voteIssue: (id: string, value: string) => void;
+};
+
+const Ctx = createContext<Votes | null>(null);
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function useVotes() {
-  const [s, setS] = useState<VoteState>({ available: false, canVote: null, loading: true, stale: false, error: null, mine: EMPTY, voters: 0, options: {}, plans: {} });
+export function VotesProvider({ children }: { children: ReactNode }) {
+  const [s, setS] = useState<VoteState>({ available: false, canVote: null, loading: true, stale: false, error: null, mine: EMPTY, voters: 0, options: {}, plans: {}, issues: {} });
   const dbRef = useRef<any>(null);
   const uidRef = useRef<string | null>(null);
   const writing = useRef(false);
   const pending = useRef<Ballot | null>(null);
+  const mineRef = useRef<Ballot>(EMPTY);
 
   useEffect(() => {
     const c = (window as any).claude;
@@ -51,20 +67,28 @@ export function useVotes() {
         (snap: any) => {
           const options: Record<string, Tally> = {};
           const plans: Record<string, number> = {};
+          const issues: Record<string, Record<string, number>> = {};
           let mine: Ballot = EMPTY;
           for (const d of snap.docs) {
             const b = d.data() as Partial<Ballot> | undefined;
             if (!b) continue;
-            if (d.id === uid) mine = { options: { ...(b.options ?? {}) }, plan: b.plan ?? null, updated: b.updated ?? '' };
+            if (d.id === uid) mine = { options: { ...(b.options ?? {}) }, plan: b.plan ?? null, issues: { ...(b.issues ?? {}) }, updated: b.updated ?? '' };
             for (const [k, v] of Object.entries(b.options ?? {})) {
               const t = (options[k] ??= { support: 0, oppose: 0 });
               if (v === 1) t.support++;
               else if (v === -1) t.oppose++;
             }
             if (typeof b.plan === 'string') plans[b.plan] = (plans[b.plan] ?? 0) + 1;
+            for (const [k, v] of Object.entries(b.issues ?? {})) {
+              if (typeof v !== 'string') continue;
+              const t = (issues[k] ??= {});
+              t[v] = (t[v] ?? 0) + 1;
+            }
           }
           if (!snap.metadata?.fromCache && timer) { clearTimeout(timer); timer = null; }
-          setS((p) => ({ ...p, loading: false, stale: snap.metadata?.fromCache ? p.stale : false, voters: snap.size, options, plans, mine: pending.current ?? mine }));
+          const m = pending.current ?? mine;
+          mineRef.current = m;
+          setS((p) => ({ ...p, loading: false, stale: snap.metadata?.fromCache ? p.stale : false, voters: snap.size, options, plans, issues, mine: m }));
         },
         (e: any) => {
           if (timer) { clearTimeout(timer); timer = null; }
@@ -101,29 +125,38 @@ export function useVotes() {
   }, []);
 
   const write = useCallback((next: Ballot) => {
+    mineRef.current = next;
     pending.current = next;
     setS((p) => ({ ...p, mine: next }));
     void flush();
   }, [flush]);
 
   const voteOption = useCallback((id: string, choice: Choice) => {
-    setS((p) => {
-      const opts = { ...p.mine.options };
-      if (opts[id] === choice) delete opts[id];
-      else opts[id] = choice;
-      const next = { ...p.mine, options: opts, updated: new Date().toISOString() };
-      queueMicrotask(() => write(next));
-      return p;
-    });
+    const cur = mineRef.current;
+    const opts = { ...cur.options };
+    if (opts[id] === choice) delete opts[id];
+    else opts[id] = choice;
+    write({ ...cur, options: opts, updated: new Date().toISOString() });
   }, [write]);
 
   const votePlan = useCallback((plan: string) => {
-    setS((p) => {
-      const next = { ...p.mine, plan: p.mine.plan === plan ? null : plan, updated: new Date().toISOString() };
-      queueMicrotask(() => write(next));
-      return p;
-    });
+    const cur = mineRef.current;
+    write({ ...cur, plan: cur.plan === plan ? null : plan, updated: new Date().toISOString() });
   }, [write]);
 
-  return { ...s, voteOption, votePlan };
+  const voteIssue = useCallback((id: string, value: string) => {
+    const cur = mineRef.current;
+    const issues = { ...cur.issues };
+    if (issues[id] === value) delete issues[id];
+    else issues[id] = value;
+    write({ ...cur, issues, updated: new Date().toISOString() });
+  }, [write]);
+
+  return <Ctx.Provider value={{ ...s, voteOption, votePlan, voteIssue }}>{children}</Ctx.Provider>;
+}
+
+export function useVotes(): Votes {
+  const v = useContext(Ctx);
+  if (!v) throw new Error('VotesProvider missing');
+  return v;
 }

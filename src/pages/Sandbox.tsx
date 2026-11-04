@@ -9,6 +9,11 @@ import { economics, extraFor, type Goal, goalMet, MULT, mid, optimize, optionPat
 import { OPTIONS_DATA, PRESETS, withEcon } from '../lib/planData';
 import { LEVERS, type LeverId, type Levers, simulate, ZERO } from '../lib/sandbox';
 import { type Choice, useVotes } from '../lib/votes';
+import { DESK, isUnlocked } from '../game/levels';
+import { useJourney } from '../game/state';
+import { SamSays } from '../game/UncleSam';
+
+type Desk = (typeof DESK)[number];
 
 const LEVER_NAME: Record<LeverId, string> = {
   revenues: 'Taxes', socialSecurity: 'Social Security', medicare: 'Medicare', medicaid: 'Medicaid',
@@ -18,7 +23,7 @@ const dragLevel = (s: number): 1 | 2 | 3 => (s < 0.55 ? 1 : s < 1.15 ? 2 : 3);
 type Filter = 'all' | 'revenue' | 'spending';
 type Sort = 'impact' | 'gentle';
 
-export default function Sandbox() {
+export default function Sandbox({ desk }: { desk?: Desk }) {
   const startYear = budget.latestFY;
   const base = useMemo(() => cbo.baseline.filter((b) => b.fy > startYear), [startYear]);
   const start = cbo.baseline.find((b) => b.fy === startYear) ?? cbo.history.find((h) => h.fy === startYear)!;
@@ -27,7 +32,8 @@ export default function Sandbox() {
   const lastFY = years.at(-1)!;
   const HH = budget.households.value;
 
-  const [goal, setGoal] = useState<Goal>('stabilize');
+  const [goal, setGoal] = useState<Goal>(desk?.goal ?? 'stabilize');
+  const journey = useJourney();
   const [gradual, setGradual] = useState(true);
   const [protect, setProtect] = useState<Protect>({ retirees: true, lowIncome: true, investment: true });
   const [mix, setMix] = useState(true);
@@ -117,6 +123,17 @@ export default function Sandbox() {
     first.current = false;
   }, [ev.stars, ev.met, ev.gentle, ev.promiseKept, selected.length, revenueShare, efficiency, voted, goal]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // --- the journey: meeting a desk mission completes that stop (free play counts once it is unlocked) ---
+  const deskStop = desk ?? DESK.find((d) => d.goal === goal)!;
+  const deskDone = journey.done.includes(deskStop.id);
+  useEffect(() => {
+    if (!met || deskDone) return;
+    if (!desk && !isUnlocked(deskStop.id, journey.done, journey.settings.freeRoam)) return;
+    journey.completeLevel(deskStop.id);
+    if (desk) toasts.push('Mission complete. Uncle Sam thanks you.');
+  }, [met, deskDone, deskStop.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const nextDesk = desk ? DESK[DESK.findIndex((d) => d.id === desk.id) + 1] : undefined;
+
   // --- actions ---
   const toggle = (id: string) => { setLoaded(null); setCopied('idle'); setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])); };
   const loadPlan = (pid: string) => {
@@ -150,18 +167,29 @@ export default function Sandbox() {
   return (
     <>
       <PageHead
-        eyebrow="Balance the budget"
-        title="Can you fix the budget?"
-        lede={<>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
+        eyebrow={desk ? `Budget desk · ${desk.difficulty} mission` : 'Budget desk · free play'}
+        title={desk ? mission.title : 'Can you fix the budget?'}
+        lede={desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
       />
+      {desk && (
+        <SamSays mood={met ? 'proud' : goal === 'balance' ? 'worried' : 'thinking'}>
+          {met
+            ? <>You did it, partner. That plan meets the goal. {ev.stars < 3 ? 'See if you can earn all three stars, or ' : ''}{nextDesk ? <>head back to the journey for the next challenge.</> : <>that was the hardest mission there is.</>}</>
+            : goal === 'stabilize'
+              ? <>Here’s my budget desk. My debt is growing faster than the economy. {missionFacts(goal)} Help me pick changes that stop that by FY{lastFY}, without knocking the economy flat or putting the whole load on one group.</>
+              : goal === 'deficit3'
+                ? <>Let’s be bolder. {missionFacts(goal)} Economists often point to about 3% as a level the country can keep up for the long haul. Can you get me there by FY{lastFY}?</>
+                : <>The big one: no borrowing at all. {missionFacts(goal)} It hasn’t happened since FY2001. Fair warning, this takes a lot of cards.</>}
+        </SamSays>
+      )}
 
       <ol className="howto" aria-label="How to play">
-        <li><span className="howto-n">1</span><div><strong>Choose a mission.</strong> Each one is a real target lawmakers and economists talk about.</div></li>
+        <li><span className="howto-n">1</span><div>{desk ? <><strong>Know the goal.</strong> {mission.goalText}</> : <><strong>Choose a mission.</strong> Each one is a real target lawmakers and economists talk about.</>}</div></li>
         <li><span className="howto-n">2</span><div><strong>Play cards.</strong> Each card shows how much of the gap it closes and what it means per household.</div></li>
         <li><span className="howto-n">3</span><div><strong>Earn stars.</strong> Reach the goal, keep the economy steady, and balance taxes with cuts.</div></li>
       </ol>
 
-      <Section id="missions" title="Choose your mission">
+      {!desk && <Section id="missions" title="Choose your mission">
         <div className="missions" role="radiogroup" aria-label="Mission">
           {MISSIONS.map((m) => (
             <button key={m.id} type="button" role="radio" aria-checked={goal === m.id} className="mission" onClick={() => setGoal(m.id)}>
@@ -172,7 +200,7 @@ export default function Sandbox() {
             </button>
           ))}
         </div>
-      </Section>
+      </Section>}
 
       <div className="game" id="game">
         <aside className="scoreboard card" aria-label="Scoreboard">
@@ -214,6 +242,14 @@ export default function Sandbox() {
             {met && <button type="button" className="btn btn-primary" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
           </div>
           {copied === 'manual' && <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your plan, ready to copy" />}
+          {desk && met && (
+            <div className="sb-block sb-next">
+              <strong>Mission complete.</strong>
+              <div className="sb-actions">
+                <a className="btn btn-primary" href="#journey">{nextDesk ? 'Back to the journey' : 'See your certificate'}</a>
+              </div>
+            </div>
+          )}
         </aside>
 
         <section className="deck" aria-labelledby="deck-t">

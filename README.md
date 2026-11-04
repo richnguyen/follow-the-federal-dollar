@@ -8,6 +8,32 @@ timeline, a personal tax receipt, and a balance-the-budget sandbox.
 
 Every number comes from an official U.S. government source and every chart links to its dataset.
 
+## The game
+
+The site opens as a short civic game: **Help Uncle Sam balance the budget.** Uncle Sam is an
+everyday American with a very big household who spends more than he brings in. The player is his
+budget adviser.
+
+- **Seven chapter levels** (Easy → Hard): his paycheck (revenue and your taxes), his bills
+  (spending and the three buckets), back home (your state), spending more than he makes (the
+  structural gap), the credit card (debt and interest), who writes his budget (Congress, CRs and
+  the laws that moved deficits), and keeping his promises (Social Security).
+- Each level is a step wizard of 4–6 short steps. A segmented progress bar shows the steps, and
+  quick-check questions give explanatory feedback and reveal the answer after two tries. Each
+  level ends with one vote on a real policy choice: a CBO-priced option, or a question such as
+  the tax/cut mix or an automatic continuing resolution.
+- **Budget desk missions** (Normal / Hard / Expert) unlock as chapters are finished. They use the
+  policy-card planner with stars, badges and the economists' least-cost hint.
+- **Rewards:** level certificates, adviser titles, a road map with time remaining, and a
+  copyable "budget ballot" of the player's votes.
+- **Reading settings:** text size, light/dark theme, read-aloud of Uncle Sam's lines (the
+  browser's own speech), and free roam to unlock everything.
+- **The fine print:** every level links to its full field-guide chapter and to the original
+  government documents. The field guide (all earlier pages) is always in the sidebar.
+
+Progress is saved in the browser only. On the claude.ai artifact, votes are also counted across
+everyone who opens the page (one ballot per person).
+
 **Live site:** https://richnguyen.github.io/follow-the-federal-dollar/
 
 ## Run it
@@ -61,7 +87,10 @@ estimates and labels them as the President's budget.
 
 ## Code map
 
-- `src/pages/` one file per section; `src/components/charts.tsx` the D3-based charts;
+- `src/game/` the game layer: `levels.tsx` (level content; every figure and quiz answer is computed
+  from the data), `LevelPage.tsx` (step wizard), `Journey.tsx` (hub), `state.tsx` (progress and
+  reading settings), `UncleSam.tsx` (character and narration).
+- `src/pages/` one file per field-guide section; `src/components/charts.tsx` the D3-based charts;
   `src/components/USMap.tsx` the state map; `src/lib/` formatting, categories, tax and sandbox math.
 - `src/data/types.ts` is the contract between the pipeline and the app.
 - Chart colors are a validated categorical palette (colorblind-safe order, both themes).
