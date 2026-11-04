@@ -1,8 +1,9 @@
 import type { CBOYear } from '../data/types';
 
-// A simple, transparent 10-year model on top of CBO's baseline.
-// Each lever is a percentage change applied to that category in every projected year.
-// Net interest is re-estimated from the change in debt: interest_t scales with debt_{t-1}.
+// A simple, transparent multi-year model on top of the official projection.
+// Each lever is a percentage change applied to that category; specific policy options add dollar
+// amounts by year. Net interest is re-estimated from the change in debt: interest_t scales with
+// debt_{t-1}, using the interest rates implied by the projection.
 export const LEVERS = [
   { id: 'revenues', label: 'All tax revenue', color: 'var(--c-emph)', min: -20, max: 30 },
   { id: 'socialSecurity', label: 'Social Security', color: 'var(--c-ss)', min: -30, max: 15 },
@@ -15,30 +16,54 @@ export const LEVERS = [
 
 export type LeverId = (typeof LEVERS)[number]['id'];
 export type Levers = Record<LeverId, number>; // percent
+export type Extra = Partial<Record<LeverId, number[]>>; // $ of deficit reduction by projection year
 
 export const ZERO: Levers = { revenues: 0, socialSecurity: 0, medicare: 0, medicaid: 0, otherMandatory: 0, defense: 0, nondefense: 0 };
 
-export interface SimYear { fy: number; revenues: number; programs: number; interest: number; deficit: number; debt: number; gdp: number }
+export const SPENDING_LEVERS: LeverId[] = ['socialSecurity', 'medicare', 'medicaid', 'otherMandatory', 'defense', 'nondefense'];
 
-export function simulate(baseline: CBOYear[], startDebt: number, lv: Levers): SimYear[] {
+/** Years over which a change is phased in when phasing is on (1/3, 2/3, then full). */
+export const PHASE_YEARS = 3;
+export const ramp = (i: number, on: boolean) => (on ? Math.min(1, (i + 1) / PHASE_YEARS) : 1);
+
+export interface SimYear {
+  fy: number;
+  revenues: number;
+  programs: number;
+  interest: number;
+  deficit: number;
+  debt: number;
+  gdp: number;
+  /** Policy deficit reduction this year from levers and options, before interest savings. */
+  policy: number;
+  /** Of which from revenue increases. */
+  policyRevenue: number;
+}
+
+export function simulate(baseline: CBOYear[], startDebt: number, lv: Levers, opts: { phaseIn?: boolean; extra?: Extra } = {}): SimYear[] {
   const out: SimYear[] = [];
   let debt = startDebt;
   let baseDebtPrev = startDebt;
-  for (const b of baseline) {
-    const f = (k: LeverId) => 1 + lv[k] / 100;
-    const revenues = b.revenues * f('revenues');
+  baseline.forEach((b, i) => {
+    const r = ramp(i, !!opts.phaseIn);
+    const f = (k: LeverId) => 1 + (lv[k] / 100) * r;
+    const ex = (k: LeverId) => opts.extra?.[k]?.[i] ?? 0;
+    const revenues = b.revenues * f('revenues') + ex('revenues');
     const programs =
       b.socialSecurity * f('socialSecurity') + b.medicare * f('medicare') + b.medicaid * f('medicaid') +
-      b.otherMandatory * f('otherMandatory') + b.defense * f('defense') + b.nondefense * f('nondefense');
+      b.otherMandatory * f('otherMandatory') + b.defense * f('defense') + b.nondefense * f('nondefense') -
+      SPENDING_LEVERS.reduce((s, k) => s + ex(k), 0);
+    const baseProgramsTotal = b.socialSecurity + b.medicare + b.medicaid + b.otherMandatory + b.defense + b.nondefense;
     const interest = b.netInterest * (baseDebtPrev > 0 ? debt / baseDebtPrev : 1);
     const deficit = programs + interest - revenues;
-    // CBO's debt changes by slightly more or less than the deficit (student loans, cash balance);
-    // carry that "other means of financing" through unchanged so the baseline reproduces exactly.
+    // The projection's debt changes by slightly more or less than its deficit (student loans,
+    // cash balance); carry that "other means of financing" through so the baseline reproduces.
     const otherFinancing = b.debtPublic - baseDebtPrev - b.deficit;
     debt = debt + deficit + otherFinancing;
     baseDebtPrev = b.debtPublic;
-    out.push({ fy: b.fy, revenues, programs, interest, deficit, debt, gdp: b.gdp });
-  }
+    const policyRevenue = revenues - b.revenues;
+    out.push({ fy: b.fy, revenues, programs, interest, deficit, debt, gdp: b.gdp, policy: policyRevenue + (baseProgramsTotal - programs), policyRevenue });
+  });
   return out;
 }
 

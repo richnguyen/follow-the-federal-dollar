@@ -1,0 +1,376 @@
+{
+ "volume": {
+  "title": "Options for Reducing the Deficit, 2025 to 2034",
+  "published": "2024-12-12",
+  "url": "https://www.cbo.gov/publication/60557"
+ },
+ "options": [
+  {
+   "id": "income-tax-rates-1pt",
+   "name": "Raise every income tax rate by 1 percentage point",
+   "cboTitle": "Increase Individual Income Tax Rates on Ordinary Income",
+   "variant": "Raise all tax rates on ordinary income by 1 percentage point (the other alternative raises only the top four rates, by 2 points, and saves less)",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 1185,
+   "affects": "Nearly every household that owes federal income tax",
+   "summary": "Each income tax bracket rate would go up by 1 percentage point starting in 2025. Because it reaches every bracket, it raises a large amount of money.",
+   "obbbaNote": "CBO assumed the 2017 tax law's lower rates and brackets would expire after 2025. The One Big Beautiful Bill Act made them permanent, so this estimate is likely outdated.",
+   "source": {
+    "title": "CBO, Increase Individual Income Tax Rates on Ordinary Income (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60937"
+   }
+  },
+  {
+   "id": "corp-rate-1pt",
+   "name": "Raise the corporate income tax rate by 1 percentage point",
+   "cboTitle": "Increase the Corporate Income Tax Rate by 1 Percentage Point",
+   "variant": "",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 136,
+   "affects": "Corporate shareholders, and to a lesser degree workers",
+   "summary": "The corporate income tax rate would rise from 21 percent to 22 percent starting in 2025.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Increase the Corporate Income Tax Rate by 1 Percentage Point (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60956"
+   }
+  },
+  {
+   "id": "ss-tax-earnings-over-250k",
+   "name": "Apply the Social Security tax to earnings above $250,000",
+   "cboTitle": "Increase the Maximum Taxable Earnings That Are Subject to Social Security Payroll Taxes",
+   "variant": "Apply the 12.4 percent Social Security tax to earnings above $250,000 with no change in benefits (raising the cap to cover 90 percent of earnings instead saves $728 billion)",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 1427,
+   "affects": "Workers who earn more than $250,000 a year, and their employers",
+   "summary": "Today, earnings above a yearly cap ($176,100 in 2025) are not subject to the Social Security tax. This option would also tax earnings above $250,000. The untaxed gap would shrink as the cap grows with wages and close around 2036.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Increase the Maximum Taxable Earnings That Are Subject to Social Security Payroll Taxes (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60955"
+   }
+  },
+  {
+   "id": "carbon-tax-25",
+   "name": "Tax greenhouse gas emissions at $25 per ton",
+   "cboTitle": "Impose a Tax on Emissions of Greenhouse Gases",
+   "variant": "$25 per metric ton, rising 5 percent a year faster than inflation",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 919,
+   "affects": "Energy producers and users; households would pay through higher prices for energy and goods that take a lot of energy to make",
+   "summary": "A tax of $25 per metric ton would apply to U.S. energy-related carbon dioxide emissions and to some other greenhouse gases from large factories, starting in 2025. It would raise money and reduce emissions.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Impose a Tax on Emissions of Greenhouse Gases (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60962"
+   }
+  },
+  {
+   "id": "vat-5pct",
+   "name": "Create a 5 percent value-added tax",
+   "cboTitle": "Impose a 5 Percent Value-Added Tax",
+   "variant": "Broad base (a narrower base that also exempts food eaten at home, health care, new housing, and college saves $2,180 billion)",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 3380,
+   "affects": "Consumers, through higher prices for most goods and services",
+   "summary": "A 5 percent tax would be collected at each stage of production and sale, much like a national sales tax, starting in 2026. Most goods and services would be taxed.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Impose a 5 Percent Value-Added Tax (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60961"
+   }
+  },
+  {
+   "id": "cap-health-exclusion",
+   "name": "Cap the tax break for employer health insurance",
+   "cboTitle": "Reduce Tax Subsidies for Employment-Based Health Benefits",
+   "variant": "Cap the exclusion at the 50th percentile of premiums for both income and payroll taxes, starting in 2028",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 965,
+   "affects": "Workers in costly employer health plans",
+   "summary": "Health insurance paid through an employer is not taxed today. Starting in 2028, premiums and health account contributions above about $10,000 a year for single coverage or $24,400 for family coverage would be taxed as wages.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Reduce Tax Subsidies for Employment-Based Health Benefits (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60953"
+   }
+  },
+  {
+   "id": "limit-itemized-15pct",
+   "name": "Limit the tax savings from itemized deductions to 15 percent",
+   "cboTitle": "Eliminate or Limit Itemized Deductions",
+   "variant": "Limit the tax benefit of itemized deductions to 15 percent of their total value (eliminating the state and local tax deduction instead saves $1,621 billion)",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 1910,
+   "affects": "Households that itemize, who are mostly higher-income",
+   "summary": "Itemized deductions, such as those for mortgage interest, state and local taxes, and charitable gifts, would cut a filer's tax by no more than 15 cents per dollar deducted. Today, people in higher tax brackets save more per dollar.",
+   "obbbaNote": "The One Big Beautiful Bill Act made the 2017 law's deduction rules permanent, raised the state and local tax cap to $40,000 through 2029, and added a new limit for top-bracket filers, so this estimate is likely outdated.",
+   "source": {
+    "title": "CBO, Eliminate or Limit Itemized Deductions (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60939"
+   }
+  },
+  {
+   "id": "gas-tax-15c",
+   "name": "Raise the federal gas and diesel tax by 15 cents a gallon",
+   "cboTitle": "Increase Excise Taxes on Motor Fuels and Index Them for Inflation",
+   "variant": "Raise gasoline and diesel taxes by 15 cents per gallon and index them for inflation",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 212,
+   "affects": "Drivers, and businesses that ship goods by truck",
+   "summary": "Federal taxes on gasoline (18.4 cents a gallon) and diesel (24.4 cents) have not changed since 1993. This option would raise both by 15 cents starting in 2025 and then adjust them for inflation each year.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Increase Excise Taxes on Motor Fuels and Index Them for Inflation (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60963"
+   }
+  },
+  {
+   "id": "alcohol-tax",
+   "name": "Raise taxes on beer, wine, and liquor",
+   "cboTitle": "Increase Taxes on Alcoholic Beverages",
+   "variant": "Tax all alcohol at $16 per proof gallon, end lower rates for small producers, and index for inflation (without indexing: $88 billion)",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 102,
+   "affects": "People who buy alcoholic drinks",
+   "summary": "Beer, wine, and spirits would all be taxed at the same rate per unit of alcohol, about 25 cents per ounce, starting in 2025. The rate would then rise with inflation.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Increase Taxes on Alcoholic Beverages (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60965"
+   }
+  },
+  {
+   "id": "carried-interest",
+   "name": "Tax fund managers' carried interest as ordinary income",
+   "cboTitle": "Tax Carried Interest as Ordinary Income",
+   "variant": "",
+   "side": "revenue",
+   "lever": "revenues",
+   "savings10": 13,
+   "affects": "Investment fund managers, such as private equity and hedge fund partners",
+   "summary": "Fund managers often receive a share of profits, called carried interest, that is taxed at lower capital gains rates. This option would tax it like wages, including self-employment tax, starting in 2025.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Tax Carried Interest as Ordinary Income (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60946"
+   }
+  },
+  {
+   "id": "medicare-advantage-benchmarks",
+   "name": "Lower Medicare Advantage payment benchmarks",
+   "cboTitle": "Reduce Medicare Advantage Benchmarks",
+   "variant": "Cut benchmarks by 10 percent in every county starting in 2027",
+   "side": "spending",
+   "lever": "medicare",
+   "savings10": 489,
+   "affects": "Private Medicare Advantage plans and, through them, their enrollees",
+   "summary": "Medicare pays private Medicare Advantage plans based on county benchmarks tied to spending in traditional Medicare. This option would lower every benchmark by 10 percent starting in 2027.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Reduce Medicare Advantage Benchmarks (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60900"
+   }
+  },
+  {
+   "id": "site-neutral-hospital-outpatient",
+   "name": "Pay the same Medicare rate at hospital clinics and doctors' offices",
+   "cboTitle": "Reduce Payments for Hospital Outpatient Departments",
+   "variant": "Pay site-neutral rates for most services at both on-campus and off-campus hospital outpatient departments",
+   "side": "spending",
+   "lever": "medicare",
+   "savings10": 157,
+   "affects": "Hospitals that run outpatient departments",
+   "summary": "Medicare often pays more for the same service at a hospital outpatient department than at a doctor's office. Starting in 2026, Medicare would pay the lower office rate for most of those services.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Reduce Payments for Hospital Outpatient Departments (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60908"
+   }
+  },
+  {
+   "id": "part-b-premium-35pct",
+   "name": "Raise Medicare Part B premiums",
+   "cboTitle": "Increase the Premiums Paid for Medicare Part B",
+   "variant": "Raise the basic premium from about 25 percent to 35 percent of Part B costs, phased in from 2026 to 2030",
+   "side": "spending",
+   "lever": "medicare",
+   "savings10": 510,
+   "affects": "People enrolled in Medicare Part B",
+   "summary": "The basic Part B premium ($185 a month in 2025) covers about a quarter of the program's costs. It would rise by 2 percentage points of costs each year until it covered 35 percent in 2030.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Increase the Premiums Paid for Medicare Part B (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60899"
+   }
+  },
+  {
+   "id": "medicaid-per-enrollee-caps",
+   "name": "Cap federal Medicaid spending per enrollee",
+   "cboTitle": "Establish Caps on Federal Spending for Medicaid",
+   "variant": "Per-enrollee caps that grow with inflation (CPI-U), starting in October 2027",
+   "side": "spending",
+   "lever": "medicaid",
+   "savings10": 893,
+   "affects": "States, Medicaid enrollees, and health care providers",
+   "summary": "The federal government now pays a set share of each state's Medicaid costs, with no fixed dollar limit. This option would cap federal payments per enrollee and let the cap grow only with inflation.",
+   "obbbaNote": "The One Big Beautiful Bill Act cut projected federal Medicaid spending through other changes, such as work requirements and limits on provider taxes, so savings from caps would likely be smaller now.",
+   "source": {
+    "title": "CBO, Establish Caps on Federal Spending for Medicaid (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60896"
+   }
+  },
+  {
+   "id": "raise-full-retirement-age-70",
+   "name": "Raise Social Security's full retirement age to 70",
+   "cboTitle": "Raise the Full Retirement Age for Social Security",
+   "variant": "Raise it by 2 months per birth year, reaching 70 for people born in 1981 or later",
+   "side": "spending",
+   "lever": "socialSecurity",
+   "savings10": 95,
+   "affects": "Future retirees born in 1964 or later",
+   "summary": "The full retirement age is 67 for people born in 1960 or later. Starting in 2026 it would rise slowly to 70. People could still claim at 62, with a larger reduction. Savings are small in the first decade because the change phases in slowly.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Raise the Full Retirement Age for Social Security (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60913"
+   }
+  },
+  {
+   "id": "chained-cpi",
+   "name": "Use a slower-growing inflation measure for benefit increases",
+   "cboTitle": "Use an Alternative Measure of Inflation to Index Social Security and Other Mandatory Programs",
+   "variant": "Use the chained CPI-U for cost-of-living adjustments starting in 2026",
+   "side": "spending",
+   "lever": "socialSecurity",
+   "savings10": 278,
+   "affects": "Social Security recipients, veterans, and others whose benefits rise with inflation",
+   "summary": "Yearly cost-of-living increases would use the chained CPI, which accounts for shoppers switching between products and usually rises a little more slowly. The small yearly difference adds up over time.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Use an Alternative Measure of Inflation to Index Social Security and Other Mandatory Programs (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60919"
+   }
+  },
+  {
+   "id": "ss-benefits-high-earners",
+   "name": "Trim Social Security benefits for future high earners",
+   "cboTitle": "Reduce Social Security Benefits for High Earners",
+   "variant": "Add a new bend point at the 70th percentile of earners and lower the benefit factors above it over nine years (alternatives using the 50th percentile save $117 billion to $197 billion)",
+   "side": "spending",
+   "lever": "socialSecurity",
+   "savings10": 48,
+   "affects": "Future beneficiaries with high lifetime earnings",
+   "summary": "Starting in 2026, new beneficiaries in the top 30 percent of lifetime earnings would get lower benefits than currently scheduled. People already eligible for benefits would not be affected.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Reduce Social Security Benefits for High Earners (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60911"
+   }
+  },
+  {
+   "id": "cut-defense-budget",
+   "name": "Cut the Defense Department's budget",
+   "cboTitle": "Reduce the Department of Defense's Annual Budget",
+   "variant": "Cut planned DoD funding by about $1.1 trillion over 10 years (about 11 percent), starting in October 2025",
+   "side": "spending",
+   "lever": "defense",
+   "savings10": 959,
+   "affects": "Military personnel, defense contractors, and communities near bases",
+   "summary": "The Pentagon's budget would be reduced starting in fiscal year 2026. CBO estimates the military could have about 17 percent fewer active-duty troops by 2034.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Reduce the Department of Defense's Annual Budget (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60920"
+   }
+  },
+  {
+   "id": "cut-transport-education-grants",
+   "name": "Cut federal transportation and education grants by a third",
+   "cboTitle": "Reduce Selected Nondefense Discretionary Spending",
+   "variant": "Cut federal grants to states and localities for transportation and education by one-third, starting in October 2025",
+   "side": "spending",
+   "lever": "nondefense",
+   "savings10": 339,
+   "affects": "States and localities, and the roads, transit systems, and schools they fund",
+   "summary": "Federal grants for highways, transit, and education would be cut by one-third. The education cuts would fall mostly on aid for schools serving low-income children and children with disabilities.",
+   "obbbaNote": "",
+   "source": {
+    "title": "CBO, Reduce Selected Nondefense Discretionary Spending (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60934"
+   }
+  },
+  {
+   "id": "crop-insurance-subsidies",
+   "name": "Reduce crop insurance subsidies",
+   "cboTitle": "Reduce Subsidies in the Crop Insurance Program",
+   "variant": "Lower the federal share of premiums to 40 percent on average and limit payments to insurance companies",
+   "side": "spending",
+   "lever": "otherMandatory",
+   "savings10": 47,
+   "affects": "Farmers who buy crop insurance, and the private companies that sell it",
+   "summary": "The government pays about 60 percent of farmers' crop insurance premiums on average. This option would cut that to 40 percent and limit what insurers are paid for their costs and returns.",
+   "obbbaNote": "The One Big Beautiful Bill Act raised crop insurance premium subsidies and some payments to insurers, so this estimate is likely outdated.",
+   "source": {
+    "title": "CBO, Reduce Subsidies in the Crop Insurance Program (Dec 2024)",
+    "url": "https://www.cbo.gov/budget-options/60893"
+   }
+  }
+ ],
+ "principles": [
+  {
+   "id": "multipliers",
+   "claim": "CBO found that a dollar of federal spending or tax cuts moves short-run output by different amounts depending on the policy, with the largest effects from federal purchases and the smallest from tax cuts for higher-income people and corporations.",
+   "detail": "CBO's low-to-high ranges of output multipliers for major provisions of the 2009 Recovery Act: federal purchases of goods and services 0.5 to 2.5; transfers to state and local governments for infrastructure 0.4 to 2.2; transfers to state and local governments for other purposes 0.4 to 1.8; two-year tax cuts for lower- and middle-income people 0.3 to 1.5; transfer payments to individuals 0.4 to 2.1 (from CBO’s 2015 working paper on fiscal multipliers); one-time payments to retirees 0.2 to 1.0; first-time homebuyer credit 0.2 to 0.8; one-year tax cut for higher-income people 0.1 to 0.6; corporate tax provisions mainly affecting cash flow 0 to 0.4. These ranges describe a weak economy. CBO notes multipliers are larger when unemployment is high and the Federal Reserve cannot fully offset fiscal changes, and smaller otherwise.",
+   "source": {
+    "title": "CBO, Estimated Impact of the American Recovery and Reinvestment Act on Employment and Economic Output in 2014 (Feb 2015), Table 3",
+    "url": "https://www.cbo.gov/publication/49958"
+   }
+  },
+  {
+   "id": "debt-growth",
+   "claim": "CBO finds that higher federal debt crowds out private investment, which lowers output and income over time, and smaller deficits have the opposite effect.",
+   "detail": "In CBO's long-term projections, each additional dollar of deficits reduces private investment by 33 cents (earlier CBO research put the likely range at 15 to 50 cents). Less private investment means less capital and lower output. Rising debt lowers national income (GNP) by even more than GDP, because more income goes to foreign lenders. If borrowing crowded out twice as much investment, CBO projects debt would exceed 250 percent of GDP in 2055; with no crowding out, it would be about 125 percent.",
+   "source": {
+    "title": "CBO, The Long-Term Budget Outlook Under Alternative Scenarios for the Economy and the Budget (May 2025)",
+    "url": "https://www.cbo.gov/publication/61332"
+   }
+  },
+  {
+   "id": "gradual",
+   "claim": "The IMF advises that fiscal adjustment be gradual, sustained, and part of a credible medium-term plan, so it does less harm to growth when private demand is weak.",
+   "detail": "The IMF's October 2024 Fiscal Monitor estimates that a cumulative adjustment of 3.0 to 4.5 percent of GDP over the medium term (about six years) is needed, on average, to stabilize or reduce debt with high probability. That works out to roughly 0.5 to 0.75 percent of GDP per year. The report says the pace should balance fiscal risks against the strength of private demand, and that a mix of spending and revenue measures can soften the effects on output and inequality. Countries with very high debt or at high risk of debt distress may need faster, front-loaded action, and waiting makes the needed adjustment larger.",
+   "source": {
+    "title": "IMF, Fiscal Monitor: Putting a Lid on Public Debt (October 2024)",
+    "url": "https://www.imf.org/-/media/files/publications/fiscal-monitor/2024/october/english/text.pdf"
+   }
+  },
+  {
+   "id": "debt-stabilize",
+   "claim": "A common fiscal goal is to keep debt stable or falling as a share of GDP, and that goal can be met while still running modest deficits.",
+   "detail": "CBO calculated that keeping federal debt held by the public at 100 percent of GDP through 2055 would require primary deficits (deficits excluding interest) to average 0.4 percent of GDP from 2025 to 2055. That is 1.6 percentage points of GDP smaller than in CBO's baseline, where debt rises to 156 percent of GDP in 2055. The IMF's Fiscal Monitor also frames its advice around stabilizing or reducing debt ratios.",
+   "source": {
+    "title": "CBO, The Long-Term Budget Outlook Under Alternative Scenarios for the Economy and the Budget (May 2025)",
+    "url": "https://www.cbo.gov/publication/61332"
+   }
+  },
+  {
+   "id": "composition",
+   "claim": "IMF research finds that the mix of a deficit-reduction plan matters: tax increases have often slowed short-run growth more than spending cuts, large plans usually need both, and protecting public investment supports long-run growth.",
+   "detail": "An IMF study of advanced economies (Guajardo, Leigh, and Pescatori, 2011) found that a tax-based consolidation of 1 percent of GDP lowered output by about 1.3 percent after two years, while a spending-based one lowered it by about 0.3 percent, an effect that was not statistically significant. The IMF's 2023 review of past consolidations finds that large consolidations generally require both revenue and spending measures, and that the most effective mix remains unclear. It also finds that spending-based consolidations widened income inequality more often, and that consolidations that protect public investment and targeted social spending seem to yield lasting growth gains.",
+   "source": {
+    "title": "IMF Working Paper 23/63, Fiscal Consolidation: Taking Stock of Success Factors, Impact, and Design (2023)",
+    "url": "https://www.imf.org/-/media/files/publications/wp/2023/english/wpiea2023063-print-pdf.pdf"
+   }
+  }
+ ]
+}

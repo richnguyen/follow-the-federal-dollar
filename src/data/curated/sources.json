@@ -48,5 +48,42 @@
   "title": "Learning Resources, Inc. v. Trump, No. 24-1287 (February 20, 2026)",
   "publisher": "Supreme Court of the United States",
   "url": "https://www.supremecourt.gov/opinions/25pdf/24-1287_4gcj.pdf"
+ },
+ {
+  "id": "cbo-multiplier-wp",
+  "title": "The Fiscal Multiplier and Economic Policy Analysis in the United States (Working Paper 2015-02)",
+  "publisher": "Congressional Budget Office",
+  "url": "https://www.cbo.gov/sites/default/files/114th-congress-2015-2016/workingpaper/49925-FiscalMultiplier_1.pdf"
+ },
+ {
+  "id": "cbo-options-2024",
+  "title": "Options for Reducing the Deficit, 2025 to 2034",
+  "publisher": "Congressional Budget Office",
+  "url": "https://www.cbo.gov/publication/60557",
+  "note": "Ten-year savings for each option in the Balance the budget tool."
+ },
+ {
+  "id": "principle-multipliers",
+  "title": "CBO, Estimated Impact of the American Recovery and Reinvestment Act on Employment and Economic Output in 2014 (Feb 2015), Table 3",
+  "publisher": "Congressional Budget Office",
+  "url": "https://www.cbo.gov/publication/49958"
+ },
+ {
+  "id": "principle-debt-growth",
+  "title": "CBO, The Long-Term Budget Outlook Under Alternative Scenarios for the Economy and the Budget (May 2025)",
+  "publisher": "Congressional Budget Office",
+  "url": "https://www.cbo.gov/publication/61332"
+ },
+ {
+  "id": "principle-gradual",
+  "title": "IMF, Fiscal Monitor: Putting a Lid on Public Debt (October 2024)",
+  "publisher": "International Monetary Fund",
+  "url": "https://www.imf.org/-/media/files/publications/fiscal-monitor/2024/october/english/text.pdf"
+ },
+ {
+  "id": "principle-composition",
+  "title": "IMF Working Paper 23/63, Fiscal Consolidation: Taking Stock of Success Factors, Impact, and Design (2023)",
+  "publisher": "International Monetary Fund",
+  "url": "https://www.imf.org/-/media/files/publications/wp/2023/english/wpiea2023063-print-pdf.pdf"
  }
 ]
