@@ -8,6 +8,8 @@ timeline, a personal tax receipt, and a balance-the-budget sandbox.
 
 Every number comes from an official U.S. government source and every chart links to its dataset.
 
+**Live site:** https://richnguyen.github.io/follow-the-federal-dollar/
+
 ## Run it
 
 ```bash
@@ -19,6 +21,17 @@ npm run build:artifact # one self-contained HTML page in dist-artifact/ (data ba
 
 The standalone build is static and can be hosted anywhere (GitHub Pages, Netlify, Vercel, S3).
 Routes are hash-based (`#spending`, `#state-ca`), so no server configuration is needed.
+
+### Deployment
+
+`.github/workflows/deploy-pages.yml` builds the site and publishes it to GitHub Pages on every
+push to `main` (or on demand from the Actions tab). In the repository's **Settings → Pages**,
+**Source** must be set to **GitHub Actions**. To update the data, run `npm run data` locally,
+commit `src/data/generated/`, and push.
+
+Voting on the Balance the Budget page needs a shared database, so it appears only on the
+claude.ai version of the site; on GitHub Pages the game works without it. Badges and stars are
+saved in each visitor's browser.
 
 ## Refresh the data
 
