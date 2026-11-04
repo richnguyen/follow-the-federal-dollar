@@ -1,34 +1,60 @@
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { load, save } from '../lib/storage';
 
-// The player's journey: which levels are done, quiz attempts, their choices on each level's
-// issue, and reading settings. Kept in this browser only (a per-viewer convenience).
+// The player's journey: which levels are done, stars earned, quiz attempts, their choices on each
+// level's issue, and reading settings. Kept in this browser only (a per-viewer convenience).
 
 export type TextSize = 'normal' | 'large' | 'larger';
 export type ThemeChoice = 'system' | 'light' | 'dark';
 
 export interface JourneyState {
-  done: string[]; // completed level ids (level-1 … level-7, desk-normal …)
+  v: 2;
+  done: string[]; // completed level ids (level-1 … level-10)
+  stars: Record<string, number>; // best stars per level (0–3)
   steps: Record<string, number[]>; // completed step indexes per level
   quiz: Record<string, { tries: number; correct: boolean }>; // by quiz id
   choices: Record<string, string>; // local record of the player's vote on each issue
   started: string | null;
-  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean };
+  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string };
 }
 
 const DEFAULT: JourneyState = {
+  v: 2,
   done: [],
+  stars: {},
   steps: {},
   quiz: {},
   choices: {},
   started: null,
-  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true },
+  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto' },
 };
+
+// Version 1 numbered seven chapter levels and three separate budget-desk missions. Version 2 folds
+// the missions into one ten-level path; this maps saved progress onto the new numbering.
+const V1_TO_V2: Record<string, string> = {
+  'level-1': 'level-1', 'level-2': 'level-2', 'level-3': 'level-3', 'level-4': 'level-4',
+  'desk-normal': 'level-5', 'level-5': 'level-6', 'level-6': 'level-7', 'desk-hard': 'level-8',
+  'level-7': 'level-9', 'desk-expert': 'level-10',
+};
+function migrate(s: Partial<JourneyState> & { v?: number }): Partial<JourneyState> {
+  if (s.v === 2 || (!s.done && !s.steps)) return s;
+  const map = (id: string) => V1_TO_V2[id] ?? id;
+  return {
+    ...s,
+    v: 2,
+    done: (s.done ?? []).map(map),
+    // Levels finished before stars existed keep one star; replaying can earn more.
+    stars: Object.fromEntries((s.done ?? []).map((id) => [map(id), 1])),
+    steps: Object.fromEntries(Object.entries(s.steps ?? {}).map(([k, v]) => [map(k), v])),
+  };
+}
 
 interface Journey extends JourneyState {
   completeStep: (level: string, step: number) => void;
-  completeLevel: (level: string) => void;
+  completeLevel: (level: string, stars: number) => void;
   answer: (quizId: string, correct: boolean) => void;
+  /** Clear quiz answers so a replay can earn stars again. */
+  retry: (quizIds: string[]) => void;
   choose: (issueId: string, value: string) => void;
   setSettings: (s: Partial<JourneyState['settings']>) => void;
   start: () => void;
@@ -39,8 +65,8 @@ const Ctx = createContext<Journey | null>(null);
 
 export function JourneyProvider({ children }: { children: ReactNode }) {
   const [st, setSt] = useState<JourneyState>(() => {
-    const s = load<Partial<JourneyState>>('journey', {});
-    return { ...DEFAULT, ...s, settings: { ...DEFAULT.settings, ...(s.settings ?? {}) } };
+    const s = migrate(load<Partial<JourneyState>>('journey', {}));
+    return { ...DEFAULT, ...s, v: 2, stars: { ...(s.stars ?? {}) }, settings: { ...DEFAULT.settings, ...(s.settings ?? {}) } };
   });
   const update = (f: (p: JourneyState) => JourneyState) => setSt((p) => { const n = f(p); save('journey', n); return n; });
 
@@ -62,11 +88,16 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
       const cur = p.steps[level] ?? [];
       return cur.includes(step) ? p : { ...p, steps: { ...p.steps, [level]: [...cur, step] } };
     }),
-    completeLevel: (level) => update((p) => (p.done.includes(level) ? p : { ...p, done: [...p.done, level] })),
+    completeLevel: (level, stars) => update((p) => ({
+      ...p,
+      done: p.done.includes(level) ? p.done : [...p.done, level],
+      stars: { ...p.stars, [level]: Math.max(p.stars[level] ?? 0, stars) },
+    })),
     answer: (quizId, correct) => update((p) => {
       const q = p.quiz[quizId] ?? { tries: 0, correct: false };
       return { ...p, quiz: { ...p.quiz, [quizId]: { tries: q.tries + 1, correct: q.correct || correct } } };
     }),
+    retry: (ids) => update((p) => ({ ...p, quiz: Object.fromEntries(Object.entries(p.quiz).filter(([k]) => !ids.includes(k))) })),
     choose: (issueId, v) => update((p) => ({ ...p, choices: { ...p.choices, [issueId]: v } })),
     setSettings: (s) => update((p) => ({ ...p, settings: { ...p.settings, ...s } })),
     start: () => update((p) => (p.started ? p : { ...p, started: new Date().toISOString() })),

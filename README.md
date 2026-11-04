@@ -10,31 +10,54 @@ Every number comes from an official U.S. government source and every chart links
 
 ## The game
 
-The site opens as a short civic game: **Help Uncle Sam balance the budget.** Uncle Sam is an
-everyday American with a very big household who spends more than he brings in. The player is his
+The site opens as a civic game: **Help Uncle Sam balance the budget.** Uncle Sam is an everyday
+American with a very big household who spends more than he brings in. The player is his
 budget adviser.
 
-- **Seven chapter levels** (Easy → Hard): his paycheck (revenue and your taxes), his bills
-  (spending and the three buckets), back home (your state), spending more than he makes (the
-  structural gap), the credit card (debt and interest), who writes his budget (Congress, CRs and
-  the laws that moved deficits), and keeping his promises (Social Security).
-- Each level is a step wizard of 4–6 short steps. A segmented progress bar shows the steps, and
-  quick-check questions give explanatory feedback and reveal the answer after two tries. Each
-  level ends with one vote on a real policy choice: a CBO-priced option, or a question such as
-  the tax/cut mix or an automatic continuing resolution.
-- **Budget desk missions** (Normal / Hard / Expert) unlock as chapters are finished. They use the
-  policy-card planner with stars, badges and the economists' least-cost hint.
-- **Rewards:** level certificates, adviser titles, a road map with time remaining, and a
-  copyable "budget ballot" of the player's votes.
-- **Reading settings:** text size, light/dark theme, read-aloud of Uncle Sam's lines (the
-  browser's own speech), and free roam to unlock everything.
+- **Ten levels on one road map.** Chapters explain one part of the budget each: his paycheck,
+  his bills, back home, the structural gap, the credit card (debt), who writes the budget
+  (Congress and the laws that moved deficits), and keeping his promises (Social Security).
+  Three **budget-desk levels** (5, 8 and 10) are the hard "wall" levels, where the player fixes
+  the budget with CBO-priced options. Difficulty runs in a rhythm: easy, easy, easy, medium,
+  hard, then a breather, and so on up to a final super-hard level.
+- **Steps, checks and votes.** Each chapter is 4–6 short steps with a segmented progress bar.
+  Quick checks give explanatory feedback and reveal the answer after two tries. Each chapter
+  ends with one vote on a real policy choice. Level 7 explains each major law: what it did and
+  why its official estimate came out so large.
+- **Uncle Sam talks and reacts.** He reads his lines aloud with the browser's own speech,
+  preferring a male U.S. English voice and changing pace and pitch with his mood. His face,
+  hat and arms change with his mood, and he nods and talks while speaking. At the budget desk
+  he coaches in real time as the plan changes. Speech is on by default and can be switched off
+  from the top bar or in settings.
+- **Rewards.**
+  - Up to three stars per level (all questions right on the first try, or the budget-desk
+    star rules).
+  - A celebration card on finishing a level, with the certificate earned, a quote from American
+    history on citizenship, responsibility, the future or the economy, and a preview of the next
+    level.
+  - Adviser titles and a copyable "budget ballot".
+- **Always-visible status.** The top bar shows the current level, the ten-level track, total
+  stars, the player's title, a Continue button and the voice switch.
+- **Reading settings:** text size, light/dark theme, voice choice, and free roam to unlock
+  everything.
 - **The fine print:** every level links to its full field-guide chapter and to the original
   government documents. The field guide (all earlier pages) is always in the sidebar.
 
+### Design notes (lessons from casual-game UX, without the pressure tactics)
+
+- **Readable at a glance.** Each level has its own icon silhouette as well as a number, and
+  hard levels are marked by shape (square nodes) and label, not by color alone.
+- **Never stuck.** The budget desk's hint is free and unlimited. When no combination of cards
+  can reach a goal (balancing the budget), the hint adds the smallest even mix of
+  across-the-board tax and spending changes, so every level can be finished.
+- **Snappy.** Speech never blocks play, and the celebration card closes with one tap or Escape.
+- **Character-driven feedback.** Uncle Sam's mood follows the player's answers and the plan's
+  progress.
+- **No pressure mechanics.** No timers, lives, streak penalties, leaderboards, ads or
+  purchases.
+
 Progress is saved in the browser only. On the claude.ai artifact, votes are also counted across
 everyone who opens the page (one ballot per person).
-
-**Live site:** https://richnguyen.github.io/follow-the-federal-dollar/
 
 ## Run it
 
@@ -88,8 +111,9 @@ estimates and labels them as the President's budget.
 ## Code map
 
 - `src/game/` the game layer: `levels.tsx` (level content; every figure and quiz answer is computed
-  from the data), `LevelPage.tsx` (step wizard), `Journey.tsx` (hub), `state.tsx` (progress and
-  reading settings), `UncleSam.tsx` (character and narration).
+  from the data), `LevelPage.tsx` (step wizard), `Journey.tsx` (road map), `Celebrate.tsx`
+  (level-complete card), `StatusBar.tsx`, `LawExplorer.tsx`, `quotes.ts`, `state.tsx` (progress
+  and settings), `voice.tsx` (speech: voice choice, mood prosody), `UncleSam.tsx` (character).
 - `src/pages/` one file per field-guide section; `src/components/charts.tsx` the D3-based charts;
   `src/components/USMap.tsx` the state map; `src/lib/` formatting, categories, tax and sandbox math.
 - `src/data/types.ts` is the contract between the pipeline and the app.

@@ -3,9 +3,11 @@ import { SOURCE_BY_ID } from '../data';
 import { money, pct } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
 import { type Choice, useVotes } from '../lib/votes';
-import { DESK, isUnlocked, LEVELS, type Level, type Quiz, type Step, unlockText, type VoteSpec } from './levels';
+import { Celebration } from './Celebrate';
+import { LevelIcon } from './icons';
+import { chapterStars, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
 import { useJourney } from './state';
-import { SamSays, UncleSam } from './UncleSam';
+import { plain, SamSays, UncleSam } from './UncleSam';
 
 const CHOICE_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -18,11 +20,11 @@ export default function LevelPage({ id }: { id: string }) {
 
 function Locked({ level }: { level: Level }) {
   const j = useJourney();
-  const next = LEVELS.find((l) => !j.done.includes(l.id) && isUnlocked(l.id, j.done, false));
+  const next = STOPS.find((l) => !j.done.includes(l.id) && isUnlocked(l.id, j.done, false));
   return (
     <div className="level">
       <LevelHead level={level} />
-      <SamSays mood="thinking">We’ll get there. This level builds on the one before it. {unlockText(level.id)}.</SamSays>
+      <SamSays mood="thinking" auto>We’ll get there. This level builds on the one before it. {unlockText(level.id)}.</SamSays>
       <div className="sb-actions" style={{ marginTop: 16 }}>
         {next && <a className="btn btn-primary" href={'#' + next.id}>Go to level {next.n}: {next.title}</a>}
         <button type="button" className="btn" onClick={() => j.setSettings({ freeRoam: true })}>Unlock every level (free roam)</button>
@@ -35,7 +37,7 @@ function Locked({ level }: { level: Level }) {
 function LevelHead({ level }: { level: Level }) {
   return (
     <header className="level-head">
-      <div className="eyebrow">Level {level.n} of {LEVELS.length} · {level.difficulty} · about {level.minutes} min</div>
+      <div className="eyebrow level-eyebrow"><LevelIcon id={level.icon} size={16} /> Level {level.n} of {STOPS.length} · {level.difficulty} · about {level.minutes} min</div>
       <h1 className="page-title">{level.title}</h1>
       <p className="lede">{level.topic}</p>
     </header>
@@ -48,6 +50,7 @@ function LevelRun({ level }: { level: Level }) {
   const firstOpen = level.steps.findIndex((_, i) => !doneSteps.includes(i));
   const [i, setI] = useState(() => (j.done.includes(level.id) ? level.steps.length : firstOpen < 0 ? level.steps.length : firstOpen));
   const top = useRef<HTMLDivElement>(null);
+  const [party, setParty] = useState<number | null>(null);
   useEffect(() => { j.start(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const go = (n: number) => {
@@ -56,7 +59,11 @@ function LevelRun({ level }: { level: Level }) {
   };
   const finishStep = () => {
     j.completeStep(level.id, i);
-    if (i === level.steps.length - 1) j.completeLevel(level.id);
+    if (i === level.steps.length - 1) {
+      const stars = chapterStars(level, j.quiz);
+      j.completeLevel(level.id, stars);
+      setParty(stars);
+    }
     go(i + 1);
   };
 
@@ -69,7 +76,7 @@ function LevelRun({ level }: { level: Level }) {
       {step ? (
         <section className="level-stage" aria-live="polite" aria-labelledby="step-label">
           <div className="step-count" id="step-label">Step {i + 1} of {level.steps.length} · {step.label}</div>
-          <StepBody step={step} />
+          <StepBody key={level.id + step.id} step={step} />
           <div className="level-nav">
             <button type="button" className="btn" onClick={() => go(Math.max(0, i - 1))} disabled={i === 0}>Back</button>
             <button type="button" className="btn btn-primary" onClick={finishStep} disabled={!quizOk}>
@@ -79,9 +86,10 @@ function LevelRun({ level }: { level: Level }) {
           </div>
         </section>
       ) : (
-        <Complete level={level} onReview={() => go(0)} />
+        <Complete level={level} onReview={() => { j.retry(level.steps.filter((x) => x.quiz).map((x) => x.quiz!.id)); go(0); }} />
       )}
       <FinePrint level={level} />
+      {party != null && <Celebration stop={STOP_BY_ID[level.id]} stars={party} onClose={() => setParty(null)} />}
     </div>
   );
 }
@@ -118,17 +126,17 @@ function StepTrack({ level, at, done, finished, onGo }: { level: Level; at: numb
 }
 
 function StepBody({ step }: { step: Step }) {
-  if (step.kind === 'story') return <SamSays mood={step.mood} size={150}>{step.sam}</SamSays>;
+  if (step.kind === 'story') return <SamSays mood={step.mood} size={150} auto>{step.sam}</SamSays>;
   if (step.kind === 'quiz') return <QuizCard quiz={step.quiz!} />;
   if (step.kind === 'vote') return (
     <>
-      {step.sam && <SamSays mood={step.mood} compact>{step.sam}</SamSays>}
+      {step.sam && <SamSays mood={step.mood} compact auto>{step.sam}</SamSays>}
       <VoteCard vote={step.vote!} />
     </>
   );
   return (
     <>
-      {step.sam && <SamSays mood={step.mood} compact>{step.sam}</SamSays>}
+      {step.sam && <SamSays mood={step.mood} compact auto>{step.sam}</SamSays>}
       <div className="card level-card">{step.body?.()}</div>
     </>
   );
@@ -147,10 +155,12 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
     if (k !== quiz.correct) setWrong((w) => (w.includes(k) ? w : [...w, k]));
     j.answer(quiz.id, k === quiz.correct);
   };
-  const mood = solved ? 'proud' : picked != null ? 'thinking' : 'happy';
+  const mood = solved ? 'proud' : revealed ? 'thinking' : picked != null ? 'worried' : 'happy';
+  const line = solved ? (rec && rec.tries > 1 ? 'You got it. Nice work sticking with it.' : 'That’s right!') : picked != null ? (revealed ? 'That one’s tricky. Here’s the answer.' : 'Not quite. Want to try again?') : 'Quick check. Take your best guess; there’s no penalty.';
+  const say = solved ? `${line} ${plain(quiz.explain)}` : revealed ? `${line} It’s ${quiz.choices[quiz.correct]}. ${plain(quiz.explain)}` : picked != null ? line : `Quick check. ${quiz.question}`;
   return (
     <div className="quiz">
-      <SamSays mood={mood} compact>{solved ? (rec && rec.tries > 1 ? 'You got it. Nice work sticking with it.' : 'That’s right!') : picked != null ? (revealed ? 'That one’s tricky. Here’s the answer.' : 'Not quite. Want to try again?') : 'Quick check. Take your best guess; there’s no penalty.'}</SamSays>
+      <SamSays mood={mood} compact auto say={say}>{line}</SamSays>
       <fieldset className="card quiz-card">
         <legend className="quiz-q">{quiz.question}</legend>
         <div className="quiz-choices">
@@ -258,30 +268,30 @@ function VoteFoot({ votes }: { votes: ReturnType<typeof useVotes> }) {
 
 function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
   const j = useJourney();
-  const next = LEVELS.find((l) => l.n === level.n + 1);
-  const desk = DESK.find((d) => !j.done.includes(d.id) && isUnlocked(d.id, j.done, false));
+  const next = STOPS[level.n];
   const quizzes = level.steps.filter((s) => s.quiz).map((s) => j.quiz[s.quiz!.id]);
   const firstTry = quizzes.filter((q) => q?.correct && q.tries === 1).length;
-  const levelsDone = LEVELS.filter((l) => j.done.includes(l.id)).length;
+  const levelsDone = STOPS.filter((l) => j.done.includes(l.id)).length;
+  const stars = j.stars[level.id] ?? chapterStars(level, j.quiz);
   return (
     <section className="complete card" aria-labelledby="complete-t">
       <div className="complete-top">
         <UncleSam mood="proud" size={120} />
         <div>
-          <div className="eyebrow">Level {level.n} complete</div>
+          <div className="eyebrow">Level {level.n} complete · <span className="complete-stars" aria-label={`${stars} of 3 stars`}>{'★'.repeat(stars)}<span className="muted">{'★'.repeat(3 - stars)}</span></span></div>
           <h2 className="complete-title" id="complete-t">{level.badge}: explained</h2>
-          <p className="small muted">{firstTry === quizzes.length ? 'Every question right on the first try. ' : `${firstTry} of ${quizzes.length} questions right on the first try. `}{levelsDone} of {LEVELS.length} chapter levels done.</p>
+          <p className="small muted">{firstTry === quizzes.length ? 'Every question right on the first try. ' : `${firstTry} of ${quizzes.length} questions right on the first try; replay for three stars. `}{levelsDone} of {STOPS.length} levels done.</p>
         </div>
       </div>
       <div className="stat-label">What we figured out together</div>
       <ul className="takeaways">
         {level.takeaways.map((t) => <li key={t}>{t}</li>)}
       </ul>
-      {desk && <div className="callout"><div className="callout-title">New at the budget desk</div><p className="small">You unlocked the <strong>{desk.difficulty}</strong> mission: {desk.title.toLowerCase()}. <a href={'#' + desk.id}>Try it now</a></p></div>}
+      {next?.kind === 'desk' && <div className="callout"><div className="callout-title">Up next: a hard level at the budget desk</div><p className="small">Level {next.n} asks you to fix the budget yourself: {next.title.toLowerCase()}. The hint is free and unlimited.</p></div>}
       <div className="sb-actions">
-        {next ? <a className="btn btn-primary" href={'#' + next.id}>Next: level {next.n}, {next.title}</a> : <a className="btn btn-primary" href="#journey">Back to the journey</a>}
+        {next ? <a className="btn btn-primary" href={'#' + next.id}>Next: level {next.n}, {next.title}</a> : <a className="btn btn-primary" href="#journey">Back to the road map</a>}
         <a className="btn" href="#journey">See your progress</a>
-        <button type="button" className="btn" onClick={onReview}>Review this level</button>
+        <button type="button" className="btn" onClick={onReview}>Replay this level</button>
       </div>
     </section>
   );

@@ -1,13 +1,18 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Seg } from '../components/ui';
 import { type TextSize, type ThemeChoice, useJourney } from './state';
+import { isMaleVoice, pickVoice, useNarrator } from './voice';
 
-/** Reading and play settings: text size, theme, read-aloud, and free roam. */
+/** Reading and play settings: text size, theme, Uncle Sam's voice, and free roam. */
 export function ReadingSettings({ compact = false }: { compact?: boolean }) {
   const j = useJourney();
+  const n = useNarrator();
   const s = j.settings;
-  const speech = typeof window !== 'undefined' && 'speechSynthesis' in window;
   const [confirm, setConfirm] = useState(false);
+  const vid = useId();
+  const us = n.voices.filter((v) => /^en[-_]US/i.test(v.lang));
+  const others = n.voices.filter((v) => !/^en[-_]US/i.test(v.lang));
+  const auto = pickVoice(n.voices);
   return (
     <div className={'settings' + (compact ? ' compact' : '')}>
       <div className="settings-row">
@@ -18,7 +23,21 @@ export function ReadingSettings({ compact = false }: { compact?: boolean }) {
         <span className="stat-label">Theme</span>
         <Seg<ThemeChoice> label="Theme" value={s.theme} onChange={(v) => j.setSettings({ theme: v })} options={[{ value: 'system', label: 'Automatic' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
       </div>
-      <label className="switch"><input type="checkbox" checked={s.narration && speech} disabled={!speech} onChange={(e) => j.setSettings({ narration: e.target.checked })} /> Read Uncle Sam’s lines aloud on request{!speech && ' (not supported in this browser)'}</label>
+      <label className="switch"><input type="checkbox" checked={s.narration && n.supported} disabled={!n.supported} onChange={(e) => { if (!e.target.checked) n.stop(); j.setSettings({ narration: e.target.checked }); }} /> Uncle Sam speaks his lines as you play{!n.supported && ' (not supported in this browser)'}</label>
+      {n.supported && !compact && (
+        <div className="settings-row">
+          <label className="stat-label" htmlFor={vid}>Voice</label>
+          <select id={vid} className="select" style={{ maxWidth: 360 }} value={s.voice} onChange={(e) => j.setSettings({ voice: e.target.value })}>
+            <option value="auto">Automatic: male, U.S. English{auto ? ` (${auto.name})` : ''}</option>
+            {us.length > 0 && <optgroup label="U.S. English">{us.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{v.name}</option>)}</optgroup>}
+            {others.length > 0 && <optgroup label="Other English">{others.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{v.name} ({v.lang})</option>)}</optgroup>}
+          </select>
+          <button type="button" className="btn" onClick={() => n.speak('voice-test', 'Howdy, partner. This is Uncle Sam. Let’s get my books in order.', 'happy')}>Test the voice</button>
+        </div>
+      )}
+      {n.supported && !compact && n.voice && !isMaleVoice(n.voice) && (
+        <p className="small muted">This browser has no male U.S. English voice installed, so Uncle Sam uses {n.voice.name} at a lower pitch. Voices come from your device; adding one in your system’s speech settings makes it available here.</p>
+      )}
       <label className="switch"><input type="checkbox" checked={s.freeRoam} onChange={(e) => j.setSettings({ freeRoam: e.target.checked })} /> Free roam: unlock every level</label>
       {!compact && (
         <div>

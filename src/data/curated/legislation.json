@@ -1,410 +1,434 @@
 [
- {
-  "id": "egtrra-2001",
-  "name": "Economic Growth and Tax Relief Reconciliation Act of 2001",
-  "shortName": "EGTRRA",
-  "signed": "2001-06-07",
-  "publicLaw": "P.L. 107-16",
-  "president": "Bush",
-  "kind": "tax",
-  "deficitEffect": 1349,
-  "window": "2001–2011",
-  "includesInterest": false,
-  "summary": "Cut income tax rates, created a new 10 percent bracket, doubled the child tax credit over time, and began phasing out the estate tax. Most of its provisions were set to expire after 2010.",
-  "source": {
-   "title": "CBO, Pay-As-You-Go Estimate for H.R. 1836, Economic Growth and Tax Relief Reconciliation Act of 2001 (June 4, 2001)",
-   "url": "https://www.cbo.gov/sites/default/files/107th-congress-2001-2002/costestimate/hr1836omb0.pdf"
+  {
+    "id": "egtrra-2001",
+    "name": "Economic Growth and Tax Relief Reconciliation Act of 2001",
+    "shortName": "EGTRRA",
+    "signed": "2001-06-07",
+    "publicLaw": "P.L. 107-16",
+    "president": "Bush",
+    "kind": "tax",
+    "deficitEffect": 1349,
+    "window": "2001–2011",
+    "includesInterest": false,
+    "summary": "Cut income tax rates, created a new 10 percent bracket, doubled the child tax credit over time, and began phasing out the estate tax. Most of its provisions were set to expire after 2010.",
+    "source": {
+      "title": "CBO, Pay-As-You-Go Estimate for H.R. 1836, Economic Growth and Tax Relief Reconciliation Act of 2001 (June 4, 2001)",
+      "url": "https://www.cbo.gov/sites/default/files/107th-congress-2001-2002/costestimate/hr1836omb0.pdf"
+    },
+    "why": "Lower tax rates reach almost every taxpayer, so even modest cuts add up across about 130 million tax returns a year. The lower rates, including the new 10% bracket, were the largest pieces; the bigger child credit and the estate tax phase-out added more. Because most provisions expired after 2010, the estimate covers a temporary cut."
+  },
+  {
+    "id": "jgtrra-2003",
+    "name": "Jobs and Growth Tax Relief Reconciliation Act of 2003",
+    "shortName": "JGTRRA",
+    "signed": "2003-05-28",
+    "publicLaw": "P.L. 108-27",
+    "president": "Bush",
+    "kind": "tax",
+    "deficitEffect": 350,
+    "window": "2003–2013",
+    "includesInterest": false,
+    "summary": "Lowered tax rates on capital gains and dividends to 15 percent and sped up the income tax cuts passed in 2001. Many of its provisions were temporary.",
+    "source": {
+      "title": "CBO, Cost Estimate for H.R. 2, Jobs and Growth Tax Relief Reconciliation Act of 2003, as cleared by the Congress (May 23, 2003)",
+      "url": "https://cbo.gov/sites/default/files/108th-congress-2003-2004/costestimate/hr250.pdf"
+    },
+    "why": "Most of the cost came from speeding up rate cuts already scheduled under the 2001 law and from the lower rates on dividends and capital gains. Congress's budget plan that year allowed about $350 billion in tax cuts, so many provisions were written to expire early to fit that limit."
+  },
+  {
+    "id": "mma-2003",
+    "name": "Medicare Prescription Drug, Improvement, and Modernization Act of 2003",
+    "shortName": "MMA",
+    "signed": "2003-12-08",
+    "publicLaw": "P.L. 108-173",
+    "president": "Bush",
+    "kind": "spending",
+    "deficitEffect": 395,
+    "window": "2004–2013",
+    "includesInterest": false,
+    "summary": "Created Medicare Part D, which helps people on Medicare pay for prescription drugs, and changed how Medicare pays private Medicare Advantage plans. Congress did not offset the cost of the new benefit with other cuts or taxes.",
+    "source": {
+      "title": "CBO, Letter on H.R. 1, the Medicare Prescription Drug, Improvement, and Modernization Act of 2003, as agreed to by the conferees (Nov 20, 2003)",
+      "url": "https://www.cbo.gov/publication/14637"
+    },
+    "why": "Helping some 40 million people on Medicare pay for prescription drugs is expensive, and the cost grows each year as drug spending rises and more people join Medicare. Premiums paid by beneficiaries cover only about a quarter of the drug benefit's cost; most of the rest comes from the Treasury's general fund, and the law added no new tax to pay for it."
+  },
+  {
+    "id": "arra-2009",
+    "name": "American Recovery and Reinvestment Act of 2009",
+    "shortName": "Recovery Act",
+    "signed": "2009-02-17",
+    "publicLaw": "P.L. 111-5",
+    "president": "Obama",
+    "kind": "emergency",
+    "deficitEffect": 787,
+    "window": "2009–2019",
+    "includesInterest": false,
+    "summary": "Spent money on infrastructure, aid to states, and safety-net programs and cut taxes to help the economy recover from the 2008–2009 recession.",
+    "source": {
+      "title": "CBO, Cost Estimate for the Conference Agreement for H.R. 1, the American Recovery and Reinvestment Act of 2009 (Feb 13, 2009)",
+      "url": "https://www.cbo.gov/publication/24870"
+    },
+    "why": "It was designed to be large and fast, to fight the Great Recession. About a third was tax cuts, such as the Making Work Pay credit; the rest was aid to states for Medicaid and schools, longer unemployment benefits, food aid, and infrastructure. Almost all of it was temporary, so most of the cost came in the first few years."
+  },
+  {
+    "id": "aca-2010",
+    "name": "Patient Protection and Affordable Care Act and Health Care and Education Reconciliation Act of 2010",
+    "shortName": "ACA",
+    "signed": "2010-03-23",
+    "publicLaw": "P.L. 111-148 and P.L. 111-152",
+    "president": "Obama",
+    "kind": "mixed",
+    "deficitEffect": -143,
+    "window": "2010–2019",
+    "includesInterest": false,
+    "summary": "Expanded health coverage through Medicaid and subsidized private insurance and paid for it with Medicare payment reductions and new taxes. CBO scored the two 2010 health laws together, and its figure includes $19 billion in savings from changes to federal student loans.",
+    "source": {
+      "title": "CBO, Letter to Speaker Pelosi on H.R. 4872, the Reconciliation Act of 2010, combined with H.R. 3590 (Mar 20, 2010)",
+      "url": "https://www.cbo.gov/publication/21351"
+    },
+    "why": "Covering about 32 million more people was costly: CBO put the coverage provisions at about $940 billion over ten years. But the law also slowed the growth of Medicare payments to hospitals and private Medicare Advantage plans and added taxes, including a Medicare tax on high earners and fees on insurers and drug makers. CBO estimated those savings and taxes would more than cover the cost of coverage."
+  },
+  {
+    "id": "tax-relief-act-2010",
+    "name": "Tax Relief, Unemployment Insurance Reauthorization, and Job Creation Act of 2010",
+    "shortName": "2010 Tax Relief Act",
+    "signed": "2010-12-17",
+    "publicLaw": "P.L. 111-312",
+    "president": "Obama",
+    "kind": "tax",
+    "deficitEffect": 858,
+    "window": "2011–2020",
+    "includesInterest": false,
+    "summary": "Extended the 2001 and 2003 income tax cuts for two more years, cut the Social Security payroll tax by 2 percentage points for 2011, and extended unemployment benefits.",
+    "source": {
+      "title": "JCT, Estimated Budget Effects of the Tax Relief, Unemployment Insurance Reauthorization, and Job Creation Act of 2010 (JCX-54-10, Dec 10, 2010)",
+      "url": "https://www.jct.gov/publications/2010/jcx-54-10/"
+    },
+    "why": "Most of the cost was extending all of the 2001 and 2003 tax cuts for two more years, including for high earners. The one-year payroll tax cut was the next biggest piece (the Treasury's general fund made up the lost Social Security revenue), followed by the alternative minimum tax patch and 13 more months of extended unemployment benefits."
+  },
+  {
+    "id": "bca-2011",
+    "name": "Budget Control Act of 2011",
+    "shortName": "BCA",
+    "signed": "2011-08-02",
+    "publicLaw": "P.L. 112-25",
+    "president": "Obama",
+    "kind": "reduction",
+    "deficitEffect": -2100,
+    "window": "2012–2021",
+    "includesInterest": true,
+    "summary": "Raised the debt limit, capped yearly discretionary spending through 2021, and set up automatic spending cuts if a special congressional committee could not agree on further savings. CBO's figure of at least $2.1 trillion includes savings on interest.",
+    "source": {
+      "title": "CBO, Letter to Speaker Boehner and Senator Reid on the Budget Control Act of 2011 (Aug 1, 2011)",
+      "url": "https://www.cbo.gov/sites/default/files/112th-congress-2011-2012/costestimate/budgetcontrolactaug1.pdf"
+    },
+    "why": "This one saved money. It set ten years of limits on the spending Congress votes on each year, below what CBO had projected, and when the special committee failed to agree on more, automatic cuts called sequestration kicked in. Lower spending means less borrowing, which also saves interest. Congress later raised the limits several times, so the savings actually realized were smaller."
+  },
+  {
+    "id": "atra-2012",
+    "name": "American Taxpayer Relief Act of 2012",
+    "shortName": "ATRA",
+    "signed": "2013-01-02",
+    "publicLaw": "P.L. 112-240",
+    "president": "Obama",
+    "kind": "tax",
+    "deficitEffect": 3971,
+    "window": "2013–2022",
+    "includesInterest": false,
+    "summary": "Made most of the 2001 and 2003 tax cuts permanent for households earning under $400,000 ($450,000 for married couples) and permanently indexed the alternative minimum tax to inflation. Most of the cost came from extending tax cuts that were scheduled to expire, because CBO's baseline assumed they would end.",
+    "source": {
+      "title": "CBO, Estimate of the Budgetary Effects of H.R. 8, the American Taxpayer Relief Act of 2012, as passed by the Senate on January 1, 2013",
+      "url": "https://cbo.gov/sites/default/files/112th-congress-2011-2012/costestimate/american-taxpayer-relief-act0.pdf"
+    },
+    "why": "The big number comes from what CBO measures against. Under the law in place at the time, almost all of the 2001 and 2003 tax cuts were set to expire on January 1, 2013. Keeping them permanently for all but the highest-income households counted as a cost of nearly $4 trillion compared with letting them expire, even though the law raised taxes on the highest earners."
+  },
+  {
+    "id": "path-act-2015",
+    "name": "Protecting Americans from Tax Hikes Act of 2015",
+    "shortName": "PATH Act",
+    "signed": "2015-12-18",
+    "publicLaw": "P.L. 114-113 (div. Q)",
+    "president": "Obama",
+    "kind": "tax",
+    "deficitEffect": 629,
+    "window": "2016–2025",
+    "includesInterest": false,
+    "summary": "Made permanent or extended dozens of expired tax breaks, including the research credit, the expanded child and earned income tax credits, and the American Opportunity Tax Credit for college costs.",
+    "source": {
+      "title": "JCT, Estimated Revenue Budget Effects of Division Q of Amendment #2 to the Senate Amendment to H.R. 2029, the Protecting Americans from Tax Hikes Act of 2015 (JCX-143-15, Dec 16, 2015)",
+      "url": "https://www.jct.gov/publications/2015/jcx-143-15/"
+    },
+    "why": "Congress had been renewing dozens of these breaks a year or two at a time, and each short renewal looked cheap. Making many of them permanent meant counting ten full years of cost at once. The research credit, write-offs for business equipment, and the expanded child, earned income, and college credits were among the largest items."
+  },
+  {
+    "id": "tcja-2017",
+    "name": "Tax Cuts and Jobs Act",
+    "shortName": "TCJA",
+    "signed": "2017-12-22",
+    "publicLaw": "P.L. 115-97",
+    "president": "Trump",
+    "kind": "tax",
+    "deficitEffect": 1456,
+    "window": "2018–2027",
+    "includesInterest": false,
+    "summary": "Cut individual and corporate income tax rates, nearly doubled the standard deduction, and expanded the child tax credit. Most of the individual tax cuts were set to expire after 2025.",
+    "source": {
+      "title": "JCT, Estimated Budget Effects of the Conference Agreement for H.R. 1, the Tax Cuts and Jobs Act (JCX-67-17, Dec 18, 2017)",
+      "url": "https://www.jct.gov/publications/2017/jcx-67-17/"
+    },
+    "why": "Cutting the corporate tax rate from 35% to 21% permanently was one of the most expensive pieces. Lower individual rates, a larger child credit, and a new deduction for owners of pass-through businesses added more. The law raised some money back by capping the deduction for state and local taxes at $10,000, ending personal exemptions, and repealing the penalty for not having health insurance, which reduced spending on subsidies. Most individual cuts were set to expire after 2025, which kept the ten-year cost lower."
+  },
+  {
+    "id": "bba-2018",
+    "name": "Bipartisan Budget Act of 2018",
+    "shortName": "BBA 2018",
+    "signed": "2018-02-09",
+    "publicLaw": "P.L. 115-123",
+    "president": "Trump",
+    "kind": "spending",
+    "deficitEffect": 320,
+    "window": "2018–2027",
+    "includesInterest": false,
+    "summary": "Raised the caps on defense and nondefense spending for 2018 and 2019 and provided disaster aid after the 2017 hurricanes and wildfires. Only a small part of the cost was offset by savings elsewhere.",
+    "source": {
+      "title": "CBO, Cost Estimate for the Bipartisan Budget Act of 2018, Senate Amendment 1930 to H.R. 1892 (Feb 8, 2018)",
+      "url": "https://www.cbo.gov/publication/53556"
+    },
+    "why": "Most of the cost was the higher spending limits for defense and nondefense programs in 2018 and 2019, roughly $300 billion. Disaster aid and extensions of health programs added the rest, with only small savings elsewhere."
+  },
+  {
+    "id": "bba-2019",
+    "name": "Bipartisan Budget Act of 2019",
+    "shortName": "BBA 2019",
+    "signed": "2019-08-02",
+    "publicLaw": "P.L. 116-37",
+    "president": "Trump",
+    "kind": "spending",
+    "deficitEffect": 1500,
+    "window": "2020–2029",
+    "includesInterest": false,
+    "summary": "Raised the caps on defense and nondefense spending for 2020 and 2021 and suspended the debt limit until mid-2021. CBO's figure assumes the higher 2021 funding level continues and grows with inflation after the caps expire.",
+    "source": {
+      "title": "CBO, An Update to the Budget and Economic Outlook: 2019 to 2029 (Aug 21, 2019)",
+      "url": "https://www.cbo.gov/publication/55551"
+    },
+    "why": "It raised the limits for just two years, by about $320 billion. CBO's ten-year projections assume funding continues at the new, higher level and grows with inflation, so a two-year increase shows up as a much larger ten-year cost."
+  },
+  {
+    "id": "ffcra-2020",
+    "name": "Families First Coronavirus Response Act",
+    "shortName": "FFCRA",
+    "signed": "2020-03-18",
+    "publicLaw": "P.L. 116-127",
+    "president": "Trump",
+    "kind": "emergency",
+    "deficitEffect": 192,
+    "window": "2020–2030",
+    "includesInterest": false,
+    "summary": "Required many employers to provide paid sick and family leave during the COVID-19 pandemic, with tax credits to cover the cost, and made coronavirus testing free. It also increased food aid and federal Medicaid funding to states.",
+    "source": {
+      "title": "CBO, Preliminary Estimate of H.R. 6201, Families First Coronavirus Response Act (Apr 2, 2020)",
+      "url": "https://www.cbo.gov/publication/56316"
+    },
+    "why": "Most of the cost was the tax credits that repaid employers for the paid sick and family leave the law required, and a 6.2-percentage-point increase in the federal share of Medicaid for states during the public health emergency. Free testing and food aid added the rest."
+  },
+  {
+    "id": "cares-act-2020",
+    "name": "Coronavirus Aid, Relief, and Economic Security Act",
+    "shortName": "CARES Act",
+    "signed": "2020-03-27",
+    "publicLaw": "P.L. 116-136",
+    "president": "Trump",
+    "kind": "emergency",
+    "deficitEffect": 1721,
+    "window": "2020–2030",
+    "includesInterest": false,
+    "summary": "Sent $1,200 payments to most adults, expanded unemployment benefits, and created the Paycheck Protection Program of forgivable loans to small businesses. It also provided aid to hospitals, airlines, and state and local governments.",
+    "source": {
+      "title": "CBO, Preliminary Estimate of H.R. 748, the CARES Act, Public Law 116-136 (Apr 16, 2020; revised Apr 27, 2020)",
+      "url": "https://www.cbo.gov/publication/56334"
+    },
+    "why": "It was the largest emergency law in U.S. history at the time. The Paycheck Protection Program ($349 billion at first, mostly forgiven), $1,200 payments to most adults plus $500 per child, a $600 weekly addition to unemployment benefits, and $150 billion for state and local governments made up much of the cost. CBO counted $454 billion for Federal Reserve lending programs as costing little, because it expected those loans to be repaid."
+  },
+  {
+    "id": "ppp-health-care-act-2020",
+    "name": "Paycheck Protection Program and Health Care Enhancement Act",
+    "shortName": "PPP and Health Care Act",
+    "signed": "2020-04-24",
+    "publicLaw": "P.L. 116-139",
+    "president": "Trump",
+    "kind": "emergency",
+    "deficitEffect": 483,
+    "window": "2020–2030",
+    "includesInterest": false,
+    "summary": "Added money to the Paycheck Protection Program and to small business disaster loans and provided more funding for hospitals and COVID-19 testing.",
+    "source": {
+      "title": "CBO, Estimate for H.R. 266, Paycheck Protection Program and Health Care Enhancement Act (Apr 22, 2020)",
+      "url": "https://www.cbo.gov/publication/56338"
+    },
+    "why": "The first round of Paycheck Protection loans ran out in about two weeks. This law added about $320 billion more, most of it expected to be forgiven, plus $75 billion for hospitals and $25 billion for COVID-19 testing."
+  },
+  {
+    "id": "caa-2021-covid",
+    "name": "Consolidated Appropriations Act, 2021 (COVID-19 relief divisions)",
+    "shortName": "Dec. 2020 COVID relief",
+    "signed": "2020-12-27",
+    "publicLaw": "P.L. 116-260 (divs. M and N)",
+    "president": "Trump",
+    "kind": "emergency",
+    "deficitEffect": 868,
+    "window": "2021–2030",
+    "includesInterest": false,
+    "summary": "This figure covers only the COVID-19 relief in the December 2020 spending law, which sent $600 payments to most adults, added $300 a week to unemployment benefits, and reopened the Paycheck Protection Program. The rest of the law funded regular government operations and is not counted here.",
+    "source": {
+      "title": "CBO, The Budgetary Effects of Major Laws Enacted in Response to the 2020–2021 Coronavirus Pandemic (Sept 2021), entry for divisions M and N of P.L. 116-260",
+      "url": "https://cbo.gov/system/files/2021-09/57343-Pandemic.pdf"
+    },
+    "why": "A second round of relief while the pandemic was still spreading: about $165 billion for $600 payments, a $300 weekly unemployment supplement into March 2021, about $285 billion for a reopened Paycheck Protection Program, and money for schools, vaccines, and rental assistance."
+  },
+  {
+    "id": "arpa-2021",
+    "name": "American Rescue Plan Act of 2021",
+    "shortName": "ARPA",
+    "signed": "2021-03-11",
+    "publicLaw": "P.L. 117-2",
+    "president": "Biden",
+    "kind": "emergency",
+    "deficitEffect": 1856,
+    "window": "2021–2030",
+    "includesInterest": false,
+    "summary": "Sent $1,400 payments to most Americans, extended expanded unemployment benefits, and temporarily expanded the child tax credit. It also gave aid to state and local governments, schools, and COVID-19 vaccine and testing programs.",
+    "source": {
+      "title": "CBO, Estimated Budgetary Effects of H.R. 1319, American Rescue Plan Act of 2021, as passed by the Senate (Mar 10, 2021)",
+      "url": "https://www.cbo.gov/publication/57056"
+    },
+    "why": "Its biggest pieces were $1,400 payments (about $410 billion), $350 billion for state and local governments, extended unemployment supplements, a one-year child tax credit of up to $3,600 per child, and money for schools and vaccines. Nearly all of it was spent in 2021 and 2022, so the cost came at once rather than spread over ten years."
+  },
+  {
+    "id": "iija-2021",
+    "name": "Infrastructure Investment and Jobs Act",
+    "shortName": "IIJA",
+    "signed": "2021-11-15",
+    "publicLaw": "P.L. 117-58",
+    "president": "Biden",
+    "kind": "spending",
+    "deficitEffect": 256,
+    "window": "2021–2031",
+    "includesInterest": false,
+    "summary": "Increased funding for roads, bridges, transit, rail, broadband, water systems, and the electric grid. Some of the cost was offset by savings elsewhere in the budget.",
+    "source": {
+      "title": "CBO, Cost Estimate for Senate Amendment 2137 to H.R. 3684, the Infrastructure Investment and Jobs Act (Aug 5, 2021; revised Aug 9, 2021)",
+      "url": "https://www.cbo.gov/publication/57406"
+    },
+    "why": "It added about $550 billion in new spending for roads, bridges, transit, broadband, water pipes, and the power grid. Its sponsors counted savings, such as repurposing unspent COVID-19 money, to pay for much of it, but CBO's rules credited only part of them, so CBO estimated a $256 billion increase in deficits."
+  },
+  {
+    "id": "chips-2022",
+    "name": "CHIPS and Science Act",
+    "shortName": "CHIPS Act",
+    "signed": "2022-08-09",
+    "publicLaw": "P.L. 117-167",
+    "president": "Biden",
+    "kind": "spending",
+    "deficitEffect": 79,
+    "window": "2022–2031",
+    "includesInterest": false,
+    "summary": "Provided grants and a tax credit to encourage computer chip manufacturing in the United States and authorized more money for scientific research. The figure covers money the law provided directly; most of the research funding depends on future appropriations.",
+    "source": {
+      "title": "CBO, Estimated Budgetary Effects of H.R. 4346, the CHIPS Act of 2022, as amended by the Senate (July 21, 2022)",
+      "url": "https://www.cbo.gov/publication/58319"
+    },
+    "why": "About $52 billion went to chip factory grants and research programs, and a 25% tax credit for investing in chip plants cost about $24 billion more. The law authorized much more science funding, but that money counts only if Congress appropriates it later."
+  },
+  {
+    "id": "pact-act-2022",
+    "name": "Honoring our PACT Act of 2022",
+    "shortName": "PACT Act",
+    "signed": "2022-08-10",
+    "publicLaw": "P.L. 117-168",
+    "president": "Biden",
+    "kind": "spending",
+    "deficitEffect": 797,
+    "window": "2022–2032",
+    "includesInterest": false,
+    "summary": "Expanded health care and disability benefits for veterans exposed to toxic substances, such as smoke from military burn pits, and created a fund to pay for their care.",
+    "source": {
+      "title": "CBO, Legislation Enacted in the Second Session of the 117th Congress That Affects Mandatory Spending or Revenues (Mar 2023)",
+      "url": "https://www.cbo.gov/publication/58956"
+    },
+    "why": "For more than 20 illnesses, veterans exposed to burn pits and other toxins no longer have to prove their illness was caused by their service, so many more qualify for disability payments and VA health care for the rest of their lives. The law also created a fund that pays these costs automatically, moving some spending that Congress would otherwise vote on each year into mandatory spending, which counts toward the ten-year estimate."
+  },
+  {
+    "id": "ira-2022",
+    "name": "Inflation Reduction Act of 2022",
+    "shortName": "IRA",
+    "signed": "2022-08-16",
+    "publicLaw": "P.L. 117-169",
+    "president": "Biden",
+    "kind": "mixed",
+    "deficitEffect": -58,
+    "window": "2022–2031",
+    "includesInterest": false,
+    "summary": "Funded clean energy tax credits, extended larger health insurance subsidies, and let Medicare negotiate some drug prices, offset by a minimum tax on large corporations, a tax on stock buybacks, and Medicare drug savings. CBO's official score leaves out about $180 billion in extra revenue it expected from stronger IRS enforcement, which scoring rules do not count.",
+    "source": {
+      "title": "CBO, Estimated Budgetary Effects of Public Law 117-169, to Provide for Reconciliation Pursuant to Title II of S. Con. Res. 14 (Sept 7, 2022)",
+      "url": "https://www.cbo.gov/publication/58455"
+    },
+    "why": "The two sides nearly cancel out. Clean energy tax credits and three more years of larger health insurance subsidies cost several hundred billion dollars, while Medicare drug price negotiation, a 15% minimum tax on large corporations' book income, and a 1% tax on stock buybacks raised or saved a similar amount. CBO's official score leaves out the extra taxes it expected the new IRS enforcement money to collect."
+  },
+  {
+    "id": "fra-2023",
+    "name": "Fiscal Responsibility Act of 2023",
+    "shortName": "FRA",
+    "signed": "2023-06-03",
+    "publicLaw": "P.L. 118-5",
+    "president": "Biden",
+    "kind": "reduction",
+    "deficitEffect": -1500,
+    "window": "2023–2033",
+    "includesInterest": false,
+    "summary": "Suspended the debt limit until January 2025 and capped discretionary spending for 2024 and 2025. CBO's estimate assumes future appropriations follow those caps.",
+    "source": {
+      "title": "CBO, Letter to Speaker McCarthy on the Budgetary Effects of H.R. 3746, the Fiscal Responsibility Act of 2023 (May 30, 2023)",
+      "url": "https://www.cbo.gov/system/files/2023-05/hr3746_Letter_McCarthy.pdf"
+    },
+    "why": "This one saved money. It held nondefense spending roughly flat for 2024 and limited its growth in 2025, and CBO's ten-year estimate assumes later spending grows only with inflation from that lower level. It also took back some unspent COVID-19 money and IRS funding. Lower spending means less borrowing, which also saves interest."
+  },
+  {
+    "id": "social-security-fairness-2025",
+    "name": "Social Security Fairness Act of 2023",
+    "shortName": "Social Security Fairness Act",
+    "signed": "2025-01-05",
+    "publicLaw": "P.L. 118-273",
+    "president": "Biden",
+    "kind": "spending",
+    "deficitEffect": 196,
+    "window": "2024–2034",
+    "includesInterest": false,
+    "summary": "Repealed the Windfall Elimination Provision and the Government Pension Offset, two rules that had reduced Social Security benefits for many people who also receive a pension from a job not covered by Social Security, such as some teachers and police officers.",
+    "source": {
+      "title": "CBO, Cost Estimate for H.R. 82, Social Security Fairness Act of 2023 (Sept 2024)",
+      "url": "https://www.cbo.gov/publication/60690"
+    },
+    "why": "It raised benefits for more than 3 million people, back to January 2024, and the higher benefits continue for the rest of their lives. The law added no new revenue, so the cost is paid from Social Security's trust funds and moves the date they run out a little earlier."
+  },
+  {
+    "id": "obbba-2025",
+    "name": "One Big Beautiful Bill Act",
+    "shortName": "OBBBA",
+    "signed": "2025-07-04",
+    "publicLaw": "P.L. 119-21",
+    "president": "Trump",
+    "kind": "mixed",
+    "deficitEffect": 3400,
+    "window": "2025–2034",
+    "includesInterest": false,
+    "summary": "Made most of the 2017 individual tax cuts permanent and added new tax breaks, such as deductions for tips and overtime pay. It also cut projected spending on Medicaid and food assistance and added money for defense and immigration enforcement.",
+    "source": {
+      "title": "CBO, Estimated Budgetary Effects of Public Law 119-21, to Provide for Reconciliation Pursuant to Title II of H. Con. Res. 14, Relative to CBO's January 2025 Baseline (July 21, 2025)",
+      "url": "https://www.cbo.gov/publication/61570"
+    },
+    "why": "Most of the cost is making the 2017 individual tax cuts permanent: they were set to expire after 2025, so CBO counts extending them as a new cost. New breaks, such as deductions for tips, overtime, car loan interest, and seniors, a higher limit on the state and local tax deduction, and more money for defense and immigration enforcement added more. Cuts to projected Medicaid and food assistance spending, mainly through work requirements and limits on how states finance their share, offset part of it."
   }
- },
- {
-  "id": "jgtrra-2003",
-  "name": "Jobs and Growth Tax Relief Reconciliation Act of 2003",
-  "shortName": "JGTRRA",
-  "signed": "2003-05-28",
-  "publicLaw": "P.L. 108-27",
-  "president": "Bush",
-  "kind": "tax",
-  "deficitEffect": 350,
-  "window": "2003–2013",
-  "includesInterest": false,
-  "summary": "Lowered tax rates on capital gains and dividends to 15 percent and sped up the income tax cuts passed in 2001. Many of its provisions were temporary.",
-  "source": {
-   "title": "CBO, Cost Estimate for H.R. 2, Jobs and Growth Tax Relief Reconciliation Act of 2003, as cleared by the Congress (May 23, 2003)",
-   "url": "https://cbo.gov/sites/default/files/108th-congress-2003-2004/costestimate/hr250.pdf"
-  }
- },
- {
-  "id": "mma-2003",
-  "name": "Medicare Prescription Drug, Improvement, and Modernization Act of 2003",
-  "shortName": "MMA",
-  "signed": "2003-12-08",
-  "publicLaw": "P.L. 108-173",
-  "president": "Bush",
-  "kind": "spending",
-  "deficitEffect": 395,
-  "window": "2004–2013",
-  "includesInterest": false,
-  "summary": "Created Medicare Part D, which helps people on Medicare pay for prescription drugs, and changed how Medicare pays private Medicare Advantage plans. Congress did not offset the cost of the new benefit with other cuts or taxes.",
-  "source": {
-   "title": "CBO, Letter on H.R. 1, the Medicare Prescription Drug, Improvement, and Modernization Act of 2003, as agreed to by the conferees (Nov 20, 2003)",
-   "url": "https://www.cbo.gov/publication/14637"
-  }
- },
- {
-  "id": "arra-2009",
-  "name": "American Recovery and Reinvestment Act of 2009",
-  "shortName": "Recovery Act",
-  "signed": "2009-02-17",
-  "publicLaw": "P.L. 111-5",
-  "president": "Obama",
-  "kind": "emergency",
-  "deficitEffect": 787,
-  "window": "2009–2019",
-  "includesInterest": false,
-  "summary": "Spent money on infrastructure, aid to states, and safety-net programs and cut taxes to help the economy recover from the 2008–2009 recession.",
-  "source": {
-   "title": "CBO, Cost Estimate for the Conference Agreement for H.R. 1, the American Recovery and Reinvestment Act of 2009 (Feb 13, 2009)",
-   "url": "https://www.cbo.gov/publication/24870"
-  }
- },
- {
-  "id": "aca-2010",
-  "name": "Patient Protection and Affordable Care Act and Health Care and Education Reconciliation Act of 2010",
-  "shortName": "ACA",
-  "signed": "2010-03-23",
-  "publicLaw": "P.L. 111-148 and P.L. 111-152",
-  "president": "Obama",
-  "kind": "mixed",
-  "deficitEffect": -143,
-  "window": "2010–2019",
-  "includesInterest": false,
-  "summary": "Expanded health coverage through Medicaid and subsidized private insurance and paid for it with Medicare payment reductions and new taxes. CBO scored the two 2010 health laws together, and its figure includes $19 billion in savings from changes to federal student loans.",
-  "source": {
-   "title": "CBO, Letter to Speaker Pelosi on H.R. 4872, the Reconciliation Act of 2010, combined with H.R. 3590 (Mar 20, 2010)",
-   "url": "https://www.cbo.gov/publication/21351"
-  }
- },
- {
-  "id": "tax-relief-act-2010",
-  "name": "Tax Relief, Unemployment Insurance Reauthorization, and Job Creation Act of 2010",
-  "shortName": "2010 Tax Relief Act",
-  "signed": "2010-12-17",
-  "publicLaw": "P.L. 111-312",
-  "president": "Obama",
-  "kind": "tax",
-  "deficitEffect": 858,
-  "window": "2011–2020",
-  "includesInterest": false,
-  "summary": "Extended the 2001 and 2003 income tax cuts for two more years, cut the Social Security payroll tax by 2 percentage points for 2011, and extended unemployment benefits.",
-  "source": {
-   "title": "JCT, Estimated Budget Effects of the Tax Relief, Unemployment Insurance Reauthorization, and Job Creation Act of 2010 (JCX-54-10, Dec 10, 2010)",
-   "url": "https://www.jct.gov/publications/2010/jcx-54-10/"
-  }
- },
- {
-  "id": "bca-2011",
-  "name": "Budget Control Act of 2011",
-  "shortName": "BCA",
-  "signed": "2011-08-02",
-  "publicLaw": "P.L. 112-25",
-  "president": "Obama",
-  "kind": "reduction",
-  "deficitEffect": -2100,
-  "window": "2012–2021",
-  "includesInterest": true,
-  "summary": "Raised the debt limit, capped yearly discretionary spending through 2021, and set up automatic spending cuts if a special congressional committee could not agree on further savings. CBO's figure of at least $2.1 trillion includes savings on interest.",
-  "source": {
-   "title": "CBO, Letter to Speaker Boehner and Senator Reid on the Budget Control Act of 2011 (Aug 1, 2011)",
-   "url": "https://www.cbo.gov/sites/default/files/112th-congress-2011-2012/costestimate/budgetcontrolactaug1.pdf"
-  }
- },
- {
-  "id": "atra-2012",
-  "name": "American Taxpayer Relief Act of 2012",
-  "shortName": "ATRA",
-  "signed": "2013-01-02",
-  "publicLaw": "P.L. 112-240",
-  "president": "Obama",
-  "kind": "tax",
-  "deficitEffect": 3971,
-  "window": "2013–2022",
-  "includesInterest": false,
-  "summary": "Made most of the 2001 and 2003 tax cuts permanent for households earning under $400,000 ($450,000 for married couples) and permanently indexed the alternative minimum tax to inflation. Most of the cost came from extending tax cuts that were scheduled to expire, because CBO's baseline assumed they would end.",
-  "source": {
-   "title": "CBO, Estimate of the Budgetary Effects of H.R. 8, the American Taxpayer Relief Act of 2012, as passed by the Senate on January 1, 2013",
-   "url": "https://cbo.gov/sites/default/files/112th-congress-2011-2012/costestimate/american-taxpayer-relief-act0.pdf"
-  }
- },
- {
-  "id": "path-act-2015",
-  "name": "Protecting Americans from Tax Hikes Act of 2015",
-  "shortName": "PATH Act",
-  "signed": "2015-12-18",
-  "publicLaw": "P.L. 114-113 (div. Q)",
-  "president": "Obama",
-  "kind": "tax",
-  "deficitEffect": 629,
-  "window": "2016–2025",
-  "includesInterest": false,
-  "summary": "Made permanent or extended dozens of expired tax breaks, including the research credit, the expanded child and earned income tax credits, and the American Opportunity Tax Credit for college costs.",
-  "source": {
-   "title": "JCT, Estimated Revenue Budget Effects of Division Q of Amendment #2 to the Senate Amendment to H.R. 2029, the Protecting Americans from Tax Hikes Act of 2015 (JCX-143-15, Dec 16, 2015)",
-   "url": "https://www.jct.gov/publications/2015/jcx-143-15/"
-  }
- },
- {
-  "id": "tcja-2017",
-  "name": "Tax Cuts and Jobs Act",
-  "shortName": "TCJA",
-  "signed": "2017-12-22",
-  "publicLaw": "P.L. 115-97",
-  "president": "Trump",
-  "kind": "tax",
-  "deficitEffect": 1456,
-  "window": "2018–2027",
-  "includesInterest": false,
-  "summary": "Cut individual and corporate income tax rates, nearly doubled the standard deduction, and expanded the child tax credit. Most of the individual tax cuts were set to expire after 2025.",
-  "source": {
-   "title": "JCT, Estimated Budget Effects of the Conference Agreement for H.R. 1, the Tax Cuts and Jobs Act (JCX-67-17, Dec 18, 2017)",
-   "url": "https://www.jct.gov/publications/2017/jcx-67-17/"
-  }
- },
- {
-  "id": "bba-2018",
-  "name": "Bipartisan Budget Act of 2018",
-  "shortName": "BBA 2018",
-  "signed": "2018-02-09",
-  "publicLaw": "P.L. 115-123",
-  "president": "Trump",
-  "kind": "spending",
-  "deficitEffect": 320,
-  "window": "2018–2027",
-  "includesInterest": false,
-  "summary": "Raised the caps on defense and nondefense spending for 2018 and 2019 and provided disaster aid after the 2017 hurricanes and wildfires. Only a small part of the cost was offset by savings elsewhere.",
-  "source": {
-   "title": "CBO, Cost Estimate for the Bipartisan Budget Act of 2018, Senate Amendment 1930 to H.R. 1892 (Feb 8, 2018)",
-   "url": "https://www.cbo.gov/publication/53556"
-  }
- },
- {
-  "id": "bba-2019",
-  "name": "Bipartisan Budget Act of 2019",
-  "shortName": "BBA 2019",
-  "signed": "2019-08-02",
-  "publicLaw": "P.L. 116-37",
-  "president": "Trump",
-  "kind": "spending",
-  "deficitEffect": 1500,
-  "window": "2020–2029",
-  "includesInterest": false,
-  "summary": "Raised the caps on defense and nondefense spending for 2020 and 2021 and suspended the debt limit until mid-2021. CBO's figure assumes the higher 2021 funding level continues and grows with inflation after the caps expire.",
-  "source": {
-   "title": "CBO, An Update to the Budget and Economic Outlook: 2019 to 2029 (Aug 21, 2019)",
-   "url": "https://www.cbo.gov/publication/55551"
-  }
- },
- {
-  "id": "ffcra-2020",
-  "name": "Families First Coronavirus Response Act",
-  "shortName": "FFCRA",
-  "signed": "2020-03-18",
-  "publicLaw": "P.L. 116-127",
-  "president": "Trump",
-  "kind": "emergency",
-  "deficitEffect": 192,
-  "window": "2020–2030",
-  "includesInterest": false,
-  "summary": "Required many employers to provide paid sick and family leave during the COVID-19 pandemic, with tax credits to cover the cost, and made coronavirus testing free. It also increased food aid and federal Medicaid funding to states.",
-  "source": {
-   "title": "CBO, Preliminary Estimate of H.R. 6201, Families First Coronavirus Response Act (Apr 2, 2020)",
-   "url": "https://www.cbo.gov/publication/56316"
-  }
- },
- {
-  "id": "cares-act-2020",
-  "name": "Coronavirus Aid, Relief, and Economic Security Act",
-  "shortName": "CARES Act",
-  "signed": "2020-03-27",
-  "publicLaw": "P.L. 116-136",
-  "president": "Trump",
-  "kind": "emergency",
-  "deficitEffect": 1721,
-  "window": "2020–2030",
-  "includesInterest": false,
-  "summary": "Sent $1,200 payments to most adults, expanded unemployment benefits, and created the Paycheck Protection Program of forgivable loans to small businesses. It also provided aid to hospitals, airlines, and state and local governments.",
-  "source": {
-   "title": "CBO, Preliminary Estimate of H.R. 748, the CARES Act, Public Law 116-136 (Apr 16, 2020; revised Apr 27, 2020)",
-   "url": "https://www.cbo.gov/publication/56334"
-  }
- },
- {
-  "id": "ppp-health-care-act-2020",
-  "name": "Paycheck Protection Program and Health Care Enhancement Act",
-  "shortName": "PPP and Health Care Act",
-  "signed": "2020-04-24",
-  "publicLaw": "P.L. 116-139",
-  "president": "Trump",
-  "kind": "emergency",
-  "deficitEffect": 483,
-  "window": "2020–2030",
-  "includesInterest": false,
-  "summary": "Added money to the Paycheck Protection Program and to small business disaster loans and provided more funding for hospitals and COVID-19 testing.",
-  "source": {
-   "title": "CBO, Estimate for H.R. 266, Paycheck Protection Program and Health Care Enhancement Act (Apr 22, 2020)",
-   "url": "https://www.cbo.gov/publication/56338"
-  }
- },
- {
-  "id": "caa-2021-covid",
-  "name": "Consolidated Appropriations Act, 2021 (COVID-19 relief divisions)",
-  "shortName": "Dec. 2020 COVID relief",
-  "signed": "2020-12-27",
-  "publicLaw": "P.L. 116-260 (divs. M and N)",
-  "president": "Trump",
-  "kind": "emergency",
-  "deficitEffect": 868,
-  "window": "2021–2030",
-  "includesInterest": false,
-  "summary": "This figure covers only the COVID-19 relief in the December 2020 spending law, which sent $600 payments to most adults, added $300 a week to unemployment benefits, and reopened the Paycheck Protection Program. The rest of the law funded regular government operations and is not counted here.",
-  "source": {
-   "title": "CBO, The Budgetary Effects of Major Laws Enacted in Response to the 2020–2021 Coronavirus Pandemic (Sept 2021), entry for divisions M and N of P.L. 116-260",
-   "url": "https://cbo.gov/system/files/2021-09/57343-Pandemic.pdf"
-  }
- },
- {
-  "id": "arpa-2021",
-  "name": "American Rescue Plan Act of 2021",
-  "shortName": "ARPA",
-  "signed": "2021-03-11",
-  "publicLaw": "P.L. 117-2",
-  "president": "Biden",
-  "kind": "emergency",
-  "deficitEffect": 1856,
-  "window": "2021–2030",
-  "includesInterest": false,
-  "summary": "Sent $1,400 payments to most Americans, extended expanded unemployment benefits, and temporarily expanded the child tax credit. It also gave aid to state and local governments, schools, and COVID-19 vaccine and testing programs.",
-  "source": {
-   "title": "CBO, Estimated Budgetary Effects of H.R. 1319, American Rescue Plan Act of 2021, as passed by the Senate (Mar 10, 2021)",
-   "url": "https://www.cbo.gov/publication/57056"
-  }
- },
- {
-  "id": "iija-2021",
-  "name": "Infrastructure Investment and Jobs Act",
-  "shortName": "IIJA",
-  "signed": "2021-11-15",
-  "publicLaw": "P.L. 117-58",
-  "president": "Biden",
-  "kind": "spending",
-  "deficitEffect": 256,
-  "window": "2021–2031",
-  "includesInterest": false,
-  "summary": "Increased funding for roads, bridges, transit, rail, broadband, water systems, and the electric grid. Some of the cost was offset by savings elsewhere in the budget.",
-  "source": {
-   "title": "CBO, Cost Estimate for Senate Amendment 2137 to H.R. 3684, the Infrastructure Investment and Jobs Act (Aug 5, 2021; revised Aug 9, 2021)",
-   "url": "https://www.cbo.gov/publication/57406"
-  }
- },
- {
-  "id": "chips-2022",
-  "name": "CHIPS and Science Act",
-  "shortName": "CHIPS Act",
-  "signed": "2022-08-09",
-  "publicLaw": "P.L. 117-167",
-  "president": "Biden",
-  "kind": "spending",
-  "deficitEffect": 79,
-  "window": "2022–2031",
-  "includesInterest": false,
-  "summary": "Provided grants and a tax credit to encourage computer chip manufacturing in the United States and authorized more money for scientific research. The figure covers money the law provided directly; most of the research funding depends on future appropriations.",
-  "source": {
-   "title": "CBO, Estimated Budgetary Effects of H.R. 4346, the CHIPS Act of 2022, as amended by the Senate (July 21, 2022)",
-   "url": "https://www.cbo.gov/publication/58319"
-  }
- },
- {
-  "id": "pact-act-2022",
-  "name": "Honoring our PACT Act of 2022",
-  "shortName": "PACT Act",
-  "signed": "2022-08-10",
-  "publicLaw": "P.L. 117-168",
-  "president": "Biden",
-  "kind": "spending",
-  "deficitEffect": 797,
-  "window": "2022–2032",
-  "includesInterest": false,
-  "summary": "Expanded health care and disability benefits for veterans exposed to toxic substances, such as smoke from military burn pits, and created a fund to pay for their care.",
-  "source": {
-   "title": "CBO, Legislation Enacted in the Second Session of the 117th Congress That Affects Mandatory Spending or Revenues (Mar 2023)",
-   "url": "https://www.cbo.gov/publication/58956"
-  }
- },
- {
-  "id": "ira-2022",
-  "name": "Inflation Reduction Act of 2022",
-  "shortName": "IRA",
-  "signed": "2022-08-16",
-  "publicLaw": "P.L. 117-169",
-  "president": "Biden",
-  "kind": "mixed",
-  "deficitEffect": -58,
-  "window": "2022–2031",
-  "includesInterest": false,
-  "summary": "Funded clean energy tax credits, extended larger health insurance subsidies, and let Medicare negotiate some drug prices, offset by a minimum tax on large corporations, a tax on stock buybacks, and Medicare drug savings. CBO's official score leaves out about $180 billion in extra revenue it expected from stronger IRS enforcement, which scoring rules do not count.",
-  "source": {
-   "title": "CBO, Estimated Budgetary Effects of Public Law 117-169, to Provide for Reconciliation Pursuant to Title II of S. Con. Res. 14 (Sept 7, 2022)",
-   "url": "https://www.cbo.gov/publication/58455"
-  }
- },
- {
-  "id": "fra-2023",
-  "name": "Fiscal Responsibility Act of 2023",
-  "shortName": "FRA",
-  "signed": "2023-06-03",
-  "publicLaw": "P.L. 118-5",
-  "president": "Biden",
-  "kind": "reduction",
-  "deficitEffect": -1500,
-  "window": "2023–2033",
-  "includesInterest": false,
-  "summary": "Suspended the debt limit until January 2025 and capped discretionary spending for 2024 and 2025. CBO's estimate assumes future appropriations follow those caps.",
-  "source": {
-   "title": "CBO, Letter to Speaker McCarthy on the Budgetary Effects of H.R. 3746, the Fiscal Responsibility Act of 2023 (May 30, 2023)",
-   "url": "https://www.cbo.gov/system/files/2023-05/hr3746_Letter_McCarthy.pdf"
-  }
- },
- {
-  "id": "social-security-fairness-2025",
-  "name": "Social Security Fairness Act of 2023",
-  "shortName": "Social Security Fairness Act",
-  "signed": "2025-01-05",
-  "publicLaw": "P.L. 118-273",
-  "president": "Biden",
-  "kind": "spending",
-  "deficitEffect": 196,
-  "window": "2024–2034",
-  "includesInterest": false,
-  "summary": "Repealed the Windfall Elimination Provision and the Government Pension Offset, two rules that had reduced Social Security benefits for many people who also receive a pension from a job not covered by Social Security, such as some teachers and police officers.",
-  "source": {
-   "title": "CBO, Cost Estimate for H.R. 82, Social Security Fairness Act of 2023 (Sept 2024)",
-   "url": "https://www.cbo.gov/publication/60690"
-  }
- },
- {
-  "id": "obbba-2025",
-  "name": "One Big Beautiful Bill Act",
-  "shortName": "OBBBA",
-  "signed": "2025-07-04",
-  "publicLaw": "P.L. 119-21",
-  "president": "Trump",
-  "kind": "mixed",
-  "deficitEffect": 3400,
-  "window": "2025–2034",
-  "includesInterest": false,
-  "summary": "Made most of the 2017 individual tax cuts permanent and added new tax breaks, such as deductions for tips and overtime pay. It also cut projected spending on Medicaid and food assistance and added money for defense and immigration enforcement.",
-  "source": {
-   "title": "CBO, Estimated Budgetary Effects of Public Law 119-21, to Provide for Reconciliation Pursuant to Title II of H. Con. Res. 14, Relative to CBO's January 2025 Baseline (July 21, 2025)",
-   "url": "https://www.cbo.gov/publication/61570"
-  }
- }
 ]

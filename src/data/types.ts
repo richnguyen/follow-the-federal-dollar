@@ -210,6 +210,8 @@ export interface Law {
   window: string;
   includesInterest: boolean;
   summary: string;
+  /** Plain-language explanation of what drove the estimate. */
+  why?: string;
   source: { title: string; url: string };
 }
 

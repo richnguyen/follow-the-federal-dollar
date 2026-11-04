@@ -3,44 +3,29 @@ import { Stars } from '../components/game';
 import { Section } from '../components/ui';
 import { budget } from '../data';
 import { moneyWords } from '../lib/format';
-import { loadProgress } from '../lib/game';
 import { OPTIONS_DATA } from '../lib/planData';
 import { useVotes } from '../lib/votes';
-import { ALL_STOPS, DESK, isUnlocked, LEVELS, unlockText } from './levels';
+import { LevelIcon, LockIcon } from './icons';
+import { isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } from './levels';
 import { ReadingSettings } from './Settings';
 import { useJourney } from './state';
 import { SamSays, UncleSam } from './UncleSam';
 
-// The order players meet the stops: four chapters, then the first desk mission, and so on.
-export const PATH = ['level-1', 'level-2', 'level-3', 'level-4', 'desk-normal', 'level-5', 'level-6', 'desk-hard', 'level-7', 'desk-expert'];
+export { LockIcon } from './icons';
 
-const RANKS = [
-  { at: 0, name: 'New volunteer' },
-  { at: 2, name: 'Budget aide' },
-  { at: 4, name: 'Budget analyst' },
-  { at: 7, name: 'Senior budget adviser' },
-  { at: PATH.length, name: 'Informed Budget Voter' },
-];
-export const rankFor = (n: number) => [...RANKS].reverse().find((r) => n >= r.at)!;
-
-function stopInfo(id: string) {
-  const l = LEVELS.find((x) => x.id === id);
-  if (l) return { id, kind: 'level' as const, num: `Level ${l.n}`, title: l.title, topic: l.topic, difficulty: l.difficulty, minutes: l.minutes, badge: l.badge };
-  const d = DESK.find((x) => x.id === id)!;
-  return { id, kind: 'desk' as const, num: 'Budget desk', title: d.title, topic: 'Balance Uncle Sam’s books with real options CBO has priced', difficulty: d.difficulty, minutes: d.minutes, badge: `${d.difficulty} mission` };
-}
+const hard = (d: string) => d === 'Hard' || d === 'Super hard';
+const pillFor = (d: string) => (d === 'Easy' ? 'pill-ok' : d === 'Medium' ? 'pill-warn' : 'pill-crit');
 
 export default function Journey() {
   const j = useJourney();
   const votes = useVotes();
-  const game = loadProgress();
-  const done = PATH.filter((id) => j.done.includes(id));
-  const nextId = PATH.find((id) => !j.done.includes(id) && isUnlocked(id, j.done, j.settings.freeRoam));
-  const next = nextId ? stopInfo(nextId) : null;
-  const minutesLeft = ALL_STOPS.filter((s) => !j.done.includes(s.id)).reduce((a, s) => a + s.minutes, 0);
-  const total = ALL_STOPS.reduce((a, s) => a + s.minutes, 0);
+  const done = STOPS.filter((s) => j.done.includes(s.id));
+  const next = STOPS.find((s) => !j.done.includes(s.id) && isUnlocked(s.id, j.done, j.settings.freeRoam)) ?? null;
+  const minutesLeft = STOPS.filter((s) => !j.done.includes(s.id)).reduce((a, s) => a + s.minutes, 0);
+  const total = STOPS.reduce((a, s) => a + s.minutes, 0);
+  const stars = STOPS.reduce((a, s) => a + (j.stars[s.id] ?? 0), 0);
   const rank = rankFor(done.length);
-  const finished = done.length === PATH.length;
+  const finished = done.length === STOPS.length;
   const fresh = !j.started && done.length === 0;
   const T = budget.receiptsByFY[String(budget.latestFY)]?.reduce((s, r) => s + r.amount, 0) ?? 0;
 
@@ -50,15 +35,17 @@ export default function Journey() {
         <div className="journey-copy">
           <div className="eyebrow">A civic game about the federal budget</div>
           <h1 className="page-title">Help Uncle Sam balance the budget</h1>
-          <SamSays mood={finished ? 'proud' : fresh ? 'happy' : 'thinking'} size={150}>
+          <SamSays mood={finished ? 'cheering' : fresh ? 'happy' : next && hard(next.difficulty) ? 'worried' : 'thinking'} size={150} auto>
             {finished
               ? <>We did it, partner. You’ve seen where every dollar comes from and goes, and you’ve weighed in on the big choices. That makes you an informed budget voter.</>
               : fresh
                 ? <>Howdy. I’m Uncle Sam. I took in {moneyWords(T)} last year, and I still spent more than I made. I need a level-headed adviser to help me understand my books and decide what to do. Got a few minutes?</>
-                : <>Welcome back. You’re my {rank.name.toLowerCase()} now. Let’s pick up where we left off.</>}
+                : next && hard(next.difficulty)
+                  ? <>Welcome back, {rank.name.toLowerCase()}. Next up is a hard one: level {next.n}, where we try to fix my budget ourselves. Take your time; the hint is free.</>
+                  : <>Welcome back. You’re my {rank.name.toLowerCase()} now. Let’s pick up where we left off.</>}
           </SamSays>
           <div className="sb-actions">
-            {next && <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: ${next.num}${next.kind === 'level' ? `, ${next.title}` : ` (${next.difficulty})`}`}</a>}
+            {next && <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a>}
             <a className="btn" href="#overview">Skip the game and read the guide</a>
           </div>
         </div>
@@ -67,30 +54,34 @@ export default function Journey() {
             <span className="stat-label">Your title</span>
             <strong>{rank.name}</strong>
           </div>
-          <div className="jp-bar" role="progressbar" aria-valuemin={0} aria-valuemax={PATH.length} aria-valuenow={done.length} aria-label={`${done.length} of ${PATH.length} stops done`}>
-            {PATH.map((id) => <span key={id} data-done={j.done.includes(id)} data-desk={id.startsWith('desk')} />)}
+          <div className="jp-bar" role="progressbar" aria-valuemin={0} aria-valuemax={STOPS.length} aria-valuenow={done.length} aria-label={`${done.length} of ${STOPS.length} levels done`}>
+            {STOPS.map((s) => <span key={s.id} data-done={j.done.includes(s.id)} data-desk={s.kind === 'desk'} />)}
           </div>
-          <div className="small"><strong>{done.length} of {PATH.length}</strong> stops done · {finished ? 'all done' : `about ${minutesLeft} of ${total} minutes left`}</div>
-          <p className="small muted">Each level turns official reports into a few short steps, a couple of questions, and one vote. The full chapters and original documents are always one click away.</p>
+          <div className="small"><strong>{done.length} of {STOPS.length}</strong> levels · <strong>★ {stars}</strong> of {MAX_STARS} stars · {finished ? 'all done' : `about ${minutesLeft} of ${total} minutes left`}</div>
+          <p className="small muted">Easy levels explain one part of the budget in a few short steps, a couple of questions, and one vote. Every few levels comes a hard one at the budget desk, where you fix the budget yourself. The full chapters and original documents are always one click away.</p>
         </div>
       </section>
 
-      <Section id="map" title="The road map" sub="Levels get harder as you go. Finishing chapters unlocks the budget desk, where you try to fix the budget yourself.">
+      <Section id="map" title="The road map" sub="Ten levels. Easy chapters build up to three hard budget-desk levels, so a tough level is always followed by a breather.">
         <ol className="roadmap">
-          {PATH.map((id, k) => {
-            const s = stopInfo(id);
-            const isDone = j.done.includes(id);
-            const open = isUnlocked(id, j.done, j.settings.freeRoam);
-            const stars = s.kind === 'desk' ? game.stars[DESK.find((d) => d.id === id)!.goal] ?? 0 : 0;
+          {STOPS.map((s) => {
+            const isDone = j.done.includes(s.id);
+            const open = isUnlocked(s.id, j.done, j.settings.freeRoam);
+            const st = j.stars[s.id] ?? 0;
             return (
-              <li key={id} className="stop" data-done={isDone} data-open={open} data-kind={s.kind} data-next={id === nextId}>
-                <span className="stop-node" aria-hidden="true">{isDone ? '✓' : open ? k + 1 : <LockIcon />}</span>
+              <li key={s.id} className="stop" data-done={isDone} data-open={open} data-kind={s.kind} data-hard={hard(s.difficulty)} data-next={s.id === next?.id}>
+                <span className="stop-node" aria-hidden="true">{open || isDone ? <LevelIcon id={s.icon} size={20} /> : <LockIcon />}</span>
                 <div className="stop-body">
-                  <div className="stop-meta"><span>{s.num}</span><span className={'pill ' + (s.difficulty === 'Easy' || s.difficulty === 'Normal' ? 'pill-ok' : s.difficulty === 'Medium' || s.difficulty === 'Hard' ? 'pill-warn' : 'pill-crit')}>{s.difficulty}</span><span className="muted">about {s.minutes} min</span>{s.kind === 'desk' && stars > 0 && <Stars n={stars} size="sm" label={`Best: ${stars} of 3 stars`} />}</div>
-                  <h3 className="stop-title">{open ? <a href={'#' + id}>{s.title}</a> : s.title}</h3>
-                  <div className="small muted">{open ? s.topic : unlockText(id)}</div>
+                  <div className="stop-meta">
+                    <span>Level {s.n}</span>
+                    <span className={'pill ' + pillFor(s.difficulty)}>{s.difficulty}{s.kind === 'desk' ? ' level' : ''}</span>
+                    <span className="muted">about {s.minutes} min</span>
+                    {isDone && <Stars n={st} size="sm" label={`${st} of 3 stars`} />}
+                  </div>
+                  <h3 className="stop-title">{open ? <a href={'#' + s.id}>{s.title}</a> : s.title}</h3>
+                  <div className="small muted">{open ? s.topic : unlockText(s.id)}</div>
                 </div>
-                {open && <a className={'btn' + (id === nextId ? ' btn-primary' : '')} href={'#' + id} aria-label={`${isDone ? 'Replay' : 'Play'} ${s.num}: ${s.title}`}>{isDone ? 'Replay' : id === nextId ? 'Play' : 'Open'}</a>}
+                {open && <a className={'btn' + (s.id === next?.id ? ' btn-primary' : '')} href={'#' + s.id} aria-label={`${isDone ? 'Replay' : 'Play'} level ${s.n}: ${s.title}`}>{isDone ? 'Replay' : s.id === next?.id ? 'Play' : 'Open'}</a>}
               </li>
             );
           })}
@@ -103,21 +94,12 @@ export default function Journey() {
 
       <Section id="awards" title="Certificates" sub="Earn one for each level you finish. Saved in this browser only.">
         <div className="badges">
-          {LEVELS.map((l) => {
+          {STOPS.map((l) => {
             const got = j.done.includes(l.id);
             return (
               <div key={l.id} className="badge" data-got={got}>
-                <span className="badge-medal" aria-hidden="true">{got ? '★' : l.n}</span>
-                <div><strong>{l.badge}: explained</strong><div className="small muted">{got ? `Level ${l.n} complete` : `Finish level ${l.n}, ${l.title}`}</div></div>
-              </div>
-            );
-          })}
-          {DESK.map((d) => {
-            const got = j.done.includes(d.id);
-            return (
-              <div key={d.id} className="badge" data-got={got}>
-                <span className="badge-medal" aria-hidden="true">{got ? '★' : '$'}</span>
-                <div><strong>Budget desk: {d.difficulty}</strong><div className="small muted">{got ? 'Mission complete' : d.title}</div></div>
+                <span className="badge-medal" aria-hidden="true">{got ? <LevelIcon id={l.icon} size={18} /> : l.n}</span>
+                <div><strong>{l.badge}</strong><div className="small muted">{got ? `Level ${l.n} complete · ${'★'.repeat(j.stars[l.id] ?? 0)}` : `Finish level ${l.n}, ${l.title}`}</div></div>
               </div>
             );
           })}
@@ -208,6 +190,3 @@ function Ballot() {
   );
 }
 
-export function LockIcon() {
-  return <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="6" width="9" height="6.5" rx="1.5" fill="currentColor" /><path d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>;
-}

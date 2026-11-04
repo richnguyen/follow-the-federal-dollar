@@ -8,7 +8,9 @@ import { dateLabel, dollars, money, moneyWords, pct, people } from '../lib/forma
 import { OPTIONS_DATA } from '../lib/planData';
 import { estimateTaxes } from '../lib/tax';
 import type { FilingStatus } from '../data/types';
-import type { Mood } from './UncleSam';
+import type { Mood } from './voice';
+import { LawExplorer } from './LawExplorer';
+import { QUOTES, type Quote } from './quotes';
 
 // ---------------------------------------------------------------------------------------------
 // The seven chapter levels. Every number Uncle Sam says, and every quiz answer, is computed from
@@ -31,13 +33,17 @@ export interface Step {
   vote?: VoteSpec;
 }
 
+export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Super hard';
+export type IconId = 'paycheck' | 'bills' | 'home' | 'gap' | 'gauge' | 'card' | 'capitol' | 'target' | 'shield' | 'scale';
+
 export interface Level {
   id: string;
   n: number;
   title: string;
   topic: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty: Difficulty;
   minutes: number;
+  icon: IconId;
   badge: string;
   steps: Step[];
   takeaways: string[];
@@ -185,7 +191,7 @@ const mixChoices = [{ value: 'taxes', label: 'Mostly tax increases' }, { value: 
 
 export const LEVELS: Level[] = [
   {
-    id: 'level-1', n: 1, title: 'Uncle Sam’s paycheck', topic: 'Where the money comes from', difficulty: 'Easy', minutes: 4, badge: 'Revenue basics',
+    id: 'level-1', n: 1, title: 'Uncle Sam’s paycheck', topic: 'Where the money comes from', difficulty: 'Easy', minutes: 4, icon: 'paycheck', badge: 'Revenue basics',
     steps: [
       { id: 'meet', label: 'Meet Uncle Sam', kind: 'story', mood: 'happy', sam: <>Howdy, I’m Uncle Sam. I’m a regular guy with a very big household: {people(POP)} of you. Like plenty of families, I spend more than I bring in, and I could use your help sorting it out. Let’s start with my paycheck.</> },
       { id: 'sources', label: 'Where it comes from', kind: 'facts', mood: 'thinking', sam: <>Last year I brought in {moneyWords(T.receipts)}. Most of it comes from your paychecks.</>,
@@ -206,7 +212,7 @@ export const LEVELS: Level[] = [
     sources: ['mts9', 'mts4', 'irs-rp2532', 'irs-p15'],
   },
   {
-    id: 'level-2', n: 2, title: 'Uncle Sam’s bills', topic: 'Where the money goes', difficulty: 'Easy', minutes: 5, badge: 'Spending basics',
+    id: 'level-2', n: 2, title: 'Uncle Sam’s bills', topic: 'Where the money goes', difficulty: 'Easy', minutes: 5, icon: 'bills', badge: 'Spending basics',
     steps: [
       { id: 'intro', label: 'The bills', kind: 'story', mood: 'thinking', sam: <>Now the bills. I spent {moneyWords(T.outlays)} last year. That’s about {money(T.outlays / 365)} a day, or {dollars(T.outlays / HH)} for every household.</> },
       { id: 'every100', label: 'Every $100', kind: 'facts', mood: 'thinking', sam: <>Here’s where every $100 went. Point at a row to light it up.</>, body: () => <WaffleBlock /> },
@@ -238,7 +244,7 @@ export const LEVELS: Level[] = [
     sources: ['mts9', 'mts5', 'omb-hist'],
   },
   {
-    id: 'level-3', n: 3, title: 'Back home', topic: 'Federal money in your state', difficulty: 'Easy', minutes: 4, badge: 'Federal money at home',
+    id: 'level-3', n: 3, title: 'Back home', topic: 'Federal money in your state', difficulty: 'Easy', minutes: 4, icon: 'home', badge: 'Federal money at home',
     steps: [
       { id: 'intro', label: 'Neighbors', kind: 'story', mood: 'happy', sam: <>A lot of what I spend ends up right in your neighborhood: Social Security checks, Medicaid, highways, schools, and military bases. Let’s look at your state.</> },
       { id: 'state', label: 'Your state', kind: 'try', mood: 'proud', sam: <>Pick your state. These are federal grants, contracts, and payments recorded for FY{geo.fy}.</>, body: () => <StateTry /> },
@@ -253,7 +259,7 @@ export const LEVELS: Level[] = [
     sources: ['usaspending-geo', 'usaspending-cat'],
   },
   {
-    id: 'level-4', n: 4, title: 'Spending more than I make', topic: 'Deficits and the structural gap', difficulty: 'Medium', minutes: 5, badge: 'Deficits explained',
+    id: 'level-4', n: 4, title: 'Spending more than I make', topic: 'Deficits and the structural gap', difficulty: 'Medium', minutes: 5, icon: 'gap', badge: 'Deficits',
     steps: [
       { id: 'intro', label: 'The problem', kind: 'story', mood: 'worried', sam: <>Here’s my real problem. It isn’t one bad month. I’ve borrowed every single year since {LAST_SURPLUS + 1}. Last year the gap was {moneyWords(T.deficit)}.</> },
       { id: 'gap', label: 'The gap', kind: 'facts', mood: 'worried', sam: <>The dark band is spending that runs on autopilot, plus interest. The light band on top is what Congress votes on each year. The line is everything I take in. Lately the line barely clears the dark band.</>, body: () => <GapChart /> },
@@ -276,7 +282,7 @@ export const LEVELS: Level[] = [
     links: ['multipliers', 'composition'].map((id) => principle(id)).filter(Boolean).map((p) => ({ title: p!.source.title, url: p!.source.url })),
   },
   {
-    id: 'level-5', n: 5, title: 'The credit card', topic: 'Debt and interest', difficulty: 'Medium', minutes: 5, badge: 'Debt and interest explained',
+    id: 'level-6', n: 6, title: 'The credit card', topic: 'Debt and interest', difficulty: 'Medium', minutes: 5, icon: 'card', badge: 'Debt and interest',
     steps: [
       { id: 'intro', label: 'The balance', kind: 'story', mood: 'worried', sam: <>All that borrowing goes on the card. My total debt was {money(D.total)} on {dateLabel(D.date)}. That’s about {dollars(D.total / HH)} per household.</> },
       { id: 'who', label: 'Who I owe', kind: 'facts', mood: 'thinking', sam: <>Most of it I owe to investors, banks, other countries, and the Federal Reserve. The rest I owe to my own trust funds, like Social Security.</>,
@@ -321,7 +327,7 @@ export const LEVELS: Level[] = [
     sources: ['penny', 'debtHist', 'rates', 'mts9'],
   },
   {
-    id: 'level-6', n: 6, title: 'Who writes my budget?', topic: 'How Congress budgets, and the laws that moved the needle', difficulty: 'Hard', minutes: 6, badge: 'Budget process explained',
+    id: 'level-7', n: 7, title: 'Who writes my budget?', topic: 'How Congress budgets, and the laws that moved the needle', difficulty: 'Medium', minutes: 7, icon: 'capitol', badge: 'The budget process',
     steps: [
       { id: 'intro', label: 'Kitchen table', kind: 'story', mood: 'thinking', sam: <>In my house we sit down at the kitchen table once a year and plan. Congress is supposed to do the same, with a deadline of October 1. Let’s see how that’s going.</> },
       { id: 'paper', label: 'On paper vs. practice', kind: 'facts', mood: 'worried', sam: <>On paper it’s orderly. In practice, Congress usually misses the deadline and passes stopgaps called <Term id="cr">continuing resolutions</Term>.</>,
@@ -336,11 +342,8 @@ export const LEVELS: Level[] = [
         id: 'l6q1', question: 'When did Congress last pass all of its regular spending bills on time?',
         choices: ['FY2019', `FY${process.lastAllOnTime?.fy ?? 1997}`, 'FY2009'], correct: 1,
         explain: <>{process.lastAllOnTime?.note ?? 'All regular bills were last enacted on time in FY1997.'}</> } },
-      { id: 'laws', label: 'Laws that moved it', kind: 'facts', mood: 'surprised', sam: <>Deficits are written into law. Here are the biggest laws of the past 25 years, with the official estimates made when each passed.</>,
-        body: () => {
-          const top = laws.filter((l) => top7ids.includes(l.id)).sort((a, b) => Math.abs(b.deficitEffect) - Math.abs(a.deficitEffect));
-          return <ChartFrame title="Ten-year effect on deficits, as estimated when each law passed" legend={<Legend items={[{ label: 'Added to deficits', color: 'var(--div-pos)' }, { label: 'Reduced deficits', color: 'var(--div-neg)' }]} />} sourceIds={[]} note={<a href="#laws">All {laws.length} laws, with links to each CBO or JCT estimate</a>}><BarList items={top.map((l) => ({ id: l.id, label: `${l.shortName} (${l.signed.slice(0, 4)})`, value: Math.abs(l.deficitEffect) * 1e9, color: l.deficitEffect > 0 ? 'var(--div-pos)' : 'var(--div-neg)' }))} format={(v) => money(v)} /></ChartFrame>;
-        } },
+      { id: 'laws', label: 'Laws that moved it', kind: 'facts', mood: 'surprised', sam: <>Deficits are written into law. Here are the biggest laws of the past 25 years, with the official estimates made when each passed. Tap one to see what it did and why it cost so much.</>,
+        body: () => <LawExplorer /> },
       { id: 'q2', label: 'Quick check', kind: 'quiz', quiz: {
         id: 'l6q2', question: 'Which of these laws was officially estimated to reduce deficits?',
         choices: lawChoices.map((l) => `${l.name} (${l.signed.slice(0, 4)})`), correct: 1,
@@ -356,7 +359,7 @@ export const LEVELS: Level[] = [
     links: [...process.sources, ...laws.filter((l) => top7ids.includes(l.id)).map((l) => l.source)].filter((x) => x.url),
   },
   {
-    id: 'level-7', n: 7, title: 'Keeping my promises', topic: 'Social Security’s future', difficulty: 'Hard', minutes: 6, badge: 'Social Security explained',
+    id: 'level-9', n: 9, title: 'Keeping my promises', topic: 'Social Security’s future', difficulty: 'Medium', minutes: 6, icon: 'shield', badge: 'Social Security',
     steps: [
       { id: 'intro', label: 'A promise', kind: 'story', mood: 'proud', sam: <>I made a promise to the folks who worked their whole lives. Social Security pays about {ssa.beneficiaries ? people(ssa.beneficiaries.total) : '71 million'} people. But its savings are running down.</> },
       { id: 'fund', label: 'The savings', kind: 'facts', mood: 'worried', sam: <>Since FY{ssa.oasdi.find((r) => r.year >= 2015 && r.cost > r.income)?.year ?? 2021} the program has paid out more than it takes in each year, so the trust fund is shrinking.</>,
@@ -394,30 +397,41 @@ export const LEVELS: Level[] = [
   },
 ];
 
-/** The budget desk: the three balancing missions, unlocked by finishing chapter levels. */
-export const DESK = [
-  { id: 'desk-normal', goal: 'stabilize' as const, title: 'Stop the debt from outgrowing the economy', short: 'Budget desk: Normal', difficulty: 'Normal', minutes: 8, needs: { levels: 4, desk: null as string | null } },
-  { id: 'desk-hard', goal: 'deficit3' as const, title: 'Cut the deficit to 3% of GDP', short: 'Budget desk: Hard', difficulty: 'Hard', minutes: 8, needs: { levels: 6, desk: 'desk-normal' } },
-  { id: 'desk-expert', goal: 'balance' as const, title: 'Balance the budget', short: 'Budget desk: Expert', difficulty: 'Expert', minutes: 10, needs: { levels: 7, desk: 'desk-hard' } },
+/** The budget desk levels: the hard "wall" levels where the player fixes the budget with real options. */
+export interface DeskLevel { id: string; n: number; goal: 'stabilize' | 'deficit3' | 'balance'; title: string; topic: string; difficulty: Difficulty; minutes: number; icon: IconId; badge: string }
+export const DESK: DeskLevel[] = [
+  { id: 'level-5', n: 5, goal: 'stabilize', title: 'Stop the debt from outgrowing the economy', topic: 'Budget desk: fix the budget with real options CBO has priced', difficulty: 'Hard', minutes: 8, icon: 'gauge', badge: 'Debt stabilized' },
+  { id: 'level-8', n: 8, goal: 'deficit3', title: 'Cut the deficit to 3% of GDP', topic: 'Budget desk: a bigger fix, with the same rules', difficulty: 'Hard', minutes: 8, icon: 'target', badge: 'Deficit tamed' },
+  { id: 'level-10', n: 10, goal: 'balance', title: 'Balance the budget', topic: 'Budget desk: the final challenge, no borrowing at all', difficulty: 'Super hard', minutes: 10, icon: 'scale', badge: 'Budget balanced' },
 ];
 
-export const ALL_STOPS = [...LEVELS.map((l) => ({ id: l.id, minutes: l.minutes })), ...DESK.map((d) => ({ id: d.id, minutes: d.minutes }))];
+/** Every level in play order, chapters and budget desk alike. */
+export interface Stop { id: string; n: number; kind: 'chapter' | 'desk'; title: string; topic: string; difficulty: Difficulty; minutes: number; icon: IconId; badge: string; quote: Quote }
+export const STOPS: Stop[] = [
+  ...LEVELS.map((l) => ({ id: l.id, n: l.n, kind: 'chapter' as const, title: l.title, topic: l.topic, difficulty: l.difficulty, minutes: l.minutes, icon: l.icon, badge: `${l.badge}: explained`, quote: QUOTES[l.id] })),
+  ...DESK.map((d) => ({ id: d.id, n: d.n, kind: 'desk' as const, title: d.title, topic: d.topic, difficulty: d.difficulty, minutes: d.minutes, icon: d.icon, badge: d.badge, quote: QUOTES[d.id] })),
+].sort((a, b) => a.n - b.n);
+export const STOP_BY_ID: Record<string, Stop> = Object.fromEntries(STOPS.map((s) => [s.id, s]));
+export const ALL_STOPS = STOPS;
 
 export function isUnlocked(id: string, done: string[], freeRoam: boolean) {
   if (freeRoam) return true;
-  const lv = LEVELS.find((l) => l.id === id);
-  if (lv) return lv.n === 1 || done.includes(`level-${lv.n - 1}`);
-  const d = DESK.find((x) => x.id === id);
-  if (!d) return true;
-  const levelsDone = LEVELS.filter((l) => done.includes(l.id)).length;
-  return levelsDone >= d.needs.levels && (!d.needs.desk || done.includes(d.needs.desk));
+  const s = STOP_BY_ID[id];
+  if (!s) return true;
+  return s.n === 1 || done.includes(`level-${s.n - 1}`);
 }
 
 export function unlockText(id: string) {
-  const lv = LEVELS.find((l) => l.id === id);
-  if (lv) return lv.n === 1 ? 'Open' : `Finish level ${lv.n - 1} to unlock`;
-  const d = DESK.find((x) => x.id === id)!;
-  return `Finish ${d.needs.levels} chapter levels${d.needs.desk ? ` and the ${DESK.find((x) => x.id === d.needs.desk)!.difficulty} desk mission` : ''} to unlock`;
+  const s = STOP_BY_ID[id];
+  return !s || s.n === 1 ? 'Open' : `Finish level ${s.n - 1} to unlock`;
+}
+
+/** Stars for a chapter level: three for every question right on the first try. */
+export function chapterStars(level: Level, quiz: Record<string, { tries: number; correct: boolean }>) {
+  const qs = level.steps.filter((s) => s.quiz).map((s) => quiz[s.quiz!.id]);
+  if (!qs.length) return 3;
+  const first = qs.filter((q) => q?.correct && q.tries === 1).length;
+  return first === qs.length ? 3 : first >= qs.length / 2 ? 2 : 1;
 }
 
 export function useLevel(id: string) {
@@ -425,3 +439,14 @@ export function useLevel(id: string) {
 }
 
 export const sourcesFor = (ids: string[]) => ids.map(src).filter(Boolean);
+
+/** Adviser titles earned along the road. */
+export const RANKS = [
+  { at: 0, name: 'New volunteer' },
+  { at: 2, name: 'Budget aide' },
+  { at: 4, name: 'Budget analyst' },
+  { at: 7, name: 'Senior budget adviser' },
+  { at: STOPS.length, name: 'Informed Budget Voter' },
+];
+export const rankFor = (n: number) => [...RANKS].reverse().find((r) => n >= r.at)!;
+export const MAX_STARS = STOPS.length * 3;

@@ -20,20 +20,20 @@ import Glossary from './pages/Glossary';
 import Sources from './pages/Sources';
 import { VotesProvider } from './lib/votes';
 import { JourneyProvider, useJourney } from './game/state';
-import Journey, { LockIcon } from './game/Journey';
+import Journey from './game/Journey';
 import LevelPage from './game/LevelPage';
-import { DESK, isUnlocked, LEVELS } from './game/levels';
+import { DESK, isUnlocked, LEVELS, STOP_BY_ID, STOPS } from './game/levels';
 import { ReadingSettings } from './game/Settings';
+import { StatusBar } from './game/StatusBar';
+import { LevelIcon, LockIcon } from './game/icons';
+import { NarrationProvider, useNarrator } from './game/voice';
 
 
 type NavItem = { route: Route; label: string; game?: boolean };
 const NAV: { group: string; items: NavItem[]; fold?: boolean }[] = [
   { group: 'The game', items: [{ route: 'journey', label: 'Your journey' }] },
-  { group: 'Levels', items: LEVELS.map((l) => ({ route: l.id as Route, label: `${l.n}. ${l.title}`, game: true })) },
-  { group: 'Budget desk', items: [
-    ...DESK.map((d) => ({ route: d.id as Route, label: `${d.difficulty} mission`, game: true })),
-    { route: 'sandbox', label: 'Free play' },
-  ] },
+  { group: 'Levels', items: STOPS.map((l) => ({ route: l.id as Route, label: l.title, game: true })) },
+  { group: 'Practice', items: [{ route: 'sandbox', label: 'Budget desk: free play' }] },
   { group: 'Field guide', fold: true, items: [
     { route: 'overview', label: 'The big picture' },
     { route: 'spending', label: 'Where it goes' },
@@ -53,13 +53,12 @@ const NAV: { group: string; items: NavItem[]; fold?: boolean }[] = [
 ];
 
 const LABEL: Record<Route, string> = Object.fromEntries(NAV.flatMap((g) => g.items.map((i) => [i.route, i.label]))) as Record<Route, string>;
-LEVELS.forEach((l) => { LABEL[l.id as Route] = `Level ${l.n}: ${l.title}`; });
-DESK.forEach((d) => { LABEL[d.id as Route] = `Budget desk: ${d.difficulty}`; });
+STOPS.forEach((l) => { LABEL[l.id as Route] = `Level ${l.n}: ${l.title}`; });
 
 // Each field-guide chapter belongs to a level, so readers can jump into the game from any page.
 const CHAPTER_LEVEL: Partial<Record<Route, string>> = {
   revenue: 'level-1', receipt: 'level-1', overview: 'level-2', spending: 'level-2', state: 'level-3',
-  gap: 'level-4', debt: 'level-5', process: 'level-6', laws: 'level-6', 'social-security': 'level-7',
+  gap: 'level-4', debt: 'level-6', process: 'level-7', laws: 'level-7', 'social-security': 'level-9',
 };
 
 const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
@@ -68,12 +67,12 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   'level-2': () => <LevelPage id="level-2" />,
   'level-3': () => <LevelPage id="level-3" />,
   'level-4': () => <LevelPage id="level-4" />,
-  'level-5': () => <LevelPage id="level-5" />,
+  'level-5': () => <DeskPage id="level-5" />,
   'level-6': () => <LevelPage id="level-6" />,
   'level-7': () => <LevelPage id="level-7" />,
-  'desk-normal': () => <DeskPage id="desk-normal" />,
-  'desk-hard': () => <DeskPage id="desk-hard" />,
-  'desk-expert': () => <DeskPage id="desk-expert" />,
+  'level-8': () => <DeskPage id="level-8" />,
+  'level-9': () => <LevelPage id="level-9" />,
+  'level-10': () => <DeskPage id="level-10" />,
   overview: () => <Overview />,
   spending: () => <Spending />,
   revenue: () => <Revenue />,
@@ -98,19 +97,19 @@ function DeskPage({ id }: { id: string }) {
 
 function DeskLocked({ id }: { id: string }) {
   const j = useJourney();
-  const d = DESK.find((x) => x.id === id)!;
-  const need = d.needs.levels - LEVELS.filter((l) => j.done.includes(l.id)).length;
+  const d = STOP_BY_ID[id];
+  const prev = STOPS[d.n - 2];
   return (
     <div className="level">
       <header className="level-head">
-        <div className="eyebrow">Budget desk · {d.difficulty} mission</div>
+        <div className="eyebrow level-eyebrow"><LevelIcon id={d.icon} size={16} /> Level {d.n} of {STOPS.length} · {d.difficulty} level</div>
         <h1 className="page-title">{d.title}</h1>
       </header>
       <div className="callout">
         <div className="callout-title">Locked for now</div>
-        <p className="small">{need > 0 ? `Finish ${need} more chapter level${need === 1 ? '' : 's'}` : ''}{need > 0 && d.needs.desk && !j.done.includes(d.needs.desk) ? ' and ' : ''}{d.needs.desk && !j.done.includes(d.needs.desk) ? `the ${DESK.find((x) => x.id === d.needs.desk)!.difficulty} mission` : ''} to open this desk. You can also unlock everything with free roam, or practice in free play.</p>
+        <p className="small">Finish level {prev.n}, {prev.title}, to open this level. You can also unlock everything with free roam, or practice at the budget desk in free play.</p>
         <div className="sb-actions">
-          <a className="btn btn-primary" href="#journey">Back to the journey</a>
+          <a className="btn btn-primary" href={'#' + prev.id}>Go to level {prev.n}</a>
           <button type="button" className="btn" onClick={() => j.setSettings({ freeRoam: true })}>Unlock every level (free roam)</button>
           <a className="btn" href="#sandbox">Free play</a>
         </div>
@@ -129,7 +128,7 @@ function NavLinks({ route }: { route: Route }) {
           const locked = it.game && !isUnlocked(it.route, j.done, j.settings.freeRoam);
           return (
             <a key={it.route} className="nav-link" href={'#' + it.route} aria-current={route === it.route ? 'page' : undefined} data-locked={locked || undefined}>
-              <span>{it.label}</span>
+              <span>{it.game && <span className="nav-n num">{STOP_BY_ID[it.route]?.n}</span>}{it.label}</span>
               {it.game && <span className="nav-status" aria-label={done ? 'done' : locked ? 'locked' : 'open'}>{done ? '✓' : locked ? <LockIcon /> : ''}</span>}
             </a>
           );
@@ -172,10 +171,30 @@ function ChapterBanner({ route }: { route: Route }) {
 }
 
 export default function App() {
+  return (
+    <LiveProvider>
+      <UnitsProvider>
+        <TooltipProvider>
+          <JourneyProvider>
+            <NarrationProvider>
+              <VotesProvider>
+                <Shell />
+              </VotesProvider>
+            </NarrationProvider>
+          </JourneyProvider>
+        </TooltipProvider>
+      </UnitsProvider>
+    </LiveProvider>
+  );
+}
+
+function Shell() {
   const { route, param } = useHashRoute();
+  const narrator = useNarrator();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     setOpen(false);
+    narrator.stop();
     window.scrollTo({ top: 0 });
     document.title = route === 'journey' ? 'Follow the Federal Dollar' : `${LABEL[route]} · Follow the Federal Dollar`;
   }, [route]);
@@ -187,17 +206,13 @@ export default function App() {
   }, [open]);
   const Page = PAGES[route];
   return (
-    <LiveProvider>
-      <UnitsProvider>
-        <TooltipProvider>
-          <JourneyProvider>
-          <VotesProvider>
+    <>
           <div className="topbar">
             <button className="icon-btn" aria-label="Open menu" aria-expanded={open} aria-controls="sidebar" onClick={() => setOpen(true)}>
               <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
             </button>
             <a className="brand" href="#journey"><BrandMark /><span className="brand-name">Follow the<br />Federal Dollar</span></a>
-            <span className="topbar-title">{LABEL[route]}</span>
+            <StatusBar route={route} compact />
           </div>
           <div className="shell">
             {open && <div className="scrim" onClick={() => setOpen(false)} />}
@@ -210,6 +225,7 @@ export default function App() {
               </div>
             </nav>
             <main className="main" id="main">
+              <div className="statusbar-wrap"><StatusBar route={route} /></div>
               <div className="page" key={route}>
                 <ChapterBanner route={route} />
                 <Page param={param} />
@@ -220,10 +236,6 @@ export default function App() {
               </div>
             </main>
           </div>
-          </VotesProvider>
-          </JourneyProvider>
-        </TooltipProvider>
-      </UnitsProvider>
-    </LiveProvider>
+    </>
   );
 }

@@ -75,6 +75,7 @@ export default function Laws() {
                     <span>{l.publicLaw}</span>
                   </div>
                   <p className="law-summary">{l.summary}</p>
+                  {l.why && <p className="law-summary law-why"><strong>{l.deficitEffect < 0 ? 'Why it saved that much: ' : 'Why it cost that much: '}</strong>{l.why}</p>}
                   <div className="cite" style={{ marginTop: 6 }}>
                     Estimate: <a href={l.source.url} target="_blank" rel="noreferrer">{l.source.title}</a> · {l.window}{l.includesInterest ? ', including added interest costs' : ''}
                   </div>

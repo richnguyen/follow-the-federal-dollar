@@ -9,11 +9,13 @@ import { economics, extraFor, type Goal, goalMet, MULT, mid, optimize, optionPat
 import { OPTIONS_DATA, PRESETS, withEcon } from '../lib/planData';
 import { LEVERS, type LeverId, type Levers, simulate, ZERO } from '../lib/sandbox';
 import { type Choice, useVotes } from '../lib/votes';
-import { DESK, isUnlocked } from '../game/levels';
+import { Celebration } from '../game/Celebrate';
+import { DESK, type DeskLevel, isUnlocked, STOP_BY_ID, STOPS } from '../game/levels';
 import { useJourney } from '../game/state';
 import { SamSays } from '../game/UncleSam';
+import type { Mood } from '../game/voice';
 
-type Desk = (typeof DESK)[number];
+type Desk = DeskLevel;
 
 const LEVER_NAME: Record<LeverId, string> = {
   revenues: 'Taxes', socialSecurity: 'Social Security', medicare: 'Medicare', medicaid: 'Medicaid',
@@ -123,23 +125,55 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     first.current = false;
   }, [ev.stars, ev.met, ev.gentle, ev.promiseKept, selected.length, revenueShare, efficiency, voted, goal]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // --- the journey: meeting a desk mission completes that stop (free play counts once it is unlocked) ---
+  // --- the journey: meeting the goal completes this level (free play counts once it is unlocked) ---
   const deskStop = desk ?? DESK.find((d) => d.goal === goal)!;
-  const deskDone = journey.done.includes(deskStop.id);
+  const [party, setParty] = useState<number | null>(null);
+  const wasMet = useRef(met);
   useEffect(() => {
-    if (!met || deskDone) return;
-    if (!desk && !isUnlocked(deskStop.id, journey.done, journey.settings.freeRoam)) return;
-    journey.completeLevel(deskStop.id);
-    if (desk) toasts.push('Mission complete. Uncle Sam thanks you.');
-  }, [met, deskDone, deskStop.id]); // eslint-disable-line react-hooks/exhaustive-deps
-  const nextDesk = desk ? DESK[DESK.findIndex((d) => d.id === desk.id) + 1] : undefined;
+    const counts = !!desk || isUnlocked(deskStop.id, journey.done, journey.settings.freeRoam);
+    if (met && counts && (!journey.done.includes(deskStop.id) || ev.stars > (journey.stars[deskStop.id] ?? 0))) journey.completeLevel(deskStop.id, ev.stars);
+    if (met && desk && !wasMet.current) setParty(ev.stars);
+    wasMet.current = met;
+  }, [met, ev.stars, deskStop.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const nextStop = desk ? STOPS[desk.n] : undefined;
+
+  // Uncle Sam reacts to the plan as it changes, like a coach at the player's elbow.
+  const steep = econ.peakStep > 0.01;
+  const cardsCanWin = useMemo(() => goalMet(goal, run(ctx.options.map((o) => o.id), ZERO), ctx.startRatio), [goal, gradual, ctx]); // eslint-disable-line react-hooks/exhaustive-deps
+  const coach: { mood: Mood; line: string } = met && slidersUsed && loaded === 'economists'
+    ? { mood: 'cheering', line: 'We did it! The cards alone couldn’t get us there, so the hint added across-the-board changes too.' }
+    : met
+    ? (ev.stars === 3 ? { mood: 'cheering', line: 'Three stars! That’s a plan I could take to Congress.' } : { mood: 'cheering', line: 'We did it! Now, can we earn the other stars too?' })
+    : prog <= 0.001
+      ? { mood: 'worried', line: goal === 'stabilize' ? 'My debt is still outgrowing the economy. Pick a card to get us started.' : 'We haven’t made a dent yet. Pick a card to get us started.' }
+      : steep
+        ? { mood: 'surprised', line: 'Whoa, easy now. That’s a steep hit to the economy in a single year. Try phasing it in, or swap a card for a gentler one.' }
+        : prog >= 0.75 && !cardsCanWin && !slidersUsed
+          ? { mood: 'thinking', line: 'The cards alone won’t get us all the way. We’ll need some across-the-board changes, further down, or try the free hint.' }
+        : prog >= 0.75
+          ? { mood: 'happy', line: 'Almost there! One more card should do it.' }
+          : prog >= 0.4
+            ? { mood: 'thinking', line: 'Good progress. We’re partway there.' }
+            : { mood: 'thinking', line: 'That’s a start. Keep going.' };
 
   // --- actions ---
   const toggle = (id: string) => { setLoaded(null); setCopied('idle'); setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])); };
+  // When no combination of cards reaches the goal (balancing the budget, for one), the free hint
+  // tops up with the smallest even mix of across-the-board tax increases and spending cuts, so no
+  // level is ever left unwinnable.
+  const topUp = (sel: string[]): Levers | null => {
+    const room = (id: LeverId) => LEVERS.find((l) => l.id === id)!;
+    for (let x = 1; x <= 40; x++) {
+      const lv: Levers = { ...ZERO, revenues: Math.min(x, room('revenues').max), defense: -Math.min(x, -room('defense').min), nondefense: -Math.min(x, -room('nondefense').min), otherMandatory: -Math.min(x, -room('otherMandatory').min) };
+      if (goalMet(goal, run(sel, lv), ctx.startRatio)) return lv;
+    }
+    return null;
+  };
   const loadPlan = (pid: string) => {
     const p = PRESETS.find((x) => x.id === pid)!;
-    setIds(p.optimizer ? econPlan.ids : p.ids ?? []);
-    setLv({ ...ZERO });
+    const sel = p.optimizer ? econPlan.ids : p.ids ?? [];
+    setIds(sel);
+    setLv(p.optimizer && !econPlan.met ? topUp(sel) ?? { ...ZERO } : { ...ZERO });
     setLoaded(pid);
     setCopied('idle');
     document.getElementById('game')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -167,19 +201,19 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   return (
     <>
       <PageHead
-        eyebrow={desk ? `Budget desk · ${desk.difficulty} mission` : 'Budget desk · free play'}
+        eyebrow={desk ? `Level ${desk.n} of ${STOPS.length} · ${desk.difficulty} level · budget desk` : 'Budget desk · free play'}
         title={desk ? mission.title : 'Can you fix the budget?'}
         lede={desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
       />
       {desk && (
-        <SamSays mood={met ? 'proud' : goal === 'balance' ? 'worried' : 'thinking'}>
+        <SamSays mood={met ? 'proud' : goal === 'balance' ? 'worried' : 'thinking'} auto={!met}>
           {met
-            ? <>You did it, partner. That plan meets the goal. {ev.stars < 3 ? 'See if you can earn all three stars, or ' : ''}{nextDesk ? <>head back to the journey for the next challenge.</> : <>that was the hardest mission there is.</>}</>
+            ? <>You did it, partner. That plan meets the goal. {ev.stars < 3 ? 'See if you can earn all three stars, or ' : ''}{nextStop ? <>move on to level {nextStop.n}.</> : <>that was the hardest level there is.</>}</>
             : goal === 'stabilize'
               ? <>Here’s my budget desk. My debt is growing faster than the economy. {missionFacts(goal)} Help me pick changes that stop that by FY{lastFY}, without knocking the economy flat or putting the whole load on one group.</>
               : goal === 'deficit3'
                 ? <>Let’s be bolder. {missionFacts(goal)} Economists often point to about 3% as a level the country can keep up for the long haul. Can you get me there by FY{lastFY}?</>
-                : <>The big one: no borrowing at all. {missionFacts(goal)} It hasn’t happened since FY2001. Fair warning, this takes a lot of cards.</>}
+                : <>The big one: no borrowing at all. {missionFacts(goal)} It hasn’t happened since FY2001. Fair warning: {cardsCanWin ? 'this takes a lot of cards.' : 'even every card on the table isn’t quite enough, so we’ll need some across-the-board changes too.'}</>}
         </SamSays>
       )}
 
@@ -206,13 +240,14 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         <aside className="scoreboard card" aria-label="Scoreboard">
           <div className="sb-head">
             <div>
-              <div className="eyebrow">{mission.level} mission</div>
+              <div className="eyebrow">{desk ? `Level ${desk.n} · ${desk.difficulty} level` : `${mission.level} mission`}</div>
               <div className="chart-title">{mission.short}</div>
             </div>
             <Stars n={ev.stars} size="lg" />
           </div>
+          {desk && <div className="sb-coach"><SamSays mood={coach.mood} compact auto={party == null && !(met && !wasMet.current)} delay={900}>{coach.line}</SamSays></div>}
           <div aria-live="polite" className="sb-progress">
-            <div className="sb-big">{met ? 'Mission complete!' : `${Math.min(99, Math.floor(shownProg * 100))}% of the way there`}</div>
+            <div className="sb-big">{met ? (desk ? 'Level complete!' : 'Mission complete!') : `${Math.min(99, Math.floor(shownProg * 100))}% of the way there`}</div>
             <GapBar segments={segments} progress={Math.max(0, prog)} />
             <div className="small muted">{met ? `You beat the goal: deficit ${last.deficit <= 0 ? 'balanced' : pct(last.deficit / last.gdp, 1) + ' of GDP'} and debt ${pct(last.debt / last.gdp, 0)} of GDP in FY${lastFY}.` : `Still needed: ${neededText}.`}</div>
           </div>
@@ -237,16 +272,17 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             <div className="sb-block small"><strong>Efficiency {efficiency}/100.</strong> {efficiency >= 91 ? 'Your plan is about as gentle on the economy as the least-cost plan.' : `The least-cost plan for this mission does about ${Math.round((1 - efficiency / 100) * 100)}% less economic harm. Try the hint to compare.`}</div>
           )}
           <div className="sb-actions">
-            <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Hint: the economists’ answer</button>
+            <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
             <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
             {met && <button type="button" className="btn btn-primary" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
           </div>
           {copied === 'manual' && <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your plan, ready to copy" />}
           {desk && met && (
             <div className="sb-block sb-next">
-              <strong>Mission complete.</strong>
+              <strong>Level {desk.n} complete.</strong>
               <div className="sb-actions">
-                <a className="btn btn-primary" href="#journey">{nextDesk ? 'Back to the journey' : 'See your certificate'}</a>
+                {nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#journey">See your certificate</a>}
+                <a className="btn" href="#journey">Road map</a>
               </div>
             </div>
           )}
@@ -400,7 +436,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         {!econPlan.met && <p className="small" style={{ marginTop: 8 }}>With these rules, even every allowed card falls short of this mission. Loosen a rule or use across-the-board changes.</p>}
       </details>
 
-      <details className="card more">
+      <details className="card more" open={slidersUsed || undefined}>
         <summary className="chart-title">Across-the-board changes (advanced)</summary>
         <p className="small muted">Blunt tools: percentage changes to whole categories, from the {cbo.projShort}. They count toward the goal but not toward the efficiency score.</p>
         {LEVERS.map((l) => (
@@ -440,6 +476,10 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       </details>
 
       <Toasts items={toasts.items} />
+      {party != null && desk && (
+        <Celebration stop={STOP_BY_ID[desk.id]} stars={party} onClose={() => setParty(null)}
+          line={party === 3 ? 'Three stars! We fixed it without knocking the economy flat, and both taxes and spending pitched in. Well done, partner!' : party === 2 ? 'We did it, partner! That plan meets the goal. Replay any time to go for three stars.' : 'We did it! The goal is met. There are more stars to earn if you go easier on the economy and share the load.'} />
+      )}
     </>
   );
 }
