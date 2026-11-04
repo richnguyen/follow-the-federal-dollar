@@ -14,7 +14,7 @@ export const MEDALS: Medal[] = [
   { id: 'first-steps', name: 'First steps', desc: 'Finish level 1.', earned: (j) => j.done.includes('level-1') },
   { id: 'first-vote', name: 'Voice of the people', desc: 'Cast your first vote.', earned: (j) => votesCast(j) >= 1 },
   { id: 'perfect', name: 'Perfect level', desc: 'Earn three stars on any level.', earned: (j) => Object.values(j.stars).some((n) => n >= 3) },
-  { id: 'fine-print', name: 'Fine-print reader', desc: 'Open one of the original government documents.', earned: (j) => j.marks.includes('doc') },
+  { id: 'fine-print', name: 'Fine-print reader', desc: 'Open one of the original government documents in Sources & methods.', earned: (j) => j.marks.includes('doc') },
   { id: 'explorer', name: 'Field-guide explorer', desc: 'Read five chapters of the field guide.', earned: (j) => FIELD_GUIDE.filter((p) => j.marks.includes('page:' + p)).length >= 5 },
   { id: 'neighbor', name: 'Good neighbor', desc: 'Share your progress or a fact with someone.', earned: (j) => j.marks.includes('share') },
   { id: 'halfway', name: 'Halfway there', desc: 'Finish five levels.', earned: (j) => STOPS.filter((s) => j.done.includes(s.id)).length >= 5 },

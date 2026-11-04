@@ -10,6 +10,7 @@ import { diffKey, isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } fr
 import { MEDALS } from './medals';
 import { GAME_NAME, SITE_URL } from './share';
 import { ShareButton } from './ShareButton';
+import { JOURNEY_LINES } from './script';
 import { ReadingSettings } from './Settings';
 import { useJourney } from './state';
 import { SamSays, UncleSam } from './UncleSam';
@@ -40,12 +41,12 @@ export default function Journey() {
           <h1 className="page-title">Help Uncle Sam balance the budget</h1>
           <SamSays mood={finished ? 'cheering' : fresh ? 'happy' : next && hard(next.difficulty) ? 'worried' : 'thinking'} size={150} auto>
             {finished
-              ? <>We did it, partner. You’ve seen where every dollar comes from and goes, and you’ve weighed in on the big choices. That makes you an informed budget voter.</>
+              ? JOURNEY_LINES.finished
               : fresh
-                ? <>Howdy. I’m Uncle Sam. I took in {moneyWords(T)} last year, and I still spent more than I made. I need a level-headed adviser to help me understand my books and decide what to do. Got a few minutes?</>
+                ? JOURNEY_LINES.fresh(moneyWords(T))
                 : next && hard(next.difficulty)
-                  ? <>Welcome back, {rank.name.toLowerCase()}. Next up is a hard one: level {next.n}, where we try to fix my budget ourselves. Take your time; the hint is free.</>
-                  : <>Welcome back. You’re my {rank.name.toLowerCase()} now. Let’s pick up where we left off.</>}
+                  ? JOURNEY_LINES.hardNext(rank.name.toLowerCase(), next.n)
+                  : JOURNEY_LINES.back(rank.name.toLowerCase())}
           </SamSays>
           <div className="sb-actions">
             {next && <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a>}
@@ -162,34 +163,7 @@ export default function Journey() {
         <div className="card"><ReadingSettings /></div>
       </Section>
 
-      <Section id="fine-print" title="Prefer the full story?" sub="Nothing in the game is hidden. Every level links to its full chapter and to the original government documents.">
-        <div className="grid-2">
-          <div className="card">
-            <div className="chart-title">The field guide</div>
-            <p className="small muted">Every chapter of this site, with all charts, data tables, and sources.</p>
-            <ul className="link-list">
-              <li><a href="#overview">The big picture</a></li>
-              <li><a href="#spending">Where it goes</a> and <a href="#revenue">where it comes from</a></li>
-              <li><a href="#gap">Deficits</a> and <a href="#debt">debt</a></li>
-              <li><a href="#process">How Congress budgets</a> and <a href="#laws">laws that moved the needle</a></li>
-              <li><a href="#state">Your state and district</a> and <a href="#social-security">Social Security</a></li>
-              <li><a href="#glossary">Glossary</a> and <a href="#sources">every source, with methods</a></li>
-            </ul>
-          </div>
-          <div className="card">
-            <div className="chart-title">The original documents</div>
-            <p className="small muted">The official sources the numbers come from, unedited.</p>
-            <ul className="link-list">
-              <li><a href="https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>Monthly Treasury Statement</a> (U.S. Treasury)</li>
-              <li><a href="https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>Historical Tables of the U.S. Budget</a> (OMB)</li>
-              <li><a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>Debt to the Penny</a> (U.S. Treasury)</li>
-              <li><a href="https://www.ssa.gov/oact/TR/2026/tr2026.pdf" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>2026 Social Security Trustees Report</a> (PDF)</li>
-              <li><a href={OPTIONS_DATA.volume.url} target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>{OPTIONS_DATA.volume.title}</a> (CBO)</li>
-              <li><a href="https://www.usaspending.gov/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>USAspending.gov</a> (federal awards by place)</li>
-            </ul>
-          </div>
-        </div>
-      </Section>
+      <p className="fineprint-link small">Every level’s full chapter and the original government documents behind its numbers are listed in <a href="#sources">Sources &amp; methods</a>.</p>
     </div>
   );
 }

@@ -5,3 +5,5 @@ data/raw/**/*.xlsx
 
 # Exploratory page caches (third-party sites may embed their own tokens)
 data/raw/cms/*.html
+.kokoro/
+.venv/

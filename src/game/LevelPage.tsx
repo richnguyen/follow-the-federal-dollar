@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { SOURCE_BY_ID } from '../data';
 import { money, pct } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
 import { type Choice, useVotes } from '../lib/votes';
@@ -9,6 +8,7 @@ import { LevelIcon } from './icons';
 import { chapterStars, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
 import { useJourney } from './state';
 import { plain, SamSays, UncleSam } from './UncleSam';
+import { lockedLine, QUIZ_LINES } from './script';
 
 const CHOICE_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -25,7 +25,7 @@ function Locked({ level }: { level: Level }) {
   return (
     <div className="level">
       <LevelHead level={level} />
-      <SamSays mood="thinking" auto>We’ll get there. This level builds on the one before it. {unlockText(level.id)}.</SamSays>
+      <SamSays mood="thinking" auto>{lockedLine(unlockText(level.id))}</SamSays>
       <div className="sb-actions" style={{ marginTop: 16 }}>
         {next && <a className="btn btn-primary" href={'#' + next.id}>Go to level {next.n}: {next.title}</a>}
         <button type="button" className="btn" onClick={() => j.setSettings({ freeRoam: true })}>Unlock every level (free roam)</button>
@@ -109,7 +109,7 @@ function LevelRun({ level }: { level: Level }) {
       ) : (
         <Complete level={level} onReview={() => { j.retry(level.steps.filter((x) => x.quiz).map((x) => x.quiz!.id)); go(0); }} />
       )}
-      <FinePrint level={level} />
+      <p className="fineprint-link small">This level’s full chapter and the original government documents are in <a href={'#sources-' + level.id}>Sources &amp; methods</a>.</p>
       {party != null && <Celebration stop={STOP_BY_ID[level.id]} stars={party} onClose={() => setParty(null)} />}
     </div>
   );
@@ -195,8 +195,9 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
     return () => window.removeEventListener('keydown', on);
   }, [quiz.choices.length]);
   const mood = solved ? 'proud' : revealed ? 'thinking' : picked != null ? 'worried' : 'happy';
-  const line = solved ? (rec && rec.tries > 1 ? 'You got it. Nice work sticking with it.' : 'That’s right!') : picked != null ? (revealed ? 'That one’s tricky. Here’s the answer.' : 'Not quite. Want to try again?') : 'Quick check. Take your best guess; there’s no penalty.';
-  const say = solved ? `${line} ${plain(quiz.explain)}` : revealed ? `${line} It’s ${quiz.choices[quiz.correct]}. ${plain(quiz.explain)}` : picked != null ? line : `Quick check. ${quiz.question}`;
+  const Q = QUIZ_LINES;
+  const line = solved ? (rec && rec.tries > 1 ? Q.rightLater : Q.right) : picked != null ? (revealed ? Q.reveal : Q.wrong) : Q.prompt;
+  const say = solved ? `${line} ${plain(quiz.explain)}` : revealed ? `${Q.revealSay(quiz.choices[quiz.correct])} ${plain(quiz.explain)}` : picked != null ? line : Q.ask(quiz.question);
   return (
     <div className="quiz">
       <SamSays mood={mood} compact auto say={say}>{line}</SamSays>
@@ -336,32 +337,5 @@ function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
         <button type="button" className="btn" onClick={onReview}>Replay this level</button>
       </div>
     </section>
-  );
-}
-
-function FinePrint({ level }: { level: Level }) {
-  const j = useJourney();
-  const docs = [
-    ...level.sources.map((s) => SOURCE_BY_ID[s]).filter(Boolean).map((d) => ({ title: d.title, url: d.url, by: d.publisher as string | undefined })),
-    ...(level.links ?? []).map((d) => ({ title: d.title, url: d.url, by: undefined })),
-  ].filter((d, k, a) => a.findIndex((x) => x.url === d.url) === k);
-  const item = (d: (typeof docs)[number]) => <li key={d.url}><a href={d.url} target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>{d.title}</a>{d.by && <span className="muted"> ({d.by})</span>}</li>;
-  return (
-    <aside className="fineprint" aria-label="The fine print">
-      <div>
-        <div className="stat-label">The full chapter</div>
-        <ul>{level.deepDive.map((d) => <li key={d.route}><a href={'#' + d.route}>{d.label}</a>: every chart, with data tables and sources</li>)}</ul>
-      </div>
-      <div>
-        <div className="stat-label">The original documents</div>
-        <ul>{docs.slice(0, 5).map(item)}</ul>
-        {docs.length > 5 && (
-          <details className="fineprint-more">
-            <summary>Show all {docs.length} documents</summary>
-            <ul>{docs.slice(5).map(item)}</ul>
-          </details>
-        )}
-      </div>
-    </aside>
   );
 }

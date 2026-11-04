@@ -939,3 +939,17 @@ html.modal-open { overflow: hidden; }
 .share-manual { width: 100%; margin-top: 6px; font-size: 0.8125rem; }
 .toasts { z-index: 95; }
 @media (prefers-reduced-motion: reduce) { .stop[data-next="true"] .stop-node, .quiz-choice[data-state] { animation: none; } }
+
+/* ---------- fine print, gathered on Sources & methods ---------- */
+.fineprint-link { color: var(--ink-2); padding-top: 4px; }
+.leveldocs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.leveldoc { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 72px; }
+.leveldoc-head { display: flex; gap: 10px; align-items: center; }
+.leveldoc-head .factcard-icon { background: var(--lv); color: #fff; }
+.leveldoc-title { font-weight: 700; font-size: var(--step-1); color: var(--ink); text-decoration: none; }
+.leveldoc-title:hover { text-decoration: underline; }
+.leveldoc-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px 24px; font-size: 0.875rem; }
+.leveldoc-cols .link-list { font-size: 0.875rem; }
+@media (max-width: 760px) { .leveldoc-cols { grid-template-columns: minmax(0, 1fr); } }
+.leveldoc.flash { animation: docflash 1.6s ease 0.2s; }
+@keyframes docflash { 0%, 100% { box-shadow: 0 0 0 1px var(--ring); } 30% { box-shadow: 0 0 0 3px var(--lv); } }

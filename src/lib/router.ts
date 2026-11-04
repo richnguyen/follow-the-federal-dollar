@@ -13,6 +13,7 @@ export type Route = (typeof ROUTES)[number];
 export function parseHash(hash: string): { route: Route; param: string | null } {
   const h = hash.replace(/^#/, '').toLowerCase();
   if (h.startsWith('state-')) return { route: 'state', param: h.slice(6) };
+  if (h.startsWith('sources-')) return { route: 'sources', param: h.slice(8) };
   // Links from the first version of the game, when the budget desk had its own missions.
   const legacy: Record<string, Route> = { 'desk-normal': 'level-5', 'desk-hard': 'level-8', 'desk-expert': 'level-10' };
   if (legacy[h]) return { route: legacy[h], param: null };

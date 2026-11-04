@@ -15,6 +15,7 @@ import { useJourney } from '../game/state';
 import { SamSays } from '../game/UncleSam';
 import type { Mood } from '../game/voice';
 import { useHaptics } from '../game/haptics';
+import { COACH, DESK_PARTY } from '../game/script';
 
 type Desk = DeskLevel;
 
@@ -143,20 +144,20 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const steep = econ.peakStep > 0.01;
   const cardsCanWin = useMemo(() => goalMet(goal, run(ctx.options.map((o) => o.id), ZERO), ctx.startRatio), [goal, gradual, ctx]); // eslint-disable-line react-hooks/exhaustive-deps
   const coach: { mood: Mood; line: string } = met && slidersUsed && loaded === 'economists'
-    ? { mood: 'cheering', line: 'We did it! The cards alone couldn’t get us there, so the hint added across-the-board changes too.' }
+    ? { mood: 'cheering', line: COACH.metWithHint }
     : met
-    ? (ev.stars === 3 ? { mood: 'cheering', line: 'Three stars! That’s a plan I could take to Congress.' } : { mood: 'cheering', line: 'We did it! Now, can we earn the other stars too?' })
+    ? (ev.stars === 3 ? { mood: 'cheering', line: COACH.met3 } : { mood: 'cheering', line: COACH.met })
     : prog <= 0.001
-      ? { mood: 'worried', line: goal === 'stabilize' ? 'My debt is still outgrowing the economy. Pick a card to get us started.' : 'We haven’t made a dent yet. Pick a card to get us started.' }
+      ? { mood: 'worried', line: goal === 'stabilize' ? COACH.startStabilize : COACH.start }
       : steep
-        ? { mood: 'surprised', line: 'Whoa, easy now. That’s a steep hit to the economy in a single year. Try phasing it in, or swap a card for a gentler one.' }
+        ? { mood: 'surprised', line: COACH.steep }
         : prog >= 0.75 && !cardsCanWin && !slidersUsed
-          ? { mood: 'thinking', line: 'The cards alone won’t get us all the way. We’ll need some across-the-board changes, further down, or try the free hint.' }
+          ? { mood: 'thinking', line: COACH.cardsShort }
         : prog >= 0.75
-          ? { mood: 'happy', line: 'Almost there! One more card should do it.' }
+          ? { mood: 'happy', line: COACH.almost }
           : prog >= 0.4
-            ? { mood: 'thinking', line: 'Good progress. We’re partway there.' }
-            : { mood: 'thinking', line: 'That’s a start. Keep going.' };
+            ? { mood: 'thinking', line: COACH.partway }
+            : { mood: 'thinking', line: COACH.begun };
 
   // --- actions ---
   const toggle = (id: string) => { buzz('card'); setLoaded(null); setCopied('idle'); setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])); };
@@ -477,10 +478,11 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         </div>
       </details>
 
+      {desk && <p className="fineprint-link small">This level’s full chapters and the original documents are in <a href={'#sources-' + desk.id}>Sources &amp; methods</a>.</p>}
       <Toasts items={toasts.items} />
       {party != null && desk && (
         <Celebration stop={STOP_BY_ID[desk.id]} stars={party} onClose={() => setParty(null)}
-          line={party === 3 ? 'Three stars! We fixed it without knocking the economy flat, and both taxes and spending pitched in. Well done, partner!' : party === 2 ? 'We did it, partner! That plan meets the goal. Replay any time to go for three stars.' : 'We did it! The goal is met. There are more stars to earn if you go easier on the economy and share the load.'} />
+          line={DESK_PARTY[party]} />
       )}
     </>
   );

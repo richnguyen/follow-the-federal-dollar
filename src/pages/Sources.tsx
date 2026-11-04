@@ -1,9 +1,19 @@
+import { useEffect } from 'react';
 import { PageHead, Section } from '../components/ui';
+import { LevelDocs } from '../game/LevelDocs';
+import { useJourney } from '../game/state';
+import { OPTIONS_DATA } from '../lib/planData';
 import { budget, cbo, geo, SOURCES, ssa } from '../data';
 import { dateLabel } from '../lib/format';
 
-export default function Sources() {
+export default function Sources({ param }: { param?: string | null }) {
   const groups = [...new Set(SOURCES.map((s) => s.publisher))];
+  const j = useJourney();
+  useEffect(() => {
+    if (!param) return;
+    const el = document.getElementById('doc-' + param);
+    if (el) requestAnimationFrame(() => { el.scrollIntoView({ block: 'start' }); el.classList.add('flash'); });
+  }, [param]);
   return (
     <>
       <PageHead
@@ -11,6 +21,39 @@ export default function Sources() {
         title="Sources & methods"
         lede="Every number on this site comes from an official U.S. government source. Most data were downloaded by a reproducible script from each agency’s API or published files, with the retrieval date listed below. A few figures (the Social Security trustees’ projections, the cost estimates for major laws, and the budget-process record) come from agencies whose websites block automated downloads; those were read from the agencies’ own pages, and each one links to its page."
       />
+      <Section id="start" title="Start here" sub="The full chapters of this site, and the main official documents, unedited.">
+        <div className="grid-2">
+          <div className="card">
+            <div className="chart-title">The field guide</div>
+            <p className="small muted">Every chapter of this site, with all charts, data tables, and sources.</p>
+            <ul className="link-list">
+              <li><a href="#overview">The big picture</a></li>
+              <li><a href="#spending">Where it goes</a> and <a href="#revenue">where it comes from</a></li>
+              <li><a href="#receipt">Your tax receipt</a> and <a href="#state">your state and district</a></li>
+              <li><a href="#gap">Deficits</a> and <a href="#debt">debt</a></li>
+              <li><a href="#process">How Congress budgets</a> and <a href="#laws">laws that moved the needle</a></li>
+              <li><a href="#social-security">Social Security’s future</a> and the <a href="#glossary">glossary</a></li>
+            </ul>
+          </div>
+          <div className="card">
+            <div className="chart-title">The original documents</div>
+            <p className="small muted">The official sources the numbers come from.</p>
+            <ul className="link-list">
+              {[
+                ['Monthly Treasury Statement', 'https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/', 'U.S. Treasury'],
+                ['Historical Tables of the U.S. Budget', 'https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/', 'OMB'],
+                ['Debt to the Penny', 'https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/', 'U.S. Treasury'],
+                ['2026 Social Security Trustees Report (PDF)', 'https://www.ssa.gov/oact/TR/2026/tr2026.pdf', 'SSA'],
+                [OPTIONS_DATA.volume.title, OPTIONS_DATA.volume.url, 'CBO'],
+                ['USAspending.gov', 'https://www.usaspending.gov/', 'federal awards by place'],
+              ].map(([t, u, by]) => <li key={u}><a href={u} target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>{t}</a> <span className="muted">({by})</span></li>)}
+            </ul>
+          </div>
+        </div>
+      </Section>
+      <Section id="by-level" title="By level" sub="For each level of the game: its full chapter and the original documents behind its numbers.">
+        <LevelDocs />
+      </Section>
       <Section id="list" title="Datasets and documents">
         {groups.map((g) => (
           <div key={g} className="card" style={{ paddingBlock: 6 }}>
@@ -19,7 +62,7 @@ export default function Sources() {
               {SOURCES.filter((s) => s.publisher === g).map((s) => (
                 <div className="source" key={s.id}>
                   <div>
-                    <div className="source-title"><a href={s.url} target="_blank" rel="noreferrer">{s.title}</a></div>
+                    <div className="source-title"><a href={s.url} target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>{s.title}</a></div>
                     {s.note && <div className="source-meta">{s.note}</div>}
                   </div>
                   <div className="source-meta">{s.retrieved ? `Retrieved ${dateLabel(s.retrieved)}` : ''}</div>
@@ -39,6 +82,7 @@ export default function Sources() {
           <p><strong>State and district figures</strong> are federal award obligations in FY{geo.fy} from USAspending.gov, by place of performance. Obligations are commitments to spend and differ from outlays; not all federal spending is recorded as an award.</p>
           <p><strong>Social Security</strong> trust fund history (income, cost, and reserves by fiscal year) comes from the Treasury’s Monthly Treasury Statement, Table 8. Depletion dates, the share of benefits payable afterward, and the changes needed to close the gap are from the {ssa.report} (intermediate assumptions), released {dateLabel(ssa.released)}, and the 2026 Medicare Trustees Report.</p>
           <p><strong>Laws.</strong> Deficit effects are the official CBO or JCT estimates published when each law was enacted, as linked on each entry.</p>
+          <p><strong>Uncle Sam’s voice</strong> was recorded ahead of time with <a href="https://github.com/hexgrad/kokoro" target="_blank" rel="noreferrer">Kokoro</a>, an open-weight neural text-to-speech model (Apache 2.0 license), using its “am_michael” American English voice, run through <a href="https://github.com/thewh1teagle/kokoro-onnx" target="_blank" rel="noreferrer">kokoro-onnx</a>. Every sentence he says is listed in the project’s <code>scripts/voice/lines.json</code>. If you choose one of your device’s voices in the reading settings, the browser’s own speech is used instead.</p>
           <p><strong>Rounding.</strong> Figures are rounded for readability; totals may not add because of rounding.</p>
         </div>
       </Section>

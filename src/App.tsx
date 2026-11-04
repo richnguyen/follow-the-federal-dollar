@@ -26,7 +26,7 @@ import { DESK, isUnlocked, LEVELS, STOP_BY_ID, STOPS } from './game/levels';
 import { ReadingSettings } from './game/Settings';
 import { StatusBar } from './game/StatusBar';
 import { LevelIcon, LockIcon } from './game/icons';
-import { NarrationProvider, useNarrator } from './game/voice';
+import { NarrationProvider, prefetchVoice, useNarrator } from './game/voice';
 import { earnedMedals, MEDALS } from './game/medals';
 import { useHaptics } from './game/haptics';
 import { Toasts, useToasts } from './components/game';
@@ -107,7 +107,7 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   receipt: () => <Receipt />,
   sandbox: () => <Sandbox />,
   glossary: () => <Glossary />,
-  sources: () => <Sources />,
+  sources: ({ param }) => <Sources param={param} />,
 };
 
 function DeskPage({ id }: { id: string }) {
@@ -219,6 +219,7 @@ function Shell() {
     setOpen(false);
     narrator.stop();
     if (FIELD_GUIDE_ROUTES.includes(route)) journey.mark('page:' + route);
+    if (journey.settings.narration) prefetchVoice(route);
     window.scrollTo({ top: 0 });
     document.title = route === 'journey' ? 'Follow the Federal Dollar' : `${LABEL[route]} · Follow the Federal Dollar`;
   }, [route]);

@@ -24,8 +24,9 @@ budget adviser.
   Quick checks give explanatory feedback and reveal the answer after two tries. Each chapter
   ends with one vote on a real policy choice. Level 7 explains each major law: what it did and
   why its official estimate came out so large.
-- **Uncle Sam talks and reacts.** He reads his lines aloud with the browser's own speech,
-  preferring a male U.S. English voice and changing pace and pitch with his mood. His face,
+- **Uncle Sam talks and reacts.** His lines are pre-recorded with Kokoro, an open-weight
+  neural voice model, so he sounds natural and the same on every device; his pace follows his
+  mood. Visitors can switch to one of their device's voices in settings. His face,
   hat and arms change with his mood, and he nods and talks while speaking. At the budget desk
   he coaches in real time as the plan changes. Speech is on by default and can be switched off
   from the top bar or in settings.
@@ -40,8 +41,9 @@ budget adviser.
   stars, the player's title, a Continue button and the voice switch.
 - **Reading settings:** text size, light/dark theme, voice choice, and free roam to unlock
   everything.
-- **The fine print:** every level links to its full field-guide chapter and to the original
-  government documents. The field guide (all earlier pages) is always in the sidebar.
+- **The fine print:** each level's full field-guide chapter and original government documents
+  are gathered on Sources & methods ("By level"), one link from every level. The field guide
+  (all earlier pages) is always in the sidebar.
 
 ### Design notes: five UX lessons from Royal Match, without the pressure tactics
 
@@ -90,6 +92,23 @@ commit `src/data/generated/`, and push.
 Voting on the Balance the Budget page needs a shared database, so it appears only on the
 claude.ai version of the site; on GitHub Pages the game works without it. Badges and stars are
 saved in each visitor's browser.
+
+## Re-record Uncle Sam's voice
+
+Uncle Sam's lines are recorded ahead of time with [Kokoro](https://github.com/hexgrad/kokoro)
+(Apache 2.0) via [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx), voice `am_michael`.
+After changing any of his lines:
+
+```sh
+python3 -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile   # once; also needs ffmpeg
+mkdir -p .kokoro && cd .kokoro && curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx \
+  -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin && cd ..
+npm run dev &                      # the collector reads the lines from the running app (needs Playwright)
+npm run voice:collect              # writes scripts/voice/lines.json
+PATH=.venv/bin:$PATH npm run voice:synth   # writes public/voice/*.mp3 and src/data/generated/voice.json
+```
+
+Lines without a recording fall back to the browser's own speech, so nothing breaks in between.
 
 ## Refresh the data
 

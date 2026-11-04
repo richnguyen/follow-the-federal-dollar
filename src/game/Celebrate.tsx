@@ -5,17 +5,12 @@ import { DIFF_COLOR, diffKey, LEVELS, STOPS, type Stop } from './levels';
 import { GAME_NAME, shareCard, SITE_URL } from './share';
 import { ShareButton } from './ShareButton';
 import { SamSays } from './UncleSam';
+import { CHEER } from './script';
 
 // The celebration card that pops up when a level is finished: stars, the certificate earned,
 // a quote, a way to share, and the next level. It is earned, never interrupts play, and closes
 // with one tap or Escape.
 
-const CHEER: Record<number, string> = {
-  3: 'Well done, partner! Three stars. You have a real head for this.',
-  2: 'Nicely done! That’s another level in the books.',
-  1: 'We made it through that one together. On to the next!',
-  0: 'We made it through that one together. On to the next!',
-};
 
 export function factFor(stop: Stop) {
   const l = LEVELS.find((x) => x.id === stop.id);
