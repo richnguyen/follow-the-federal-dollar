@@ -450,3 +450,7 @@ export const RANKS = [
 ];
 export const rankFor = (n: number) => [...RANKS].reverse().find((r) => n >= r.at)!;
 export const MAX_STARS = STOPS.length * 3;
+
+/** Game chrome colors by difficulty: bold, high-contrast fills, read together with each level's icon. */
+export const DIFF_COLOR: Record<Difficulty, string> = { Easy: '#128a4d', Medium: '#2467c4', Hard: '#c9302c', 'Super hard': '#5b45cc' };
+export const diffKey = (d: Difficulty) => (d === 'Super hard' ? 'super' : d.toLowerCase());

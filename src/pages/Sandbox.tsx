@@ -14,6 +14,7 @@ import { DESK, type DeskLevel, isUnlocked, STOP_BY_ID, STOPS } from '../game/lev
 import { useJourney } from '../game/state';
 import { SamSays } from '../game/UncleSam';
 import type { Mood } from '../game/voice';
+import { useHaptics } from '../game/haptics';
 
 type Desk = DeskLevel;
 
@@ -36,6 +37,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
 
   const [goal, setGoal] = useState<Goal>(desk?.goal ?? 'stabilize');
   const journey = useJourney();
+  const buzz = useHaptics();
   const [gradual, setGradual] = useState(true);
   const [protect, setProtect] = useState<Protect>({ retirees: true, lowIncome: true, investment: true });
   const [mix, setMix] = useState(true);
@@ -157,7 +159,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             : { mood: 'thinking', line: 'That’s a start. Keep going.' };
 
   // --- actions ---
-  const toggle = (id: string) => { setLoaded(null); setCopied('idle'); setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])); };
+  const toggle = (id: string) => { buzz('card'); setLoaded(null); setCopied('idle'); setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])); };
   // When no combination of cards reaches the goal (balancing the budget, for one), the free hint
   // tops up with the smallest even mix of across-the-board tax increases and spending cuts, so no
   // level is ever left unwinnable.

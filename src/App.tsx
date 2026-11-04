@@ -27,6 +27,28 @@ import { ReadingSettings } from './game/Settings';
 import { StatusBar } from './game/StatusBar';
 import { LevelIcon, LockIcon } from './game/icons';
 import { NarrationProvider, useNarrator } from './game/voice';
+import { earnedMedals, MEDALS } from './game/medals';
+import { useHaptics } from './game/haptics';
+import { Toasts, useToasts } from './components/game';
+
+const FIELD_GUIDE_ROUTES = ['overview', 'spending', 'revenue', 'receipt', 'state', 'gap', 'debt', 'process', 'laws', 'social-security'];
+
+/** Announces each medal once, the moment it is earned, wherever the player is. */
+function MedalWatcher() {
+  const j = useJourney();
+  const buzz = useHaptics();
+  const toasts = useToasts();
+  const fresh = earnedMedals(j).filter((id) => !j.medals.includes(id));
+  const key = fresh.join();
+  useEffect(() => {
+    if (!fresh.length) return;
+    j.award(fresh);
+    const names = fresh.map((id) => MEDALS.find((m) => m.id === id)!.name);
+    toasts.push(names.length === 1 ? `Medal earned: ${names[0]}` : `${names.length} medals earned: ${names.join(', ')}`);
+    buzz('medal');
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+  return <Toasts items={toasts.items} />;
+}
 
 
 type NavItem = { route: Route; label: string; game?: boolean };
@@ -191,10 +213,12 @@ export default function App() {
 function Shell() {
   const { route, param } = useHashRoute();
   const narrator = useNarrator();
+  const journey = useJourney();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     setOpen(false);
     narrator.stop();
+    if (FIELD_GUIDE_ROUTES.includes(route)) journey.mark('page:' + route);
     window.scrollTo({ top: 0 });
     document.title = route === 'journey' ? 'Follow the Federal Dollar' : `${LABEL[route]} · Follow the Federal Dollar`;
   }, [route]);
@@ -236,6 +260,7 @@ function Shell() {
               </div>
             </main>
           </div>
+      <MedalWatcher />
     </>
   );
 }

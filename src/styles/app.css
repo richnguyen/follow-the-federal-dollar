@@ -877,3 +877,65 @@ html.modal-open { overflow: hidden; }
 @keyframes popin { from { opacity: 0; transform: translateY(12px) scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes starpop { from { opacity: 0; transform: scale(0.3) rotate(-20deg); } to { opacity: 1; transform: none; } }
 .lawx-detail { scroll-margin-top: 72px; }
+
+/* ---------- Royal Match lesson 1: simple, high-contrast color by difficulty, plus shape ---------- */
+:root { --lv-easy: #128a4d; --lv-medium: #2467c4; --lv-hard: #c9302c; --lv-super: #5b45cc; }
+[data-diff="easy"] { --lv: var(--lv-easy); }
+[data-diff="medium"] { --lv: var(--lv-medium); }
+[data-diff="hard"] { --lv: var(--lv-hard); }
+[data-diff="super"] { --lv: var(--lv-super); }
+.stop[data-open="true"] .stop-node, .stop[data-done="true"] .stop-node { background: var(--lv); color: #fff; box-shadow: none; }
+.stop[data-open="true"]:not([data-done="true"]) .stop-node { color: #fff; }
+.stop[data-hard="true"][data-open="true"]:not([data-done="true"]) .stop-node { color: #fff; box-shadow: none; }
+.stop[data-hard="true"][data-done="true"] .stop-node { background: var(--lv); }
+.stop[data-next="true"] .stop-node { box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--lv); animation: nextpulse 2.4s ease-in-out infinite; }
+.stop[data-done="true"] .stop-node::after { content: "✓"; position: absolute; right: -5px; bottom: -5px; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); color: #fff; font: 700 11px/18px var(--font-body); text-align: center; box-shadow: 0 0 0 2px var(--paper); }
+.stop[data-done="true"]::before { background: var(--accent); }
+.stop .stop-meta .pill { background: color-mix(in srgb, var(--lv) 14%, var(--surface)); color: var(--lv); }
+.stop[data-hard="true"] .stop-body { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--lv) 45%, var(--line)); }
+@keyframes nextpulse { 0%, 100% { box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--lv); } 50% { box-shadow: 0 0 0 3px var(--paper), 0 0 0 8px color-mix(in srgb, var(--lv) 35%, transparent); } }
+.stb-icon[data-diff] { background: var(--lv); color: #fff; }
+.stb-track i[data-done="true"] { background: var(--lv); }
+.stb-track i[data-done="true"][data-hard="true"] { background: var(--lv); }
+.celebrate[data-diff] .celebrate-band { background: var(--lv); color: #fff; }
+.celebrate-next[data-diff] { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--lv) 45%, var(--line)); }
+.celebrate-next[data-diff] .celebrate-next-icon { background: var(--lv); color: #fff; }
+.level-head[data-diff] .level-eyebrow svg { color: #fff; background: var(--lv); border-radius: 5px; padding: 2px; width: 20px; height: 20px; }
+.factcard[data-diff] .factcard-icon { background: var(--lv); color: #fff; }
+
+/* ---------- lesson 2: never slow down (keyboard play) ---------- */
+.keyhint { margin-left: auto; }
+.keyhint kbd, kbd { font-family: var(--font-mono); font-size: 0.75rem; padding: 1px 5px; border-radius: 4px; background: var(--surface-2); box-shadow: inset 0 -1px 0 var(--line), 0 0 0 1px var(--line); color: var(--ink-2); }
+@media (hover: none), (max-width: 760px) { .keyhint { display: none; } }
+
+/* ---------- lesson 3: feedback you can feel (press response; vibration on phones) ---------- */
+.btn, .quiz-choice, .ballot-choice, .vote-btn, .pcard-add, .lawx-row, .chip, .stb-voice { transition: transform 0.08s ease, background-color 0.15s ease, box-shadow 0.15s ease; }
+.btn:active:not(:disabled), .quiz-choice:active:not(:disabled), .ballot-choice:active, .vote-btn:active:not(:disabled), .pcard-add:active, .lawx-row:active, .chip:active { transform: scale(0.97); }
+.quiz-choice[data-state="right"] { animation: rightpop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4); }
+.quiz-choice[data-state="wrong"] { animation: nudge 0.3s ease; }
+@keyframes rightpop { 0% { transform: scale(0.97); } 60% { transform: scale(1.02); } 100% { transform: none; } }
+@keyframes nudge { 0%, 100% { transform: none; } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+/* ---------- lesson 4: generous rewards (medals, fact cards) ---------- */
+.medals { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.medal { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 12px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring); }
+.medal-disc { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--line); color: #fff; font-size: 1.1rem; }
+.medal[data-got="true"] .medal-disc { background: var(--gold); box-shadow: inset 0 0 0 3px color-mix(in srgb, #fff 35%, var(--gold)), 0 0 0 2px color-mix(in srgb, var(--gold) 30%, transparent); }
+.medal[data-got="false"] strong { color: var(--ink-2); }
+.factcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.factcard { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring); }
+.factcard[data-got="true"] { box-shadow: 0 0 0 1px var(--ring), inset 4px 0 0 var(--lv); }
+.factcard[data-got="false"] { background: transparent; box-shadow: 0 0 0 1px var(--line); }
+.factcard-top { display: flex; align-items: center; gap: 8px; }
+.factcard-icon { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); flex: none; }
+.factcard-list { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; font-size: 0.9375rem; }
+.factcard-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: auto; }
+.btn-sm { padding: 5px 11px; font-size: 0.8125rem; }
+
+/* ---------- lesson 5: easy to share ---------- */
+.celebrate-share { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--accent-wash); }
+.celebrate-share > .small { flex: 1 1 220px; min-width: 0; }
+.celebrate-share-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.share-manual { width: 100%; margin-top: 6px; font-size: 0.8125rem; }
+.toasts { z-index: 95; }
+@media (prefers-reduced-motion: reduce) { .stop[data-next="true"] .stop-node, .quiz-choice[data-state] { animation: none; } }

@@ -4,8 +4,9 @@ import { money, pct } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
 import { type Choice, useVotes } from '../lib/votes';
 import { Celebration } from './Celebrate';
+import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
-import { chapterStars, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
+import { chapterStars, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
 import { useJourney } from './state';
 import { plain, SamSays, UncleSam } from './UncleSam';
 
@@ -36,7 +37,7 @@ function Locked({ level }: { level: Level }) {
 
 function LevelHead({ level }: { level: Level }) {
   return (
-    <header className="level-head">
+    <header className="level-head" data-diff={diffKey(level.difficulty)}>
       <div className="eyebrow level-eyebrow"><LevelIcon id={level.icon} size={16} /> Level {level.n} of {STOPS.length} · {level.difficulty} · about {level.minutes} min</div>
       <h1 className="page-title">{level.title}</h1>
       <p className="lede">{level.topic}</p>
@@ -69,6 +70,25 @@ function LevelRun({ level }: { level: Level }) {
 
   const step = level.steps[i];
   const quizOk = step?.kind !== 'quiz' || !!j.quiz[step.quiz!.id]?.correct || (j.quiz[step.quiz!.id]?.tries ?? 0) >= 2;
+
+  // Keyboard play, so nothing waits on the mouse: Enter or → continues, ← goes back.
+  const keys = useRef({ finishStep, go, i, quizOk, step, party });
+  keys.current = { finishStep, go, i, quizOk, step, party };
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      const c = keys.current;
+      if (c.party != null || e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement;
+      if (t.closest('input, select, textarea, [contenteditable="true"]')) return;
+      if ((e.key === 'Enter' || e.key === 'ArrowRight') && c.step && c.quizOk) {
+        if (e.key === 'Enter' && t.closest('button, a')) return; // let the focused control act
+        e.preventDefault();
+        c.finishStep();
+      } else if (e.key === 'ArrowLeft' && c.i > 0) { e.preventDefault(); c.go(c.i - 1); }
+    };
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
+  }, []);
   return (
     <div className="level" ref={top}>
       <LevelHead level={level} />
@@ -83,6 +103,7 @@ function LevelRun({ level }: { level: Level }) {
               {step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
             </button>
             {!quizOk && <span className="small muted">Answer the question to continue.</span>}
+            <span className="keyhint small muted" aria-hidden="true">{step.kind === 'quiz' ? <><kbd>1</kbd>–<kbd>{step.quiz!.choices.length}</kbd> answer · </> : null}<kbd>Enter</kbd> continue · <kbd>←</kbd> back</span>
           </div>
         </section>
       ) : (
@@ -149,12 +170,30 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
   const [wrong, setWrong] = useState<number[]>([]);
   const solved = picked === quiz.correct;
   const revealed = !solved && (rec?.tries ?? 0) >= 2;
+  const buzz = useHaptics();
   const pick = (k: number) => {
     if (solved) return;
     setPicked(k);
     if (k !== quiz.correct) setWrong((w) => (w.includes(k) ? w : [...w, k]));
+    buzz(k === quiz.correct ? 'right' : 'wrong');
     j.answer(quiz.id, k === quiz.correct);
   };
+  const pickRef = useRef(pick);
+  pickRef.current = pick;
+  const blocked = (k: number) => solved || (wrong.includes(k) && !revealed) || (revealed && k !== quiz.correct);
+  const blockedRef = useRef(blocked);
+  blockedRef.current = blocked;
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || (e.target as HTMLElement).closest('input, select, textarea')) return;
+      const k = '1234'.indexOf(e.key) >= 0 ? '1234'.indexOf(e.key) : 'abcd'.indexOf(e.key.toLowerCase());
+      if (k < 0 || k >= quiz.choices.length || blockedRef.current(k)) return;
+      e.preventDefault();
+      pickRef.current(k);
+    };
+    window.addEventListener('keydown', on);
+    return () => window.removeEventListener('keydown', on);
+  }, [quiz.choices.length]);
   const mood = solved ? 'proud' : revealed ? 'thinking' : picked != null ? 'worried' : 'happy';
   const line = solved ? (rec && rec.tries > 1 ? 'You got it. Nice work sticking with it.' : 'That’s right!') : picked != null ? (revealed ? 'That one’s tricky. Here’s the answer.' : 'Not quite. Want to try again?') : 'Quick check. Take your best guess; there’s no penalty.';
   const say = solved ? `${line} ${plain(quiz.explain)}` : revealed ? `${line} It’s ${quiz.choices[quiz.correct]}. ${plain(quiz.explain)}` : picked != null ? line : `Quick check. ${quiz.question}`;
@@ -167,7 +206,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
           {quiz.choices.map((c, k) => {
             const state = solved && k === quiz.correct ? 'right' : revealed && k === quiz.correct ? 'answer' : wrong.includes(k) ? 'wrong' : undefined;
             return (
-              <button key={k} type="button" className="quiz-choice" data-state={state} aria-pressed={picked === k} disabled={solved || (wrong.includes(k) && !revealed) || (revealed && k !== quiz.correct)} onClick={() => pick(k)}>
+              <button key={k} type="button" className="quiz-choice" data-state={state} aria-pressed={picked === k} disabled={blocked(k)} onClick={() => pick(k)}>
                 <span className="quiz-letter" aria-hidden="true">{state === 'right' || state === 'answer' ? '✓' : state === 'wrong' ? '✕' : CHOICE_LETTERS[k]}</span>
                 <span>{c}</span>
               </button>
@@ -188,6 +227,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
 function VoteCard({ vote }: { vote: VoteSpec }) {
   const j = useJourney();
   const votes = useVotes();
+  const buzz = useHaptics();
   if (vote.kind === 'option') {
     const o = OPTIONS_DATA.options.find((x) => x.id === vote.optionId)!;
     const key = 'option:' + o.id;
@@ -197,6 +237,7 @@ function VoteCard({ vote }: { vote: VoteSpec }) {
     const t = votes.options[o.id] ?? { support: 0, oppose: 0 };
     const n = t.support + t.oppose;
     const cast = (v: 'support' | 'oppose') => {
+      buzz('vote');
       j.choose(key, cur === v ? '' : v);
       if (votes.available && votes.canVote !== false) votes.voteOption(o.id, (v === 'support' ? 1 : -1) as Choice);
     };
@@ -231,6 +272,7 @@ function VoteCard({ vote }: { vote: VoteSpec }) {
   const tally = votes.issues[vote.id] ?? {};
   const n = Object.values(tally).reduce((a, b) => a + b, 0);
   const cast = (v: string) => {
+    buzz('vote');
     j.choose(vote.id, cur === v ? '' : v);
     if (votes.available && votes.canVote !== false) votes.voteIssue(vote.id, v);
   };
@@ -298,11 +340,12 @@ function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
 }
 
 function FinePrint({ level }: { level: Level }) {
+  const j = useJourney();
   const docs = [
     ...level.sources.map((s) => SOURCE_BY_ID[s]).filter(Boolean).map((d) => ({ title: d.title, url: d.url, by: d.publisher as string | undefined })),
     ...(level.links ?? []).map((d) => ({ title: d.title, url: d.url, by: undefined })),
   ].filter((d, k, a) => a.findIndex((x) => x.url === d.url) === k);
-  const item = (d: (typeof docs)[number]) => <li key={d.url}><a href={d.url} target="_blank" rel="noreferrer">{d.title}</a>{d.by && <span className="muted"> ({d.by})</span>}</li>;
+  const item = (d: (typeof docs)[number]) => <li key={d.url}><a href={d.url} target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>{d.title}</a>{d.by && <span className="muted"> ({d.by})</span>}</li>;
   return (
     <aside className="fineprint" aria-label="The fine print">
       <div>

@@ -6,7 +6,10 @@ import { moneyWords } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
 import { useVotes } from '../lib/votes';
 import { LevelIcon, LockIcon } from './icons';
-import { isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } from './levels';
+import { diffKey, isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } from './levels';
+import { MEDALS } from './medals';
+import { GAME_NAME, SITE_URL } from './share';
+import { ShareButton } from './ShareButton';
 import { ReadingSettings } from './Settings';
 import { useJourney } from './state';
 import { SamSays, UncleSam } from './UncleSam';
@@ -69,7 +72,7 @@ export default function Journey() {
             const open = isUnlocked(s.id, j.done, j.settings.freeRoam);
             const st = j.stars[s.id] ?? 0;
             return (
-              <li key={s.id} className="stop" data-done={isDone} data-open={open} data-kind={s.kind} data-hard={hard(s.difficulty)} data-next={s.id === next?.id}>
+              <li key={s.id} className="stop" data-done={isDone} data-open={open} data-kind={s.kind} data-hard={hard(s.difficulty)} data-diff={diffKey(s.difficulty)} data-next={s.id === next?.id}>
                 <span className="stop-node" aria-hidden="true">{open || isDone ? <LevelIcon id={s.icon} size={20} /> : <LockIcon />}</span>
                 <div className="stop-body">
                   <div className="stop-meta">
@@ -88,8 +91,46 @@ export default function Journey() {
         </ol>
       </Section>
 
+      <Section id="facts" title="Your fact cards" sub="Every chapter you finish adds a card of what you learned, with the source. Share any of them.">
+        <div className="factcards">
+          {LEVELS.map((l) => {
+            const got = j.done.includes(l.id);
+            return (
+              <article key={l.id} className="factcard" data-got={got} data-diff={diffKey(l.difficulty)}>
+                <div className="factcard-top"><span className="factcard-icon"><LevelIcon id={l.icon} size={18} /></span><span className="stat-label">Level {l.n} · {l.badge}</span></div>
+                {got ? (
+                  <>
+                    <ul className="factcard-list">{l.takeaways.map((t) => <li key={t}>{t}</li>)}</ul>
+                    <div className="factcard-actions">
+                      <ShareButton className="btn btn-sm" text={`Did you know? ${l.takeaways[0]} (from “${GAME_NAME}”, built on official U.S. government data)`} url={SITE_URL + '#' + l.id} />
+                      {l.deepDive[0] && <a className="small" href={'#' + l.deepDive[0].route}>The full chapter</a>}
+                    </div>
+                  </>
+                ) : (
+                  <p className="small muted">Finish level {l.n}, {l.title}, to collect this card.</p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </Section>
+
       <Section id="ballot" title="Your budget ballot" sub={votes.available ? 'Your votes from each level, counted with everyone else who opened this page.' : 'Your votes from each level, saved in this browser.'}>
         <Ballot />
+      </Section>
+
+      <Section id="medals" title="Medals" sub={`${j.medals.length} of ${MEDALS.length} earned. Medals reward taking part, reading the fine print, and sharing, as much as winning.`}>
+        <div className="medals">
+          {MEDALS.map((m) => {
+            const got = j.medals.includes(m.id);
+            return (
+              <div key={m.id} className="medal" data-got={got}>
+                <span className="medal-disc" aria-hidden="true">{got ? '★' : ''}</span>
+                <div><strong>{m.name}</strong><div className="small muted">{m.desc}</div></div>
+              </div>
+            );
+          })}
+        </div>
       </Section>
 
       <Section id="awards" title="Certificates" sub="Earn one for each level you finish. Saved in this browser only.">
@@ -111,6 +152,7 @@ export default function Journey() {
               <div className="eyebrow">Certificate</div>
               <div className="complete-title">Informed Budget Voter</div>
               <p className="small muted">For learning where federal money comes from and goes, why the government borrows, how Congress budgets, what the future holds for Social Security, and for casting a vote on each.</p>
+              <div className="sb-actions" style={{ marginTop: 8 }}><ShareButton text={`I finished all ${STOPS.length} levels of “${GAME_NAME}” and earned ${stars} of ${MAX_STARS} stars. I’m an Informed Budget Voter.`} /></div>
             </div>
           </div>
         )}
@@ -138,12 +180,12 @@ export default function Journey() {
             <div className="chart-title">The original documents</div>
             <p className="small muted">The official sources the numbers come from, unedited.</p>
             <ul className="link-list">
-              <li><a href="https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/" target="_blank" rel="noreferrer">Monthly Treasury Statement</a> (U.S. Treasury)</li>
-              <li><a href="https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/" target="_blank" rel="noreferrer">Historical Tables of the U.S. Budget</a> (OMB)</li>
-              <li><a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/" target="_blank" rel="noreferrer">Debt to the Penny</a> (U.S. Treasury)</li>
-              <li><a href="https://www.ssa.gov/oact/TR/2026/tr2026.pdf" target="_blank" rel="noreferrer">2026 Social Security Trustees Report</a> (PDF)</li>
-              <li><a href={OPTIONS_DATA.volume.url} target="_blank" rel="noreferrer">{OPTIONS_DATA.volume.title}</a> (CBO)</li>
-              <li><a href="https://www.usaspending.gov/" target="_blank" rel="noreferrer">USAspending.gov</a> (federal awards by place)</li>
+              <li><a href="https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>Monthly Treasury Statement</a> (U.S. Treasury)</li>
+              <li><a href="https://www.whitehouse.gov/omb/information-resources/budget/historical-tables/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>Historical Tables of the U.S. Budget</a> (OMB)</li>
+              <li><a href="https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>Debt to the Penny</a> (U.S. Treasury)</li>
+              <li><a href="https://www.ssa.gov/oact/TR/2026/tr2026.pdf" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>2026 Social Security Trustees Report</a> (PDF)</li>
+              <li><a href={OPTIONS_DATA.volume.url} target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>{OPTIONS_DATA.volume.title}</a> (CBO)</li>
+              <li><a href="https://www.usaspending.gov/" target="_blank" rel="noreferrer" onClick={() => j.mark('doc')}>USAspending.gov</a> (federal awards by place)</li>
             </ul>
           </div>
         </div>
@@ -184,6 +226,7 @@ function Ballot() {
       <div className="sb-actions" style={{ marginTop: 12 }}>
         <span className="small muted">{cast.length} of {rows.length} questions answered.</span>
         {cast.length > 0 && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my ballot'}</button>}
+        {cast.length > 0 && <ShareButton text={text.replace('My budget ballot (Follow the Federal Dollar)', `My budget ballot from “${GAME_NAME}”:`)} />}
       </div>
       {copied === 'manual' && <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your ballot, ready to copy" />}
     </div>

@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Seg } from '../components/ui';
 import { type TextSize, type ThemeChoice, useJourney } from './state';
 import { isMaleVoice, pickVoice, useNarrator } from './voice';
+import { hapticsSupported } from './haptics';
 
 /** Reading and play settings: text size, theme, Uncle Sam's voice, and free roam. */
 export function ReadingSettings({ compact = false }: { compact?: boolean }) {
@@ -38,6 +39,7 @@ export function ReadingSettings({ compact = false }: { compact?: boolean }) {
       {n.supported && !compact && n.voice && !isMaleVoice(n.voice) && (
         <p className="small muted">This browser has no male U.S. English voice installed, so Uncle Sam uses {n.voice.name} at a lower pitch. Voices come from your device; adding one in your system’s speech settings makes it available here.</p>
       )}
+      {hapticsSupported && <label className="switch"><input type="checkbox" checked={s.haptics} onChange={(e) => j.setSettings({ haptics: e.target.checked })} /> Gentle vibration on answers and wins (this device supports it)</label>}
       <label className="switch"><input type="checkbox" checked={s.freeRoam} onChange={(e) => j.setSettings({ freeRoam: e.target.checked })} /> Free roam: unlock every level</label>
       {!compact && (
         <div>

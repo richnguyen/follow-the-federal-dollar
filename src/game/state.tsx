@@ -15,7 +15,9 @@ export interface JourneyState {
   quiz: Record<string, { tries: number; correct: boolean }>; // by quiz id
   choices: Record<string, string>; // local record of the player's vote on each issue
   started: string | null;
-  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string };
+  marks: string[]; // things the player has done outside the levels (documents opened, pages read, shares)
+  medals: string[]; // medals already awarded (so each is announced once)
+  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string; haptics: boolean };
 }
 
 const DEFAULT: JourneyState = {
@@ -26,7 +28,9 @@ const DEFAULT: JourneyState = {
   quiz: {},
   choices: {},
   started: null,
-  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto' },
+  marks: [],
+  medals: [],
+  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto', haptics: true },
 };
 
 // Version 1 numbered seven chapter levels and three separate budget-desk missions. Version 2 folds
@@ -57,6 +61,8 @@ interface Journey extends JourneyState {
   retry: (quizIds: string[]) => void;
   choose: (issueId: string, value: string) => void;
   setSettings: (s: Partial<JourneyState['settings']>) => void;
+  mark: (id: string) => void;
+  award: (ids: string[]) => void;
   start: () => void;
   reset: () => void;
 }
@@ -66,7 +72,7 @@ const Ctx = createContext<Journey | null>(null);
 export function JourneyProvider({ children }: { children: ReactNode }) {
   const [st, setSt] = useState<JourneyState>(() => {
     const s = migrate(load<Partial<JourneyState>>('journey', {}));
-    return { ...DEFAULT, ...s, v: 2, stars: { ...(s.stars ?? {}) }, settings: { ...DEFAULT.settings, ...(s.settings ?? {}) } };
+    return { ...DEFAULT, ...s, v: 2, stars: { ...(s.stars ?? {}) }, marks: [...(s.marks ?? [])], medals: [...(s.medals ?? [])], settings: { ...DEFAULT.settings, ...(s.settings ?? {}) } };
   });
   const update = (f: (p: JourneyState) => JourneyState) => setSt((p) => { const n = f(p); save('journey', n); return n; });
 
@@ -100,8 +106,10 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
     retry: (ids) => update((p) => ({ ...p, quiz: Object.fromEntries(Object.entries(p.quiz).filter(([k]) => !ids.includes(k))) })),
     choose: (issueId, v) => update((p) => ({ ...p, choices: { ...p.choices, [issueId]: v } })),
     setSettings: (s) => update((p) => ({ ...p, settings: { ...p.settings, ...s } })),
+    mark: (id) => update((p) => (p.marks.includes(id) ? p : { ...p, marks: [...p.marks, id] })),
+    award: (ids) => update((p) => ({ ...p, medals: [...p.medals, ...ids.filter((x) => !p.medals.includes(x))] })),
     start: () => update((p) => (p.started ? p : { ...p, started: new Date().toISOString() })),
-    reset: () => update((p) => ({ ...DEFAULT, settings: p.settings })),
+    reset: () => update((p) => ({ ...DEFAULT, marks: [], medals: [], settings: p.settings })),
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

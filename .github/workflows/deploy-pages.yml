@@ -1,6 +1,9 @@
 # Builds the standalone site and publishes it to GitHub Pages on every push to main.
 # The standalone build refreshes the national debt and the latest monthly Treasury
 # figures live in each visitor's browser; everything else uses the data in src/data/.
+#
+# Action versions run natively on Node.js 24 (the Node 20 majors print deprecation warnings,
+# such as DEP0040 for `punycode`, when the runner forces them onto Node 24).
 name: Deploy to GitHub Pages
 
 on:
@@ -21,15 +24,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -38,7 +41,17 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.retry.outputs.page_url }}
     steps:
+      # GitHub's Pages service occasionally stays in "updating_pages" past the default
+      # 10-minute wait; allow 20 minutes, then try once more before failing the run.
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+        with:
+          timeout: 1200000
+      - id: retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        with:
+          timeout: 1200000

@@ -43,18 +43,27 @@ budget adviser.
 - **The fine print:** every level links to its full field-guide chapter and to the original
   government documents. The field guide (all earlier pages) is always in the sidebar.
 
-### Design notes (lessons from casual-game UX, without the pressure tactics)
+### Design notes: five UX lessons from Royal Match, without the pressure tactics
 
-- **Readable at a glance.** Each level has its own icon silhouette as well as a number, and
-  hard levels are marked by shape (square nodes) and label, not by color alone.
-- **Never stuck.** The budget desk's hint is free and unlimited. When no combination of cards
-  can reach a goal (balancing the budget), the hint adds the smallest even mix of
-  across-the-board tax and spending changes, so every level can be finished.
-- **Snappy.** Speech never blocks play, and the celebration card closes with one tap or Escape.
-- **Character-driven feedback.** Uncle Sam's mood follows the player's answers and the plan's
-  progress.
-- **No pressure mechanics.** No timers, lives, streak penalties, leaderboards, ads or
-  purchases.
+1. **Keep colors simple.** Game chrome uses four bold, high-contrast fills by difficulty (green
+   easy, blue medium, red hard, purple super hard), always paired with a distinct icon
+   silhouette per level, so levels read by shape as well as color. Charts keep their validated
+   data palette.
+2. **Don't slow down.** Nothing waits for an animation or for Uncle Sam to finish speaking.
+   Keyboard play: 1–4 or A–D to answer, Enter or → to continue, ← to go back. The celebration
+   card closes with one tap or Escape, and Continue in the top bar jumps straight back in.
+3. **Feedback you can feel.** On phones that support vibration: a tick for a right answer, a
+   soft double tap for a miss, a short flourish for a finished level or a medal (switchable in
+   settings). For everyone else, buttons and answers respond to the press.
+4. **Be generous with rewards.** Stars, certificates, adviser titles, fact cards from every
+   chapter, and medals that reward taking part (voting, reading the original documents,
+   exploring the field guide, sharing) as much as winning. The budget-desk hint is free and
+   unlimited, and every level can be finished. The article's other tactic, levels tuned to be
+   "almost winnable" to sell boosters, is deliberately left out: there are no timers, lives,
+   streak penalties, leaderboards, ads or purchases.
+5. **Make it easy to share.** Share buttons on the celebration card, fact cards, ballot and
+   certificate use the phone's share sheet, falling back to the clipboard. On the public site,
+   "Save image" makes a 1200×630 card with the level, stars, a fact and Uncle Sam.
 
 Progress is saved in the browser only. On the claude.ai artifact, votes are also counted across
 everyone who opens the page (one ballot per person).
