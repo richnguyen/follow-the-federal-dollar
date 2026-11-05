@@ -43,15 +43,17 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url || steps.retry.outputs.page_url }}
     steps:
-      # GitHub's Pages service occasionally stays in "updating_pages" past the default
-      # 10-minute wait; allow 20 minutes, then try once more before failing the run.
+      # GitHub's Pages service sometimes stalls ("updating_pages") or answers with a server
+      # error. Wait the full 10 minutes it allows, and if it fails, pause a minute and try once more.
       - id: deployment
         uses: actions/deploy-pages@v5
         continue-on-error: true
         with:
-          timeout: 1200000
+          timeout: 600000
+      - if: steps.deployment.outcome == 'failure'
+        run: sleep 60
       - id: retry
         if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v5
         with:
-          timeout: 1200000
+          timeout: 600000
