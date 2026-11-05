@@ -21,7 +21,7 @@
   --c-ss: #2a78d6;
   --c-medicare: #eb6834;
   --c-health: #1baf7a;
-  --c-cut: var(--c-health);   /* spending cuts at the budget desk: teal, not red */
+  --c-cut: var(--c-veterans); /* spending cuts at the budget desk: pink, not red or green */
   --c-income: #eda100;
   --c-veterans: #e87ba4;
   --c-other: #008300;
@@ -546,7 +546,7 @@ details > summary { list-style-position: inside; }
 .pcard-add { margin-top: auto; border: 1px dashed var(--axis); background: transparent; color: var(--ink); padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9375rem; }
 .pcard-add:hover { background: var(--surface-2); border-style: solid; }
 .pcard[data-side="revenue"] .pcard-add.on { background: var(--c-ss); border: 1px solid transparent; color: #fff; }
-.pcard[data-side="spending"] .pcard-add.on { background: var(--c-cut); border: 1px solid transparent; color: #fff; }
+.pcard[data-side="spending"] .pcard-add.on { background: var(--c-cut); border: 1px solid transparent; color: #111b16; }
 .pcard-more summary { cursor: pointer; font-size: var(--step--1); color: var(--accent); font-weight: 600; }
 .pcard-more p { font-size: var(--step--1); color: var(--ink-2); margin-top: 6px; }
 
@@ -1054,3 +1054,31 @@ html.modal-open { overflow: hidden; }
 
 .settings-row .select { min-width: 0; max-width: 100% !important; flex: 1 1 220px; text-overflow: ellipsis; }
 .medals { grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); }
+
+/* ---------- level 10 board: thin, and pinned while you scroll ---------- */
+.topboard { padding: 14px 18px; gap: 12px 22px; align-items: center; }
+.tb-head { align-items: center; }
+.tb-main { gap: 8px; }
+.tb-main .sb-big { font-size: clamp(1.4rem, 2.4vw, 1.9rem); line-height: 1.1; }
+.tb-main .gapbar { padding-top: 10px; }
+.tb-main .gapbar-track { height: 28px; }
+.tb-actions { gap: 8px; }
+.tb-actions .btn { padding: 6px 12px; font-size: 0.875rem; }
+.tb-coach .samsays.compact { flex-direction: row; align-items: flex-start; }
+.tb-coach .samsays.compact .sam { width: 52px; }
+.tb-coach .bubble { max-height: 9.6em; overflow-y: auto; }
+.tb-coach .bubble-text { font-size: 0.875rem; line-height: 1.45; }
+.tb-side .sb-block { width: 116px; gap: 6px; }
+.tb-side .vmeter-col { height: 100px; }
+.tb-side .vmeter-value { font-size: 0.75rem; }
+.tb-side .stat-label { font-size: 0.6875rem; }
+@media (min-width: 901px) { .topboard { position: sticky; top: 64px; z-index: 25; } }
+/* stars, with what earns each one on hover */
+.starpop { position: relative; }
+.starpop-btn { border: 0; background: transparent; padding: 2px 4px; border-radius: 8px; cursor: help; }
+.starpop-btn:hover, .starpop-btn[aria-expanded="true"] { background: var(--surface-2); }
+.starpop-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: min(340px, 80vw); padding: 12px 14px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring), 0 14px 32px rgba(0, 0, 0, 0.16); display: flex; flex-direction: column; gap: 8px; }
+.starpop-panel .checks { margin: 0; }
+@media (max-width: 1100px) { .tb-coach .bubble { max-height: 6.5em; } }
+.starpop-panel .checks { display: flex; flex-direction: column; gap: 10px; }
+.starpop-panel .checks li .small { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 0.8125rem; }

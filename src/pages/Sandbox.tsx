@@ -1,3 +1,4 @@
+import type React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { TimeChart } from '../components/charts';
 import { DragBars, EconMeter, GapBar, type GapSegment, LeverIcon, SIDE_COLOR, SplitBar, Stars, Toasts, useToasts, useTween } from '../components/game';
@@ -28,6 +29,32 @@ const LEVER_NAME: Record<LeverId, string> = {
 const dragLevel = (s: number): 1 | 2 | 3 => (s < 0.55 ? 1 : s < 1.15 ? 2 : 3);
 type Filter = 'all' | 'revenue' | 'spending';
 type Sort = 'impact' | 'gentle';
+
+/** The three stars; hovering, focusing or tapping them shows what earns each one. */
+function StarsPopover({ stars, checks, extra }: { stars: number; checks: { id: string; label: string; done: boolean; tip: string }[]; extra?: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="starpop" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button type="button" className="starpop-btn" aria-expanded={open} aria-controls="starpop-panel" onClick={() => setOpen((o) => !o)} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}>
+        <Stars n={stars} size="lg" label={`${stars} of 3 stars. Show what earns each star.`} />
+      </button>
+      {open && (
+        <div className="starpop-panel" id="starpop-panel" role="tooltip">
+          <div className="stat-label">How to earn the stars</div>
+          <ul className="checks">
+            {checks.map((c) => (
+              <li key={c.id} data-done={c.done}>
+                <span className="check-mark" aria-hidden="true">{c.done ? '★' : '☆'}</span>
+                <div><strong>{c.label}</strong><div className="small muted">{c.tip}</div></div>
+              </li>
+            ))}
+          </ul>
+          {extra}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Sandbox({ desk }: { desk?: Desk }) {
   const startYear = budget.latestFY;
@@ -398,18 +425,17 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             <div className="tb-coach">{coachBlock}</div>
             <div className="tb-main">
               <div className="tb-head">
-                <div>
-                  <div className="eyebrow">Level {desk!.n} · {desk!.difficulty} level</div>
-                  <div className="chart-title">Progress to a balanced budget</div>
-                </div>
-                <Stars n={ev.stars} size="lg" />
+                <div className="eyebrow">Level {desk!.n} · {desk!.difficulty} level</div>
+                <StarsPopover stars={ev.stars} checks={ev.checks} extra={efficiencyBlock} />
               </div>
               {progressBlock}
-              {checksBlock}
-              {actionsBlock}
+              <div className="sb-actions tb-actions">
+                <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
+                <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
+                {met && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
+                {met && (nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#journey">See your certificate</a>)}
+              </div>
               {copyBox}
-              {efficiencyBlock}
-              {nextBlock}
             </div>
             <div className="tb-side">
               {econBlock(true)}

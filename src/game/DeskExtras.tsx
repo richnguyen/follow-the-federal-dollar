@@ -17,19 +17,13 @@ export const searchCongress = (q: string) =>
 
 export function CongressLink({ id, topic }: { id: string; topic: string }) {
   const b = DATA.options[id];
-  if (b && !('none' in b)) {
-    return (
-      <div className="congress">
-        <span className="congress-k">In Congress</span>
-        <a href={b.url} target="_blank" rel="noreferrer">{b.bill}, {b.title}</a>
-        <span className="small muted">{b.sponsor}, {b.year}. {b.match}</span>
-      </div>
-    );
-  }
+  // Just the linked title; the bill's own page has the details.
   return (
     <div className="congress">
       <span className="congress-k">In Congress</span>
-      <span className="small muted">{b && 'none' in b ? b.note : 'No bill we found matches this option closely.'} <a href={searchCongress(topic)} target="_blank" rel="noreferrer">Search Congress for related bills</a></span>
+      {b && !('none' in b)
+        ? <a href={b.url} target="_blank" rel="noreferrer" title={`${b.sponsor}, ${b.year}. ${b.match}`}>{b.bill}, {b.title} ({b.year})</a>
+        : <a href={searchCongress(topic)} target="_blank" rel="noreferrer" title={b && 'none' in b ? b.note : undefined}>No close bill: search Congress</a>}
     </div>
   );
 }
@@ -40,8 +34,7 @@ export function PlanProposal({ id }: { id: string }) {
   return (
     <div className="congress">
       <span className="congress-k">Closest real proposal</span>
-      <a href={p.url} target="_blank" rel="noreferrer">{p.name}</a>
-      <span className="small muted">{p.by}, {p.year}. {p.match}</span>
+      <a href={p.url} target="_blank" rel="noreferrer" title={`${p.by}, ${p.year}. ${p.match}`}>{p.name}</a>
     </div>
   );
 }
