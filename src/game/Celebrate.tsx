@@ -66,12 +66,12 @@ export function Celebration({ stop, stars, onClose, line }: { stop: Stop; stars:
               </div>
             </div>
           ) : (
-            <p className="small">That was the final level. Your Informed Budget Voter certificate is on the road map.</p>
+            <p className="small">That was the final level. See how your game and your votes compare with everyone who has played, or find your Informed Budget Voter certificate on the road map.</p>
           )}
           <div className="celebrate-actions">
             {next
               ? <a ref={primary} className="btn btn-primary btn-lg" href={'#' + next.id} onClick={onClose}>Play level {next.n}</a>
-              : <a ref={primary} className="btn btn-primary btn-lg" href="#journey" onClick={onClose}>See my certificate</a>}
+              : <a ref={primary} className="btn btn-primary btn-lg" href="#results" onClick={onClose}>See how everyone played</a>}
             <a className="btn" href="#journey" onClick={onClose}>Road map</a>
             <button type="button" className="btn" onClick={onClose}>Stay here</button>
           </div>

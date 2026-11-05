@@ -116,6 +116,11 @@ export default function Journey() {
         </div>
       </Section>
 
+      <div className="callout results-callout">
+        <div className="callout-title">{finished ? 'You finished the game. How did everyone else do?' : 'How is everyone else doing?'}</div>
+        <p className="small">See how far players got, how many got each question right, and how everyone voted on every question and policy card. <a href="#results">How everyone played</a></p>
+      </div>
+
       <Section id="ballot" title="Your budget ballot" sub={votes.available ? 'Your votes from each level, counted with everyone else who opened this page.' : 'Your votes from each level, saved in this browser.'}>
         <Ballot />
       </Section>

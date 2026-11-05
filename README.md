@@ -71,8 +71,11 @@ budget adviser.
    certificate use the phone's share sheet, falling back to the clipboard. On the public site,
    "Save image" makes a 1200×630 card with the level, stars, a fact and Uncle Sam.
 
-Progress is saved in the browser only. On the claude.ai artifact, votes are also counted across
-everyone who opens the page (one ballot per person).
+Progress is saved in the browser. On the claude.ai artifact, which has a shared database, the
+game also keeps one anonymous record per player (levels finished, stars, first-try answers,
+medals) and one ballot per person, and "How everyone played" (`#results`, offered at the end of
+level 10) totals them. A static copy such as the GitHub Pages site cannot see other visitors, so
+there that page shows only the player's own results.
 
 ## Run it
 

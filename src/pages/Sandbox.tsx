@@ -346,7 +346,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                       <button type="button" className={'vote-btn' + (votes.mine.options[o.id] === -1 ? ' on' : '')} aria-pressed={votes.mine.options[o.id] === -1} disabled={votes.canVote === false} onClick={() => votes.voteOption(o.id, -1 as Choice)}>Oppose</button>
                       {n > 0 ? (
                         <span className="vote-tally" aria-label={`${t.support} support, ${t.oppose} oppose`}>
-                          <span className="vote-bar"><span style={{ width: `${(t.support / n) * 100}%`, background: 'var(--div-neg)' }} /><span style={{ width: `${(t.oppose / n) * 100}%`, background: 'var(--div-pos)' }} /></span>
+                          <span className="vote-bar"><span style={{ width: `${(t.support / n) * 100}%`, background: 'var(--vote-yes)' }} /><span style={{ width: `${(t.oppose / n) * 100}%`, background: 'var(--vote-no)' }} /></span>
                           <span className="small muted num">{pct(t.support / n, 0)} support · {n}</span>
                         </span>
                       ) : <span className="small muted">No votes yet</span>}

@@ -106,6 +106,7 @@ export function StatusBar({ route }: { route: string }) {
               return <li key={s.id} data-here={s.id === route}>{ok ? <a href={'#' + s.id} aria-current={s.id === route ? 'page' : undefined}>{body}</a> : <span className="ab-ll-locked" title="Finish the level before it to unlock">{body}</span>}</li>;
             })}
           </ol>
+          <a className="ab-results" href="#results" aria-current={route === 'results' ? 'page' : undefined}>How everyone played: results and votes</a>
           <div className="stat-label" style={{ marginTop: 6 }}>Field guide: every chapter in full</div>
           <ul className="ab-guide">
             {FIELD_GUIDE.map((g) => <li key={g.route}><a href={'#' + g.route} aria-current={g.route === route ? 'page' : undefined}>{g.label}</a></li>)}

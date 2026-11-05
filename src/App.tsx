@@ -19,6 +19,8 @@ import Sandbox from './pages/Sandbox';
 import Glossary from './pages/Glossary';
 import Sources from './pages/Sources';
 import { VotesProvider } from './lib/votes';
+import { CommunityProvider } from './lib/community';
+import Results from './game/Results';
 import { JourneyProvider, useJourney } from './game/state';
 import Journey from './game/Journey';
 import LevelPage from './game/LevelPage';
@@ -61,6 +63,7 @@ function MedalWatcher() {
 const TITLE: Partial<Record<Route, string>> = Object.fromEntries([
   ...FIELD_GUIDE.map((g) => [g.route, g.label]),
   ...REFERENCE.map((g) => [g.route, g.label]),
+  ['results', 'How everyone played'],
   ...STOPS.map((l) => [l.id, `Level ${l.n}: ${l.title}`]),
 ]);
 
@@ -94,6 +97,7 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   receipt: () => <Receipt />,
   glossary: () => <Glossary />,
   sources: ({ param }) => <Sources param={param} />,
+  results: () => <Results />,
 };
 
 function DeskPage({ id }: { id: string }) {
@@ -146,7 +150,9 @@ export default function App() {
           <JourneyProvider>
             <NarrationProvider>
               <VotesProvider>
-                <Shell />
+                <CommunityProvider>
+                  <Shell />
+                </CommunityProvider>
               </VotesProvider>
             </NarrationProvider>
           </JourneyProvider>

@@ -263,7 +263,7 @@ function VoteCard({ vote }: { vote: VoteSpec }) {
         </div>
         {votes.available && cur && n > 0 && (
           <div className="vote-tally" aria-label={`${t.support} support, ${t.oppose} oppose`}>
-            <span className="vote-bar"><span style={{ width: `${(t.support / n) * 100}%`, background: 'var(--div-neg)' }} /><span style={{ width: `${(t.oppose / n) * 100}%`, background: 'var(--div-pos)' }} /></span>
+            <span className="vote-bar"><span style={{ width: `${(t.support / n) * 100}%`, background: 'var(--vote-yes)' }} /><span style={{ width: `${(t.oppose / n) * 100}%`, background: 'var(--vote-no)' }} /></span>
             <span className="small muted num">{pct(t.support / n, 0)} support · {n} vote{n === 1 ? '' : 's'}</span>
           </div>
         )}
