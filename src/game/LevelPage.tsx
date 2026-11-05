@@ -205,8 +205,10 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
   return (
     <div className="quiz">
       <SamSays mood={mood} compact auto say={say}>{line}</SamSays>
-      <fieldset className="card quiz-card">
-        <legend className="quiz-q">{quiz.question}</legend>
+      {/* A labelled group rather than fieldset/legend: mobile Safari draws a legend on the box's
+          top border in a flex fieldset, so the question spilled over the edge. */}
+      <div className="card quiz-card" role="group" aria-labelledby={'q-' + quiz.id}>
+        <h2 className="quiz-q" id={'q-' + quiz.id}>{quiz.question}</h2>
         <div className="quiz-choices">
           {quiz.choices.map((c, k) => {
             const state = solved && k === quiz.correct ? 'right' : revealed && k === quiz.correct ? 'answer' : wrong.includes(k) ? 'wrong' : undefined;
@@ -224,7 +226,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
             {solved || revealed ? quiz.explain : 'Give it another try.'}
           </div>
         )}
-      </fieldset>
+      </div>
     </div>
   );
 }
