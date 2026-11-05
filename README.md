@@ -8,8 +8,9 @@ timeline, a personal tax receipt, and a balance-the-budget sandbox.
 
 Every number comes from an official U.S. government source and every chart links to its dataset.
 
-**Play it:** https://richnguyen.github.io/help-uncle-sam-balance-the-budget/
-(repository: [richnguyen/help-uncle-sam-balance-the-budget](https://github.com/richnguyen/help-uncle-sam-balance-the-budget))
+**Play it:** https://balancethebudget.us/
+(repository: [richnguyen/help-uncle-sam-balance-the-budget](https://github.com/richnguyen/help-uncle-sam-balance-the-budget);
+the old address, richnguyen.github.io/help-uncle-sam-balance-the-budget, forwards there)
 
 ## The game
 
@@ -96,12 +97,14 @@ Routes are hash-based (`#spending`, `#state-ca`), so no server configuration is 
 
 `.github/workflows/deploy-pages.yml` builds the site and publishes it to GitHub Pages on every
 push to `main` (or on demand from the Actions tab). In the repository's **Settings → Pages**,
-**Source** must be set to **GitHub Actions**. To update the data, run `npm run data` locally,
-commit `src/data/generated/`, and push.
+**Source** must be set to **GitHub Actions**, and **Custom domain** is `balancethebudget.us`
+(DNS: A/AAAA records for the apex pointing at GitHub Pages, and `www` as a CNAME to
+`richnguyen.github.io`). With an Actions deployment the domain lives in that setting, not in a
+CNAME file. To update the data, run `npm run data` locally, commit `src/data/generated/`, and push.
 
-Voting on the Balance the Budget page needs a shared database, so it appears only on the
-claude.ai version of the site; on GitHub Pages the game works without it. Badges and stars are
-saved in each visitor's browser.
+Shared voting totals and "How everyone played" need a shared database, so they work on the
+claude.ai copy of the site; on the public site the game shows each player's own results. Badges,
+stars and progress are saved in each visitor's browser.
 
 ## Re-record Uncle Sam's voice
 
