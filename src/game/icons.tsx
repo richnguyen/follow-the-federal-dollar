@@ -48,3 +48,21 @@ export function AwardIcon({ size = 18 }: { size?: number }) {
     </svg>
   );
 }
+
+const stroke = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+/** Top-bar icons: the road map, the glossary, sources & methods, settings, and a menu caret. */
+export function MapIcon({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 9 4.5l6 2 5-2v13l-5 2-6-2-5 2z" {...stroke} /><path d="M9 4.5v13M15 6.5v13" {...stroke} /></svg>;
+}
+export function BookIcon({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h10.5A3.5 3.5 0 0 1 19 8v11.5H8.5A3.5 3.5 0 0 1 5 16z" {...stroke} /><path d="M5 16a3.5 3.5 0 0 1 3.5-3.5H19M9 8h6" {...stroke} /></svg>;
+}
+export function DocIcon({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l4 4v13H7z" {...stroke} /><path d="M14 3.5v4h4M10 12h5M10 15.5h5" {...stroke} /></svg>;
+}
+export function GearIcon({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" {...stroke} /><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6" {...stroke} /></svg>;
+}
+export function CaretIcon({ size = 12 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" {...stroke} /></svg>;
+}

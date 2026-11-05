@@ -157,7 +157,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     first.current = false;
   }, [ev.stars, ev.met, ev.gentle, ev.promiseKept, selected.length, revenueShare, efficiency, voted, goal]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // --- the journey: meeting the goal completes this level (free play counts once it is unlocked) ---
+  // --- the journey: meeting the goal completes this level ---
   const deskStop = desk ?? DESK.find((d) => d.goal === goal)!;
   const [party, setParty] = useState<number | null>(null);
   const wasMet = useRef(met);
@@ -231,7 +231,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   };
 
   // ---- scoreboard pieces (level 10 lays them out across the top; other levels in a side panel) ----
-  const special = desk?.id === 'level-10';
+  // Every budget-desk level lays its scoreboard across the top, pinned while you scroll.
+  const special = !!desk;
   const introLine = goal === 'stabilize'
     ? `Here’s my budget desk. My debt is growing faster than the economy. ${missionFacts(goal)} Help me pick changes that stop that by FY${lastFY}, without knocking the economy flat or putting the whole load on one group.`
     : goal === 'deficit3'
@@ -387,40 +388,15 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   return (
     <>
       <PageHead
-        eyebrow={desk ? `Level ${desk.n} of ${STOPS.length} · ${desk.difficulty} level · budget desk` : 'Budget desk · free play'}
+        eyebrow={`Level ${desk?.n} of ${STOPS.length} · ${desk?.difficulty} level · budget desk`}
         title={desk ? mission.title : 'Can you fix the budget?'}
         lede={desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
       />
       <Accomplishments stars={bestStars} badges={progress.badges} />
-      {desk && !special && (
-        <SamSays mood={met ? 'proud' : goal === 'balance' ? 'worried' : 'thinking'} auto={!met}>
-          {met
-            ? <>You did it, partner. That plan meets the goal. {ev.stars < 3 ? 'See if you can earn all three stars, or ' : ''}{nextStop ? <>move on to level {nextStop.n}.</> : <>that was the hardest level there is.</>}</>
-            : introLine}
-        </SamSays>
-      )}
 
-      {!special && <ol className="howto" aria-label="How to play">
-        <li><span className="howto-n">1</span><div>{desk ? <><strong>Know the goal.</strong> {mission.goalText}</> : <><strong>Choose a mission.</strong> Each one is a real target lawmakers and economists talk about.</>}</div></li>
-        <li><span className="howto-n">2</span><div><strong>Play cards.</strong> Each card shows how much of the gap it closes and what it means per household.</div></li>
-        <li><span className="howto-n">3</span><div><strong>Earn stars.</strong> Reach the goal, keep the economy steady, and balance taxes with cuts.</div></li>
-      </ol>}
 
-      {!desk && <Section id="missions" title="Choose your mission">
-        <div className="missions" role="radiogroup" aria-label="Mission">
-          {MISSIONS.map((m) => (
-            <button key={m.id} type="button" role="radio" aria-checked={goal === m.id} className="mission" onClick={() => setGoal(m.id)}>
-              <span className="mission-top"><span className={'pill ' + (m.level === 'Normal' ? 'pill-ok' : m.level === 'Hard' ? 'pill-warn' : 'pill-crit')}>{m.level}</span><Stars n={progress.stars[m.id] ?? 0} size="sm" label={`Best: ${progress.stars[m.id] ?? 0} of 3 stars`} /></span>
-              <span className="mission-title">{m.title}</span>
-              <span className="mission-goal">{m.goalText}</span>
-              <span className="mission-fact">{missionFacts(m.id)}</span>
-            </button>
-          ))}
-        </div>
-      </Section>}
 
-      {special ? (
-        <>
+      <>
           <section className="topboard card" id="game" aria-label="Scoreboard">
             <div className="tb-coach">{coachBlock}</div>
             <div className="tb-main">
@@ -448,35 +424,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             </Carousel>
             {deckNote}
           </section>
-        </>
-      ) : (
-        <div className="game" id="game">
-          <aside className="scoreboard card" aria-label="Scoreboard">
-            <div className="sb-head">
-              <div>
-                <div className="eyebrow">{desk ? `Level ${desk.n} · ${desk.difficulty} level` : `${mission.level} mission`}</div>
-                <div className="chart-title">{mission.short}</div>
-              </div>
-              <Stars n={ev.stars} size="lg" />
-            </div>
-            {coachBlock}
-            {progressBlock}
-            {checksBlock}
-            {econBlock(false)}
-            {splitBlock(false)}
-            {efficiencyBlock}
-            {actionsBlock}
-            {copyBox}
-            {nextBlock}
-          </aside>
-          <section className="deck" aria-labelledby="deck-t">
-            <Carousel label="policy cards" count={deck.length} tools={deckTools}>
-              {cardEls}
-            </Carousel>
-            {deckNote}
-          </section>
-        </div>
-      )}
+      </>
 
       <div className="plan-bar" aria-hidden="true">
         <Stars n={ev.stars} size="sm" />

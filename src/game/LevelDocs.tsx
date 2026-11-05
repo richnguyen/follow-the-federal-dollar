@@ -17,7 +17,7 @@ const DESK_DOCS: Doc[] = [
 
 export function docsFor(stop: Stop): { chapters: { route: string; label: string }[]; docs: Doc[] } {
   const l = LEVELS.find((x) => x.id === stop.id);
-  if (!l) return { chapters: [{ route: 'gap', label: 'Deficits & the structural gap' }, { route: 'debt', label: 'Debt & interest' }, { route: 'sandbox', label: 'Budget desk: free play, with how the scoring works' }], docs: dedupe(DESK_DOCS) };
+  if (!l) return { chapters: [{ route: 'gap', label: 'Deficits & the structural gap' }, { route: 'debt', label: 'Debt & interest' }], docs: dedupe(DESK_DOCS) };
   const docs: Doc[] = [
     ...l.sources.map((s) => SOURCE_BY_ID[s]).filter(Boolean).map((d) => ({ title: d.title, url: d.url, by: d.publisher })),
     ...(l.links ?? []),

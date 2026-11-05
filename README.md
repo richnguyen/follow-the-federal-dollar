@@ -18,7 +18,9 @@ budget adviser.
   his bills, back home, the structural gap, the credit card (debt), who writes the budget
   (Congress and the laws that moved deficits), and keeping his promises (Social Security).
   Three **budget-desk levels** (5, 8 and 10) are the hard "wall" levels, where the player fixes
-  the budget with CBO-priced options. Difficulty runs in a rhythm: easy, easy, easy, medium,
+  the budget with CBO-priced options. Each keeps a thin scoreboard pinned at the top while the
+  player scrolls through policy cards and ready-made plans, each linked to the closest real
+  proposal in Congress. Difficulty runs in a rhythm: easy, easy, easy, medium,
   hard, then a breather, and so on up to a final super-hard level.
 - **Steps, checks and votes.** Each chapter is 4–6 short steps with a segmented progress bar.
   Quick checks give explanatory feedback and reveal the answer after two tries. Each chapter
@@ -37,13 +39,15 @@ budget adviser.
     history on citizenship, responsibility, the future or the economy, and a preview of the next
     level.
   - Adviser titles and a copyable "budget ballot".
-- **Always-visible status.** The top bar shows the current level, the ten-level track, total
-  stars, the player's title, a Continue button and the voice switch.
-- **Reading settings:** text size, light/dark theme, voice choice, and free roam to unlock
-  everything.
+- **One top bar, no side panel.** Left: "Your journey" (the road map). Middle: the current level
+  and the ten-level track; hovering it lists every level to jump to, plus the field-guide
+  chapters. Then stars and accomplishments (medals and budget-desk badges). Right: Continue,
+  Uncle Sam's voice switch, Glossary, Methods (sources & methods) and Settings.
+- **Settings** (top bar): text size, light/dark theme, voice choice, vibration, and free roam to
+  unlock everything.
 - **The fine print:** each level's full field-guide chapter and original government documents
   are gathered on Sources & methods ("By level"), one link from every level. The field guide
-  (all earlier pages) is always in the sidebar.
+  (all earlier pages) is listed in the top bar's level menu and in every page's footer.
 
 ### Design notes: five UX lessons from Royal Match, without the pressure tactics
 
