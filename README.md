@@ -8,6 +8,9 @@ timeline, a personal tax receipt, and a balance-the-budget sandbox.
 
 Every number comes from an official U.S. government source and every chart links to its dataset.
 
+**Play it:** https://richnguyen.github.io/help-uncle-sam-balance-the-budget/
+(repository: [richnguyen/help-uncle-sam-balance-the-budget](https://github.com/richnguyen/help-uncle-sam-balance-the-budget))
+
 ## The game
 
 The site opens as a civic game: **Help Uncle Sam balance the budget.** Uncle Sam is an everyday

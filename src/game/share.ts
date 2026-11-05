@@ -1,7 +1,10 @@
 // Sharing: the system share sheet where the browser has one, otherwise the clipboard, otherwise a
 // box of text to copy by hand. Links always point at the public site.
 
-export const SITE_URL = 'https://richnguyen.github.io/follow-the-federal-dollar/';
+// The public copy of the game. On GitHub Pages the page uses its own address, so links survive a
+// repository rename; elsewhere (the claude.ai copy) they point here.
+const PUBLIC_URL = 'https://richnguyen.github.io/help-uncle-sam-balance-the-budget/';
+export const SITE_URL = typeof location !== 'undefined' && /\.github\.io$/.test(location.hostname) ? location.origin + location.pathname : PUBLIC_URL;
 export const GAME_NAME = 'Help Uncle Sam balance the budget';
 
 export type ShareResult = 'shared' | 'copied' | 'manual' | 'cancelled';
