@@ -5,7 +5,8 @@ import { focusPoint, TipRow, TipTitle, useTooltip } from './ui';
 
 // Visual pieces for the balance-the-budget game.
 
-export const SIDE_COLOR = { revenue: 'var(--c-ss)', spending: 'var(--c-medicare)' } as const;
+// Taxes in blue, spending cuts in teal: neither side is shown in red, which reads as "bad".
+export const SIDE_COLOR = { revenue: 'var(--c-ss)', spending: 'var(--c-cut)' } as const;
 
 /** Small line icons for each budget area (24×24, stroke = currentColor). */
 export function LeverIcon({ lever, size = 22 }: { lever: LeverId; size?: number }) {
@@ -67,10 +68,22 @@ export function GapBar({ segments, progress }: { segments: GapSegment[]; progres
 }
 
 /** Economy gauge: the steepest single-year tightening, against gentle / moderate / steep zones. */
-export function EconMeter({ peakStep }: { peakStep: number }) {
+export function EconMeter({ peakStep, vertical = false }: { peakStep: number; vertical?: boolean }) {
   const max = 0.015;
   const at = Math.min(peakStep, max) / max;
   const label = peakStep <= 0.005 ? 'Gentle' : peakStep <= 0.01 ? 'Moderate' : 'Steep';
+  if (vertical) return (
+    <div className="vmeter" role="meter" aria-label="How hard the plan hits the economy in its steepest year" aria-valuemin={0} aria-valuemax={1.5} aria-valuenow={+(peakStep * 100).toFixed(2)} aria-valuetext={`${label}: ${pct(peakStep, 1)} of GDP in the steepest year`}>
+      <div className="vmeter-col">
+        <div className="vmeter-track econ">
+          <span className="z z3" /><span className="z z2" /><span className="z z1" />
+          <span className="vmeter-needle" style={{ bottom: `${at * 100}%` }} />
+        </div>
+        <div className="vmeter-scale" aria-hidden="true"><span>Steep</span><span>Moderate</span><span>Gentle</span></div>
+      </div>
+      <div className="vmeter-value"><strong>{label}</strong><span>{pct(peakStep, 1)} of GDP</span></div>
+    </div>
+  );
   return (
     <div className="econmeter" role="meter" aria-label="How hard the plan hits the economy in its steepest year" aria-valuemin={0} aria-valuemax={1.5} aria-valuenow={+(peakStep * 100).toFixed(2)} aria-valuetext={`${label}: ${pct(peakStep, 1)} of GDP in the steepest year`}>
       <div className="econmeter-track">
@@ -85,9 +98,29 @@ export function EconMeter({ peakStep }: { peakStep: number }) {
 }
 
 /** Taxes vs. spending cuts, with the balanced band (a third to two-thirds) marked. */
-export function SplitBar({ revenue, spending }: { revenue: number; spending: number }) {
+export function SplitBar({ revenue, spending, vertical = false }: { revenue: number; spending: number; vertical?: boolean }) {
   const tot = revenue + spending;
   const r = tot ? revenue / tot : 0;
+  if (vertical) return (
+    <div className="vmeter" role="img" aria-label={tot ? `${pct(r, 0)} from taxes, ${pct(1 - r, 0)} from spending cuts` : 'No savings yet'}>
+      <div className="vmeter-col">
+        <div className="vmeter-track split">
+          {tot ? (
+            <>
+              <span style={{ flex: `${spending} 0 0`, background: SIDE_COLOR.spending }} />
+              <span style={{ flex: `${revenue} 0 0`, background: SIDE_COLOR.revenue }} />
+            </>
+          ) : <span style={{ flex: 1, background: 'var(--surface-2)' }} />}
+          <span className="vmeter-band" aria-hidden="true" />
+        </div>
+        <div className="vmeter-scale" aria-hidden="true"><span>Cuts</span><span>Even</span><span>Taxes</span></div>
+      </div>
+      <div className="vmeter-value">
+        <span><span className="swatch" style={{ background: SIDE_COLOR.revenue }} /> Taxes <strong>{tot ? pct(r, 0) : '0%'}</strong></span>
+        <span><span className="swatch" style={{ background: SIDE_COLOR.spending }} /> Cuts <strong>{tot ? pct(1 - r, 0) : '0%'}</strong></span>
+      </div>
+    </div>
+  );
   return (
     <div className="splitbar">
       <div className="splitbar-track" role="img" aria-label={tot ? `${pct(r, 0)} from taxes, ${pct(1 - r, 0)} from spending cuts` : 'No savings yet'}>

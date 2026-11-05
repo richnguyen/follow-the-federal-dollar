@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { TimeChart } from '../components/charts';
 import { DragBars, EconMeter, GapBar, type GapSegment, LeverIcon, SIDE_COLOR, SplitBar, Stars, Toasts, useToasts, useTween } from '../components/game';
+import { Carousel } from '../components/Carousel';
+import { Accomplishments, CongressLink, PlanProposal } from '../game/DeskExtras';
 import { ChartFrame, Legend, PageHead, Section, Seg, Term } from '../components/ui';
 import { budget, cbo } from '../data';
 import { dateLabel, dollars, money, pct } from '../lib/format';
@@ -201,107 +203,78 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     return `That means closing a ${money(lastB.deficit)} deficit in FY${lastFY}.`;
   };
 
-  return (
-    <>
-      <PageHead
-        eyebrow={desk ? `Level ${desk.n} of ${STOPS.length} · ${desk.difficulty} level · budget desk` : 'Budget desk · free play'}
-        title={desk ? mission.title : 'Can you fix the budget?'}
-        lede={desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
-      />
-      {desk && (
-        <SamSays mood={met ? 'proud' : goal === 'balance' ? 'worried' : 'thinking'} auto={!met}>
-          {met
-            ? <>You did it, partner. That plan meets the goal. {ev.stars < 3 ? 'See if you can earn all three stars, or ' : ''}{nextStop ? <>move on to level {nextStop.n}.</> : <>that was the hardest level there is.</>}</>
-            : goal === 'stabilize'
-              ? <>Here’s my budget desk. My debt is growing faster than the economy. {missionFacts(goal)} Help me pick changes that stop that by FY{lastFY}, without knocking the economy flat or putting the whole load on one group.</>
-              : goal === 'deficit3'
-                ? <>Let’s be bolder. {missionFacts(goal)} Economists often point to about 3% as a level the country can keep up for the long haul. Can you get me there by FY{lastFY}?</>
-                : <>The big one: no borrowing at all. {missionFacts(goal)} It hasn’t happened since FY2001. Fair warning: {cardsCanWin ? 'this takes a lot of cards.' : 'even every card on the table isn’t quite enough, so we’ll need some across-the-board changes too.'}</>}
-        </SamSays>
-      )}
-
-      <ol className="howto" aria-label="How to play">
-        <li><span className="howto-n">1</span><div>{desk ? <><strong>Know the goal.</strong> {mission.goalText}</> : <><strong>Choose a mission.</strong> Each one is a real target lawmakers and economists talk about.</>}</div></li>
-        <li><span className="howto-n">2</span><div><strong>Play cards.</strong> Each card shows how much of the gap it closes and what it means per household.</div></li>
-        <li><span className="howto-n">3</span><div><strong>Earn stars.</strong> Reach the goal, keep the economy steady, and balance taxes with cuts.</div></li>
-      </ol>
-
-      {!desk && <Section id="missions" title="Choose your mission">
-        <div className="missions" role="radiogroup" aria-label="Mission">
-          {MISSIONS.map((m) => (
-            <button key={m.id} type="button" role="radio" aria-checked={goal === m.id} className="mission" onClick={() => setGoal(m.id)}>
-              <span className="mission-top"><span className={'pill ' + (m.level === 'Normal' ? 'pill-ok' : m.level === 'Hard' ? 'pill-warn' : 'pill-crit')}>{m.level}</span><Stars n={progress.stars[m.id] ?? 0} size="sm" label={`Best: ${progress.stars[m.id] ?? 0} of 3 stars`} /></span>
-              <span className="mission-title">{m.title}</span>
-              <span className="mission-goal">{m.goalText}</span>
-              <span className="mission-fact">{missionFacts(m.id)}</span>
-            </button>
-          ))}
-        </div>
-      </Section>}
-
-      <div className="game" id="game">
-        <aside className="scoreboard card" aria-label="Scoreboard">
-          <div className="sb-head">
-            <div>
-              <div className="eyebrow">{desk ? `Level ${desk.n} · ${desk.difficulty} level` : `${mission.level} mission`}</div>
-              <div className="chart-title">{mission.short}</div>
-            </div>
-            <Stars n={ev.stars} size="lg" />
-          </div>
-          {desk && <div className="sb-coach"><SamSays mood={coach.mood} compact auto={party == null && !(met && !wasMet.current)} delay={900}>{coach.line}</SamSays></div>}
-          <div aria-live="polite" className="sb-progress">
-            <div className="sb-big">{met ? (desk ? 'Level complete!' : 'Mission complete!') : `${Math.min(99, Math.floor(shownProg * 100))}% of the way there`}</div>
-            <GapBar segments={segments} progress={Math.max(0, prog)} />
-            <div className="small muted">{met ? `You beat the goal: deficit ${last.deficit <= 0 ? 'balanced' : pct(last.deficit / last.gdp, 1) + ' of GDP'} and debt ${pct(last.debt / last.gdp, 0)} of GDP in FY${lastFY}.` : `Still needed: ${neededText}.`}</div>
-          </div>
-          <ul className="checks">
-            {ev.checks.map((c) => (
-              <li key={c.id} data-done={c.done}>
-                <span className="check-mark" aria-hidden="true">{c.done ? '★' : '☆'}</span>
-                <div><strong>{c.label}</strong><div className="small muted">{c.tip}</div></div>
-              </li>
-            ))}
-          </ul>
-          <div className="sb-block">
-            <div className="stat-label">Hit to the economy</div>
-            <EconMeter peakStep={econ.peakStep} />
-            <label className="switch"><input type="checkbox" checked={gradual} onChange={(e) => setGradual(e.target.checked)} /> Phase in over 3 years</label>
-          </div>
-          <div className="sb-block">
-            <div className="stat-label">Who pays: taxes vs. spending cuts (10-year savings)</div>
-            <SplitBar revenue={revTen} spending={spTen} />
-          </div>
-          {efficiency != null && loaded !== 'economists' && (
-            <div className="sb-block small"><strong>Efficiency {efficiency}/100.</strong> {efficiency >= 91 ? 'Your plan is about as gentle on the economy as the least-cost plan.' : `The least-cost plan for this mission does about ${Math.round((1 - efficiency / 100) * 100)}% less economic harm. Try the hint to compare.`}</div>
-          )}
-          <div className="sb-actions">
-            <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
-            <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
-            {met && <button type="button" className="btn btn-primary" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
-          </div>
-          {copied === 'manual' && <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your plan, ready to copy" />}
-          {desk && met && (
-            <div className="sb-block sb-next">
-              <strong>Level {desk.n} complete.</strong>
-              <div className="sb-actions">
-                {nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#journey">See your certificate</a>}
-                <a className="btn" href="#journey">Road map</a>
-              </div>
-            </div>
-          )}
-        </aside>
-
-        <section className="deck" aria-labelledby="deck-t">
-          <div className="deck-head">
-            <h2 className="section-title" id="deck-t">Your policy cards</h2>
-            <div className="deck-tools">
-              <Seg<Filter> label="Show" value={filter} onChange={setFilter} options={[{ value: 'all', label: 'All' }, { value: 'revenue', label: 'Taxes' }, { value: 'spending', label: 'Spending cuts' }]} />
-              <Seg<Sort> label="Sort" value={sort} onChange={setSort} options={[{ value: 'impact', label: 'Biggest impact' }, { value: 'gentle', label: 'Gentlest first' }]} />
-            </div>
-          </div>
-          <p className="small muted">Numbers are CBO’s estimates. “Per household” spreads the FY{lastFY} amount across all {Math.round(HH / 1e6)} million U.S. households; real effects fall on the groups named on each card.</p>
-          <div className="pcards">
-            {deck.map((o) => {
+  // ---- scoreboard pieces (level 10 lays them out across the top; other levels in a side panel) ----
+  const special = desk?.id === 'level-10';
+  const introLine = goal === 'stabilize'
+    ? `Here’s my budget desk. My debt is growing faster than the economy. ${missionFacts(goal)} Help me pick changes that stop that by FY${lastFY}, without knocking the economy flat or putting the whole load on one group.`
+    : goal === 'deficit3'
+      ? `Let’s be bolder. ${missionFacts(goal)} Economists often point to about 3% as a level the country can keep up for the long haul. Can you get me there by FY${lastFY}?`
+      : `The big one: no borrowing at all. ${missionFacts(goal)} It hasn’t happened since FY2001. Fair warning: ${cardsCanWin ? 'this takes a lot of cards.' : 'even every card on the table isn’t quite enough, so we’ll need some across-the-board changes too.'}`;
+  // On level 10 the board's coach also gives the opening line, since the board comes first.
+  const said = special && !met && prog <= 0.001 ? { mood: 'worried' as Mood, line: introLine } : coach;
+  const coachBlock = desk ? <div className="sb-coach"><SamSays mood={said.mood} compact auto={party == null && !(met && !wasMet.current)} delay={special ? 300 : 900}>{said.line}</SamSays></div> : null;
+  const progressBlock = (
+    <div aria-live="polite" className="sb-progress">
+      <div className="sb-big">{met ? (desk ? 'Level complete!' : 'Mission complete!') : `${Math.min(99, Math.floor(shownProg * 100))}% of the way there`}</div>
+      <GapBar segments={segments} progress={Math.max(0, prog)} />
+      <div className="small muted">{met ? `You beat the goal: deficit ${last.deficit <= 0 ? 'balanced' : pct(last.deficit / last.gdp, 1) + ' of GDP'} and debt ${pct(last.debt / last.gdp, 0)} of GDP in FY${lastFY}.` : `Still needed: ${neededText}.`}</div>
+    </div>
+  );
+  const checksBlock = (
+    <ul className="checks">
+      {ev.checks.map((c) => (
+        <li key={c.id} data-done={c.done}>
+          <span className="check-mark" aria-hidden="true">{c.done ? '★' : '☆'}</span>
+          <div><strong>{c.label}</strong><div className="small muted">{c.tip}</div></div>
+        </li>
+      ))}
+    </ul>
+  );
+  const econBlock = (vertical: boolean) => (
+    <div className="sb-block">
+      <div className="stat-label">Hit to the economy</div>
+      <EconMeter peakStep={econ.peakStep} vertical={vertical} />
+      <label className="switch"><input type="checkbox" checked={gradual} onChange={(e) => setGradual(e.target.checked)} /> Phase in over 3 years</label>
+    </div>
+  );
+  const splitBlock = (vertical: boolean) => (
+    <div className="sb-block">
+      <div className="stat-label">{vertical ? 'Who pays (10-year savings)' : 'Who pays: taxes vs. spending cuts (10-year savings)'}</div>
+      <SplitBar revenue={revTen} spending={spTen} vertical={vertical} />
+    </div>
+  );
+  const efficiencyBlock = efficiency != null && loaded !== 'economists' ? (
+    <div className="sb-block small"><strong>Efficiency {efficiency}/100.</strong> {efficiency >= 91 ? 'Your plan is about as gentle on the economy as the least-cost plan.' : `The least-cost plan for this mission does about ${Math.round((1 - efficiency / 100) * 100)}% less economic harm. Try the hint to compare.`}</div>
+  ) : null;
+  const actionsBlock = (
+    <div className="sb-actions">
+      <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
+      <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
+      {met && <button type="button" className="btn btn-primary" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
+    </div>
+  );
+  const copyBox = copied === 'manual' ? <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your plan, ready to copy" /> : null;
+  const nextBlock = desk && met ? (
+    <div className="sb-block sb-next">
+      <strong>Level {desk.n} complete.</strong>
+      <div className="sb-actions">
+        {nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#journey">See your certificate</a>}
+        <a className="btn" href="#journey">Road map</a>
+      </div>
+    </div>
+  ) : null;
+  const deckTools = (
+    <div className="deck-head">
+      <h2 className="section-title" id="deck-t">Your policy cards</h2>
+      <div className="deck-tools">
+        <Seg<Filter> label="Show" value={filter} onChange={setFilter} options={[{ value: 'all', label: 'All' }, { value: 'revenue', label: 'Taxes' }, { value: 'spending', label: 'Spending cuts' }]} />
+        <Seg<Sort> label="Sort" value={sort} onChange={setSort} options={[{ value: 'impact', label: 'Biggest impact' }, { value: 'gentle', label: 'Gentlest first' }]} />
+      </div>
+    </div>
+  );
+  const deckNote = <p className="small muted">Scroll sideways for more cards. Numbers are CBO’s estimates. “Per household” spreads the FY{lastFY} amount across all {Math.round(HH / 1e6)} million U.S. households; real effects fall on the groups named on each card.</p>;
+  const cardEls = (
+    deck.map((o) => {
               const on = ids.includes(o.id);
               const y = optionPath(o, base, gradual).at(-1)!;
               const share = shareOf[o.id] ?? 0;
@@ -330,6 +303,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                   <button type="button" className={'pcard-add' + (on ? ' on' : '')} aria-pressed={on} onClick={() => toggle(o.id)}>
                     {on ? '✓ In your plan' : '+ Add to plan'}
                   </button>
+                  <CongressLink id={o.id} topic={o.name} />
                   <details className="pcard-more">
                     <summary>What it does</summary>
                     <p>{o.summary}</p>
@@ -352,20 +326,10 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                   )}
                 </article>
               );
-            })}
-          </div>
-        </section>
-      </div>
-
-      <div className="plan-bar" aria-hidden="true">
-        <Stars n={ev.stars} size="sm" />
-        <span className="plan-bar-track"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
-        <span className="num">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
-      </div>
-
-      <Section id="plans" title="Or try a ready-made plan" sub={`How each plan does on the “${mission.short}” mission.${votes.available ? ' Pick the one you’d choose; results update live.' : ''}`}>
-        <div className="grid-2">
-          {PRESETS.map((p) => {
+            })
+  );
+  const presetEls = (
+    PRESETS.map((p) => {
             const sel = p.optimizer ? econPlan.ids : p.ids ?? [];
             const sim = run(sel, ZERO);
             const e = economics(ctx, sel, ZERO, gradual);
@@ -376,10 +340,11 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             const pv = votes.plans[p.id] ?? 0;
             const pTot = Object.values(votes.plans).reduce((a, b) => a + b, 0);
             return (
-              <article key={p.id} className="card preset">
+              <article key={p.id} className="card preset" data-on={loaded === p.id}>
                 <div className="preset-head"><h3>{p.name}</h3><Stars n={pe.stars} size="sm" /></div>
                 <p className="small muted">{p.blurb}</p>
                 <SplitBar revenue={r} spending={s} />
+                <PlanProposal id={p.id} />
                 <p className="small">FY{lastFY}: deficit {pct(Math.max(0, sim.at(-1)!.deficit) / sim.at(-1)!.gdp, 1)} of GDP, debt {pct(sim.at(-1)!.debt / sim.at(-1)!.gdp, 0)}. {pe.met ? 'Meets the goal.' : 'Falls short of the goal.'}</p>
                 <div className="sb-actions">
                   <button type="button" className="btn" onClick={() => loadPlan(p.id)} disabled={!sel.length}>{loaded === p.id ? 'Loaded' : 'Play this plan'}</button>
@@ -388,23 +353,116 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                 </div>
               </article>
             );
-          })}
-        </div>
-        <VoteNote votes={votes} />
-      </Section>
+          })
+  );
+  const bestStars = desk ? Math.max(journey.stars[desk.id] ?? 0, ev.stars) : Math.max(progress.stars[goal] ?? 0, ev.stars);
 
-      <Section id="badges" title="Your badges" sub="Badges are saved in this browser only.">
-        <div className="badges">
-          {BADGES.map((b) => {
-            const got = progress.badges.includes(b.id);
-            return (
-              <div key={b.id} className="badge" data-got={got}>
-                <span className="badge-medal" aria-hidden="true">{got ? '★' : '?'}</span>
-                <div><strong>{b.name}</strong><div className="small muted">{got ? b.desc : `Locked. ${b.desc}`}</div></div>
-              </div>
-            );
-          })}
+  return (
+    <>
+      <PageHead
+        eyebrow={desk ? `Level ${desk.n} of ${STOPS.length} · ${desk.difficulty} level · budget desk` : 'Budget desk · free play'}
+        title={desk ? mission.title : 'Can you fix the budget?'}
+        lede={desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
+      />
+      <Accomplishments stars={bestStars} badges={progress.badges} />
+      {desk && !special && (
+        <SamSays mood={met ? 'proud' : goal === 'balance' ? 'worried' : 'thinking'} auto={!met}>
+          {met
+            ? <>You did it, partner. That plan meets the goal. {ev.stars < 3 ? 'See if you can earn all three stars, or ' : ''}{nextStop ? <>move on to level {nextStop.n}.</> : <>that was the hardest level there is.</>}</>
+            : introLine}
+        </SamSays>
+      )}
+
+      {!special && <ol className="howto" aria-label="How to play">
+        <li><span className="howto-n">1</span><div>{desk ? <><strong>Know the goal.</strong> {mission.goalText}</> : <><strong>Choose a mission.</strong> Each one is a real target lawmakers and economists talk about.</>}</div></li>
+        <li><span className="howto-n">2</span><div><strong>Play cards.</strong> Each card shows how much of the gap it closes and what it means per household.</div></li>
+        <li><span className="howto-n">3</span><div><strong>Earn stars.</strong> Reach the goal, keep the economy steady, and balance taxes with cuts.</div></li>
+      </ol>}
+
+      {!desk && <Section id="missions" title="Choose your mission">
+        <div className="missions" role="radiogroup" aria-label="Mission">
+          {MISSIONS.map((m) => (
+            <button key={m.id} type="button" role="radio" aria-checked={goal === m.id} className="mission" onClick={() => setGoal(m.id)}>
+              <span className="mission-top"><span className={'pill ' + (m.level === 'Normal' ? 'pill-ok' : m.level === 'Hard' ? 'pill-warn' : 'pill-crit')}>{m.level}</span><Stars n={progress.stars[m.id] ?? 0} size="sm" label={`Best: ${progress.stars[m.id] ?? 0} of 3 stars`} /></span>
+              <span className="mission-title">{m.title}</span>
+              <span className="mission-goal">{m.goalText}</span>
+              <span className="mission-fact">{missionFacts(m.id)}</span>
+            </button>
+          ))}
         </div>
+      </Section>}
+
+      {special ? (
+        <>
+          <section className="topboard card" id="game" aria-label="Scoreboard">
+            <div className="tb-coach">{coachBlock}</div>
+            <div className="tb-main">
+              <div className="tb-head">
+                <div>
+                  <div className="eyebrow">Level {desk!.n} · {desk!.difficulty} level</div>
+                  <div className="chart-title">Progress to a balanced budget</div>
+                </div>
+                <Stars n={ev.stars} size="lg" />
+              </div>
+              {progressBlock}
+              {checksBlock}
+              {actionsBlock}
+              {copyBox}
+              {efficiencyBlock}
+              {nextBlock}
+            </div>
+            <div className="tb-side">
+              {econBlock(true)}
+              {splitBlock(true)}
+            </div>
+          </section>
+          <section className="deck deck-wide" aria-labelledby="deck-t">
+            <Carousel label="policy cards" count={deck.length} tools={deckTools}>
+              {cardEls}
+            </Carousel>
+            {deckNote}
+          </section>
+        </>
+      ) : (
+        <div className="game" id="game">
+          <aside className="scoreboard card" aria-label="Scoreboard">
+            <div className="sb-head">
+              <div>
+                <div className="eyebrow">{desk ? `Level ${desk.n} · ${desk.difficulty} level` : `${mission.level} mission`}</div>
+                <div className="chart-title">{mission.short}</div>
+              </div>
+              <Stars n={ev.stars} size="lg" />
+            </div>
+            {coachBlock}
+            {progressBlock}
+            {checksBlock}
+            {econBlock(false)}
+            {splitBlock(false)}
+            {efficiencyBlock}
+            {actionsBlock}
+            {copyBox}
+            {nextBlock}
+          </aside>
+          <section className="deck" aria-labelledby="deck-t">
+            <Carousel label="policy cards" count={deck.length} tools={deckTools}>
+              {cardEls}
+            </Carousel>
+            {deckNote}
+          </section>
+        </div>
+      )}
+
+      <div className="plan-bar" aria-hidden="true">
+        <Stars n={ev.stars} size="sm" />
+        <span className="plan-bar-track"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
+        <span className="num">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
+      </div>
+
+      <Section id="plans" title="Or try a ready-made plan" sub={`How each plan does on the “${mission.short}” goal, and the real proposal in Congress closest to it.${votes.available ? ' Pick the one you’d choose; results update live.' : ''}`}>
+        <Carousel label="ready-made plans" count={PRESETS.length}>
+          {presetEls}
+        </Carousel>
+        <VoteNote votes={votes} />
       </Section>
 
       <Section id="numbers" title="See the numbers" sub={`Your plan compared with the ${cbo.projShort}, which assumes ${cbo.projAssumes.replace(/^assuming /, '')}.`}>

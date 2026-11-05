@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from 'react';
+import { useEffect, useRef, useState, type JSX } from 'react';
 import { BrandMark } from './components/Guilloche';
 import { TooltipProvider } from './components/ui';
 import { budget } from './data';
@@ -40,10 +40,14 @@ function MedalWatcher() {
   const toasts = useToasts();
   const fresh = earnedMedals(j).filter((id) => !j.medals.includes(id));
   const key = fresh.join();
+  const told = useRef(new Set<string>());
   useEffect(() => {
+    const news = fresh.filter((id) => !told.current.has(id));
+    news.forEach((id) => told.current.add(id));
     if (!fresh.length) return;
     j.award(fresh);
-    const names = fresh.map((id) => MEDALS.find((m) => m.id === id)!.name);
+    if (!news.length) return;
+    const names = news.map((id) => MEDALS.find((m) => m.id === id)!.name);
     toasts.push(names.length === 1 ? `Medal earned: ${names[0]}` : `${names.length} medals earned: ${names.join(', ')}`);
     buzz('medal');
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps

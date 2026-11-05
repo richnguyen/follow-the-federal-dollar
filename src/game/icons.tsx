@@ -37,3 +37,14 @@ export function SpeakerIcon({ on, size = 18 }: { on: boolean; size?: number }) {
 export function LockIcon() {
   return <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="6" width="9" height="6.5" rx="1.5" fill="currentColor" /><path d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>;
 }
+
+/** A ribbon medal: accomplishments. */
+export function AwardIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m8.5 13.5-2 7.5 5.5-3 5.5 3-2-7.5" />
+      <circle cx="12" cy="8.5" r="5.5" />
+      <path d="m12 6 .9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}

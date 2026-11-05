@@ -3,6 +3,7 @@ import { money, pct } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
 import { type Choice, useVotes } from '../lib/votes';
 import { Celebration } from './Celebrate';
+import { Stars } from '../components/game';
 import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
 import { chapterStars, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
@@ -36,10 +37,13 @@ function Locked({ level }: { level: Level }) {
 }
 
 function LevelHead({ level }: { level: Level }) {
+  const j = useJourney();
+  const best = j.stars[level.id] ?? 0;
   return (
     <header className="level-head" data-diff={diffKey(level.difficulty)}>
       <div className="eyebrow level-eyebrow"><LevelIcon id={level.icon} size={16} /> Level {level.n} of {STOPS.length} · {level.difficulty} · about {level.minutes} min</div>
       <h1 className="page-title">{level.title}</h1>
+      {j.done.includes(level.id) && <div className="accomp-points"><Stars n={best} size="md" label={`Best on this level: ${best} of 3 stars`} /><span className="small muted">best on this level{best < 3 ? ' · replay for more stars' : ''}</span></div>}
       <p className="lede">{level.topic}</p>
     </header>
   );

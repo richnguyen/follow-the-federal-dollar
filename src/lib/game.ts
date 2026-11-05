@@ -60,9 +60,9 @@ export interface Badge { id: string; name: string; desc: string }
 
 export const BADGES: Badge[] = [
   { id: 'first', name: 'First move', desc: 'Add your first policy card.' },
-  { id: 'stabilize', name: 'Debt stabilizer', desc: 'Complete the Normal mission.' },
-  { id: 'deficit3', name: 'Deficit tamer', desc: 'Complete the Hard mission.' },
-  { id: 'balance', name: 'Budget balancer', desc: 'Complete the Expert mission.' },
+  { id: 'stabilize', name: 'Debt stabilizer', desc: 'Finish level 5: stop the debt from outgrowing the economy.' },
+  { id: 'deficit3', name: 'Deficit tamer', desc: 'Finish level 8: cut the deficit to 3% of GDP.' },
+  { id: 'balance', name: 'Budget balancer', desc: 'Finish level 10: balance the budget.' },
   { id: 'gentle', name: 'Light touch', desc: 'Complete a mission while going easy on the economy.' },
   { id: 'even', name: 'Even-handed', desc: 'Complete a mission with 40 to 60% of savings from each side.' },
   { id: 'promise', name: 'Promise keeper', desc: 'Complete a mission without cutting benefits for current retirees, programs for low-income families, or public investment.' },
@@ -79,6 +79,8 @@ export function loadProgress(): Progress {
 
 export function saveProgress(p: Progress) {
   save('game', p);
+  // Lets the top bar's accomplishments count update straight away.
+  try { window.dispatchEvent(new Event('ftd-progress')); } catch { /* no window */ }
 }
 
 /** Badges earned by the current state (not yet merged with saved progress). */
