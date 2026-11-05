@@ -919,7 +919,7 @@ html.modal-open { overflow: hidden; }
 .medal-disc { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--line); color: #fff; font-size: 1.1rem; }
 .medal[data-got="true"] .medal-disc { background: var(--gold); box-shadow: inset 0 0 0 3px color-mix(in srgb, #fff 35%, var(--gold)), 0 0 0 2px color-mix(in srgb, var(--gold) 30%, transparent); }
 .medal[data-got="false"] strong { color: var(--ink-2); }
-.factcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.factcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 12px; }
 .factcard { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring); }
 .factcard[data-got="true"] { box-shadow: 0 0 0 1px var(--ring), inset 4px 0 0 var(--lv); }
 .factcard[data-got="false"] { background: transparent; box-shadow: 0 0 0 1px var(--line); }
@@ -1009,7 +1009,7 @@ html.modal-open { overflow: hidden; }
 .congress a { font-weight: 600; }
 
 /* ---------- level 10: the scoreboard runs across the top ---------- */
-.topboard { display: grid; grid-template-columns: minmax(170px, 0.8fr) minmax(0, 2.4fr) auto; gap: 18px 24px; align-items: start; }
+.topboard { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(0, 2.2fr) auto; gap: 18px 24px; align-items: start; }
 .tb-coach .samsays.compact { flex-direction: column; align-items: flex-start; gap: 6px; }
 .tb-coach .samsays.compact .sam { width: 64px; }
 .tb-coach .bubble { padding: 10px 12px; }
@@ -1051,3 +1051,6 @@ html.modal-open { overflow: hidden; }
 .vmeter-scale { display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6875rem; color: var(--muted); padding-block: 2px; }
 .vmeter-value { display: flex; flex-direction: column; gap: 2px; font-size: 0.8125rem; }
 .vmeter-value span { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); }
+
+.settings-row .select { min-width: 0; max-width: 100% !important; flex: 1 1 220px; text-overflow: ellipsis; }
+.medals { grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); }
