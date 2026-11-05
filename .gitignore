@@ -7,3 +7,4 @@ data/raw/**/*.xlsx
 data/raw/cms/*.html
 .kokoro/
 .venv/
+*.log
