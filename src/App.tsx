@@ -122,7 +122,7 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   results: () => <Results />,
   plan: ({ param }) => <PlanPage param={param} />,
   story: () => <Story />,
-  daily: () => <Daily />,
+  daily: ({ param }) => <Daily key={param ?? 'today'} param={param} />,
   'og-card': ({ param }) => <OgCard param={param} />,
   peoples: () => <Peoples />,
   rooms: () => <Rooms />,

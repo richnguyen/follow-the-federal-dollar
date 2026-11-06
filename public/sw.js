@@ -73,9 +73,37 @@ async function trim(cache) {
 }
 
 // ---------- Daily Dollar reminders (opt-in; see src/game/reminders.tsx) ----------
+// THEMED WEEKS: the same two date rules as src/game/daily.ts, so a reminder during Budget Week or
+// Tax Week says so, by the phone's own date (keep the two in step).
+function budgetDay(y) { const d = new Date(y, 1, 1); while (d.getDay() !== 1) d.setDate(d.getDate() + 1); return d; }
+function taxDay(y) {
+  const em = new Date(y, 3, 16);
+  if (em.getDay() === 6) em.setDate(15); else if (em.getDay() === 0) em.setDate(17);
+  const d = new Date(y, 3, 15);
+  while (d.getDay() === 0 || d.getDay() === 6 || d.getTime() === em.getTime()) d.setDate(d.getDate() + 1);
+  return d;
+}
+function themeOn(now) {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const after = (a) => Math.round((d - a) / 86400000);
+  const b = after(budgetDay(d.getFullYear())), t = after(taxDay(d.getFullYear()));
+  if (b >= 0 && b <= 6) return 'budget';
+  if (t === 0) return 'taxday';
+  if (t >= -6 && t < 0) return 'tax';
+  return null;
+}
+// END THEMED WEEKS
+const THEMED = {
+  budget: { title: 'Budget Week: the Daily Dollar is ready', body: 'The President’s budget request is due this week, so today’s five calls are about the budget.' },
+  tax: { title: 'Tax Week: the Daily Dollar is ready', body: 'Returns are due on Tax Day, so today’s five calls are about taxes.' },
+  taxday: { title: 'It’s Tax Day: the Daily Dollar is ready', body: 'Returns are due today. Today’s five calls: what a paycheck pays in federal taxes.' },
+};
+
 self.addEventListener('push', (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data ? e.data.text() : '' }; }
+  const theme = (!d.tag || d.tag === 'daily-dollar') && themeOn(new Date());
+  if (theme) d = { ...d, ...THEMED[theme] };
   e.waitUntil(self.registration.showNotification(d.title || 'The Daily Dollar is ready', {
     body: d.body || 'Today’s puzzle: five quick higher-or-lower calls on real federal numbers.',
     icon: 'icons/icon-192.png',

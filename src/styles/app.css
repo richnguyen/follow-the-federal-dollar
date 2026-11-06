@@ -1473,3 +1473,9 @@ html.modal-open { overflow: hidden; }
 .reminder-hour { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
 .reminder-hour .select { width: auto; }
 .reminder p { margin: 0; }
+
+/* Themed Daily Dollar weeks. */
+.daily-theme { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--gold) 12%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 35%, var(--line)); }
+.daily-theme[data-theme="budget"] { background: var(--accent-wash); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, var(--line)); }
+.daily-theme-tag { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); font-weight: 600; }
+.daily-upcoming { padding: 8px 10px; border-radius: var(--radius-sm); background: var(--surface-2); }

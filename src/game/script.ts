@@ -87,6 +87,11 @@ export const STORY_LINES = {
 
 export const DAILY_LINES = {
   intro: 'Here’s today’s Daily Dollar. Five quick calls: is the next number higher or lower?',
+  // Themed weeks (see daily.ts): said before "Five quick calls…".
+  budgetWeek: 'It’s Budget Week, partner. My budget request is due to Congress, so all week the Daily Dollar is about my budget.',
+  taxWeek: 'It’s Tax Week. Returns are due on Tax Day, so all week the Daily Dollar is about taxes.',
+  taxDay: 'It’s Tax Day! Returns are due today, so today’s numbers are all about taxes.',
+  calls: 'Five quick calls: is the next number higher or lower?',
   done: 'You’ve played today’s. A new one is ready tomorrow, partner.',
   score: [
     'Zero today, but now you know five new things about my budget.',

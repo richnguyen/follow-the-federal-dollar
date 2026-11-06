@@ -7,7 +7,7 @@ import { OPTIONS_DATA } from '../lib/planData';
 import { useVotes } from '../lib/votes';
 import { LevelIcon, LockIcon } from './icons';
 import { diffKey, isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } from './levels';
-import { dayNumber, loadResults, ROUNDS, todayKey, untilNext } from './daily';
+import { dayNumber, loadResults, nextTheme, ROUNDS, span, themeFor, todayKey, untilNext } from './daily';
 import { backendOn } from '../lib/backend';
 import { MEDALS } from './medals';
 import { GAME_NAME, SITE_URL } from './share';
@@ -193,12 +193,14 @@ function Today() {
   const key = todayKey();
   const played = loadResults()[key];
   const right = played?.filter(Boolean).length ?? 0;
+  const theme = themeFor(key);
+  const upcoming = theme ? null : nextTheme(key, 21);
   return (
     <section className="card today" aria-label="Today">
       <span className="stat-label">Today</span>
       <a className="today-row" href="#daily">
-        <strong>The Daily Dollar #{dayNumber(key)}</strong>
-        <span className="small muted">{played && played.length >= ROUNDS ? `You got ${right} of ${ROUNDS}. The next one is ready in ${untilNext()}.` : 'Today’s puzzle is ready: five higher-or-lower calls, about a minute.'}</span>
+        <strong>The Daily Dollar #{dayNumber(key)}{theme ? ` · ${theme.finale ? 'Tax Day' : theme.name}` : ''}</strong>
+        <span className="small muted">{played && played.length >= ROUNDS ? `You got ${right} of ${ROUNDS}. The next one is ready in ${untilNext()}.` : theme ? `${theme.id === 'tax' ? 'All about taxes' : 'All about the budget'} this week. Today’s puzzle is ready: five calls, about a minute.` : 'Today’s puzzle is ready: five higher-or-lower calls, about a minute.'}{upcoming ? ` Coming up: ${upcoming.name}, ${span(upcoming)}.` : ''}</span>
       </a>
       {backendOn() && <a className="today-row" href="#peoples">
         <strong>The People’s Budget</strong>

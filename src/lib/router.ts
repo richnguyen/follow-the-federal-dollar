@@ -19,6 +19,8 @@ export function parseHash(hash: string): { route: Route; param: string | null } 
   // A room (room?c=CODE) and a pass-the-budget chain (chain?g=…&t=…) carry their details too.
   if (/^room\?/i.test(raw)) return { route: 'room', param: raw.slice(5) };
   if (/^chain(\?|$)/i.test(raw)) return { route: 'chain', param: raw.slice(6) || null };
+  // A preview of another day's Daily Dollar (daily?d=2027-04-15), for checking themed weeks.
+  if (/^daily\?/i.test(raw)) return { route: 'daily', param: raw.slice(6) };
   const h = raw.toLowerCase();
   if (h.startsWith('state-')) return { route: 'state', param: h.slice(6) };
   if (h.startsWith('sources-')) return { route: 'sources', param: h.slice(8) };

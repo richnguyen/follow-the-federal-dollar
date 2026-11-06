@@ -146,6 +146,14 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   in the browser with a canvas and MediaRecorder (MP4 where supported, else WebM).
 - **The Daily Dollar** (`#daily`, `?daily`): five higher-or-lower calls a day on real federal
   numbers, the same puzzle for everyone on a date, with a spoiler-free result grid to post.
+  **Themed weeks** twice a year: **Budget Week**, the seven days from the first Monday in
+  February (when the law asks the President to send Congress a budget request), with spending by
+  budget function, deficits since FY1962, and agency spending; and **Tax Week**, the seven days
+  ending on Tax Day (April 15, moved past weekends and Washington, D.C.'s Emancipation Day as the
+  IRS does), with monthly collections, each tax's take since FY2015, CBO's tax options, and, on
+  Tax Day itself, what a paycheck pays. The page, Uncle Sam, the share text, the road map's Today
+  card ("Coming up: Tax Week, April 9–15" three weeks ahead) and the reminder notification all say
+  which week it is. `#daily?d=2027-04-15` previews any day's puzzle without saving it.
 - **Uncle Sam reacts** the first time each policy card is played, with one true fact from CBO's
   data, and the desk shows what the plan means for the player's own tax receipt.
 - Shared links carry a channel tag (`?s=x`, `wh`, `sh`…), saved with the player's anonymous

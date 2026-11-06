@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageHead, Section } from '../components/ui';
 import { SOURCE_BY_ID } from '../data';
 import { ReminderControl } from './reminders';
-import { grid, loadResults, puzzleFor, ROUNDS, saveResult, streak, todayKey, untilNext } from './daily';
+import { grid, loadResults, longDate, nextTheme, puzzleFor, ROUNDS, saveResult, span, streak, type Theme, themeBlurb, todayKey, untilNext } from './daily';
 import { useHaptics } from './haptics';
 import { DAILY_LINES } from './script';
 import { SITE_URL } from './share';
@@ -17,12 +17,18 @@ const ratio = (a: number, b: number) => {
   return r >= 1 ? `That’s ${r >= 10 ? Math.round(r) : r.toFixed(1)} times the number before.` : `That’s ${r < 0.1 ? 'under a tenth' : `${Math.round(r * 100)}%`} of the number before.`;
 };
 
-export default function Daily() {
+const themeLine = (t: Theme) => `${t.finale ? DAILY_LINES.taxDay : t.id === 'tax' ? DAILY_LINES.taxWeek : DAILY_LINES.budgetWeek} ${DAILY_LINES.calls}`;
+
+export default function Daily({ param = null }: { param?: string | null }) {
   const j = useJourney();
   const buzz = useHaptics();
-  const key = todayKey();
-  const { n, pool, chain } = puzzleFor(key);
-  const [answers, setAnswers] = useState<boolean[]>(() => loadResults()[key] ?? []);
+  // #daily?d=YYYY-MM-DD previews another day's puzzle; nothing is saved or counted.
+  const asked = new URLSearchParams(param ?? '').get('d');
+  const preview = asked && /^\d{4}-\d{2}-\d{2}$/.test(asked) && asked !== todayKey() ? asked : null;
+  const key = preview ?? todayKey();
+  const { n, pool, chain, theme } = puzzleFor(key);
+  const upcoming = theme ? null : nextTheme(key, 45);
+  const [answers, setAnswers] = useState<boolean[]>(() => (preview ? [] : loadResults()[key] ?? []));
   const [revealed, setRevealed] = useState(false);
   const done = answers.length >= ROUNDS;
   const round = Math.min(answers.length, ROUNDS - 1);
@@ -40,18 +46,26 @@ export default function Daily() {
     setAnswers(a);
     setRevealed(true);
     buzz(right ? 'right' : 'wrong');
+    if (preview) { if (a.length >= ROUNDS && a.every(Boolean)) buzz('win'); return; }
     saveResult(key, a);
     if (a.length >= ROUNDS) { j.mark('daily'); if (a.every(Boolean)) buzz('win'); }
   };
   const advance = () => setRevealed(false);
-  const shareTextStr = `The Daily Dollar #${n} · ${score}/${ROUNDS}\n${grid(answers)}\nHigher or lower, on real federal numbers.`;
+  const shareTextStr = `The Daily Dollar #${n}${theme ? ` · ${theme.finale ? 'Tax Day' : theme.name}` : ''} · ${score}/${ROUNDS}\n${grid(answers)}\nHigher or lower, on real federal numbers.`;
   const finished = done && !revealed;
 
   return (
     <>
-      <PageHead eyebrow={`The Daily Dollar · #${n}`} title="The Daily Dollar" lede={<>Today: <strong>{pool.title[0].toLowerCase() + pool.title.slice(1)}</strong>. Five quick calls. Is the next number higher or lower? Same puzzle for everyone today.</>} />
-      <SamSays mood={finished ? (score >= 4 ? 'cheering' : score >= 2 ? 'happy' : 'thinking') : 'happy'} auto compact>
-        {finished ? DAILY_LINES.score[score] : DAILY_LINES.intro}
+      <PageHead eyebrow={`The Daily Dollar · #${n}${theme ? ` · ${theme.name}` : ''}`} title={theme?.finale ? 'The Daily Dollar: Tax Day' : theme ? `The Daily Dollar: ${theme.name}` : 'The Daily Dollar'} lede={<>{preview ? 'That day' : 'Today'}: <strong>{pool.title[0].toLowerCase() + pool.title.slice(1)}</strong>. Five quick calls. Is the next number higher or lower? Same puzzle for everyone {preview ? 'that day' : 'today'}.</>} />
+      {preview && <div className="callout small" role="note"><strong>Preview of {longDate(preview)}, {preview.slice(0, 4)}.</strong> Play it to see how it works; nothing is saved or counted. <a href="#daily">Today’s puzzle</a></div>}
+      {theme && (
+        <div className="daily-theme" data-theme={theme.id} role="note">
+          <span className="daily-theme-tag">{theme.finale ? 'Tax Day' : `${theme.name} · day ${theme.day} of ${theme.days}`}</span>
+          <span className="small">{themeBlurb(theme)}</span>
+        </div>
+      )}
+      <SamSays mood={finished ? (score >= 4 ? 'cheering' : score >= 2 ? 'happy' : 'thinking') : theme ? 'proud' : 'happy'} auto compact>
+        {finished ? DAILY_LINES.score[score] : theme ? themeLine(theme) : DAILY_LINES.intro}
       </SamSays>
 
       {!finished && (
@@ -89,18 +103,21 @@ export default function Daily() {
         <section className="card daily-done">
           <div className="daily-score"><span className="num">{score}</span><span className="small"> of {ROUNDS}</span></div>
           <div className="daily-grid" aria-label={`${score} of ${ROUNDS} right`}>{grid(answers)}</div>
-          <p className="small">{st.run > 1 ? `${st.run} days in a row. ` : ''}You’ve played {st.played} day{st.played === 1 ? '' : 's'} so far. The next puzzle is ready in {untilNext()}.</p>
+          {preview ? <p className="small">That was a preview, so it isn’t saved. <a href="#daily">Play today’s puzzle</a></p> : <>
+          <p className="small">{st.run > 1 ? `${st.run} days in a row. ` : ''}You’ve played {st.played} day{st.played === 1 ? '' : 's'} so far. The next puzzle is ready in {untilNext()}.{theme && theme.day < theme.days ? ` ${theme.name} goes on through ${longDate(theme.end)}.` : ''}</p>
+          {upcoming && <p className="small daily-upcoming"><strong>Coming up: {upcoming.name}, {span(upcoming)}.</strong> {upcoming.id === 'tax' ? 'A week of puzzles about taxes, ending on Tax Day.' : 'A week of puzzles about the budget, starting the day the President’s budget request is due.'}</p>}
           <div className="sb-actions">
             <ShareButton text={shareTextStr} url={`${SITE_URL}?daily`} label="Share my result" className="btn btn-primary" />
             <a className="btn" href="#journey">Play the full game</a>
           </div>
           <SocialShare text={shareTextStr} url={`${SITE_URL}?daily`} />
           <ReminderControl where="daily" />
+          </>}
         </section>
       )}
 
       {(finished || answers.length > 0) && (
-        <Section id="numbers" title="Today’s numbers" sub="Every figure, and where it comes from.">
+        <Section id="numbers" title={preview ? 'That day’s numbers' : 'Today’s numbers'} sub="Every figure, and where it comes from.">
           <ol className="daily-list">
             {chain.slice(0, finished ? ROUNDS + 1 : answers.length + (revealed ? 1 : 0)).map((x) => {
               const src = x.source.id ? SOURCE_BY_ID[x.source.id] : undefined;
