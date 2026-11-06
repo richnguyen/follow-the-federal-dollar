@@ -29,13 +29,12 @@ export const DESK_PARTY: Record<number, string> = {
 };
 
 export const COACH = {
-  metWithHint: 'We did it! The cards alone couldn’t get us there, so the hint added across-the-board changes too.',
   met3: 'Three stars! That’s a plan I could take to Congress.',
   met: 'We did it! Now, can we earn the other stars too?',
   startStabilize: 'My debt is still outgrowing the economy. Pick a card to get us started.',
   start: 'We haven’t made a dent yet. Pick a card to get us started.',
   steep: 'Whoa, easy now. That’s a steep hit to the economy in a single year. Try phasing it in, or swap a card for a gentler one.',
-  cardsShort: 'The cards alone won’t get us all the way. We’ll need some across-the-board changes, further down, or try the free hint.',
+  cardsShort: 'The cards alone won’t get us all the way. We’ll need some across-the-board changes too. They’re right under the cards.',
   almost: 'Almost there! One more card should do it.',
   partway: 'Good progress. We’re partway there.',
   begun: 'That’s a start. Keep going.',
@@ -46,7 +45,7 @@ export const VOICE_TEST = 'Howdy, partner. This is Uncle Sam. Let’s get my boo
 export const JOURNEY_LINES = {
   fresh: (tookIn: string) => `Howdy. I’m Uncle Sam. I took in ${tookIn} last year, and I still spent more than I made. I need a level-headed adviser to help me understand my books and decide what to do. Got a few minutes?`,
   finished: 'We did it, partner. You’ve seen where every dollar comes from and goes, and you’ve weighed in on the big choices. That makes you an informed budget voter.',
-  hardNext: (rank: string, n: number) => `Welcome back, ${rank}. Next up is a hard one: level ${n}, where we try to fix my budget ourselves. Take your time; the hint is free.`,
+  hardNext: (rank: string, n: number) => `Welcome back, ${rank}. Next up is a hard one: level ${n}, where we try to fix my budget ourselves. Take your time.`,
   back: (rank: string) => `Welcome back. You’re my ${rank} now. Let’s pick up where we left off.`,
 };
 
@@ -60,7 +59,7 @@ export const CHALLENGE_LINES = {
   won: 'You beat their plan! Send yours back and see if they can top it.',
   tied: 'Dead even. Great minds think alike, partner.',
   lost: 'Goal met, but their plan still edges out yours. Fancy another go?',
-  start: 'Your move, partner. Pick cards below, or take the free hint to get going.',
+  start: 'Your move, partner. Pick cards below to get going.',
 };
 
 export const STORY_LINES = {

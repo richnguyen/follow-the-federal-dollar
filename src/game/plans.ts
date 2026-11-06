@@ -9,8 +9,7 @@ import { SITE_URL } from './share';
 // on a static site with no server: ?p=10.acg&lv=r5.d-5&ph=0&by=Sam&b=01-2... Nothing is sent
 // anywhere until the person chooses to share the link.
 
-/** `hint`: the plan is the free hint's (the economists' answer), not built by hand. */
-export interface SavedPlan { ids: string[]; lv: Levers; gradual: boolean; stars: number; at: string; hint?: boolean }
+export interface SavedPlan { ids: string[]; lv: Levers; gradual: boolean; stars: number; at: string }
 
 /** One fixed letter per CBO option, so links keep working when the data is reordered. New options get new letters. */
 export const CARD_CODE: Record<string, string> = {
@@ -34,7 +33,7 @@ export const BALLOT = LEVELS.flatMap((l) => l.steps.filter((s) => s.kind === 'vo
   return { key: v.id, level: l.n, question: v.question, values: v.choices.map((c) => c.value), labels: v.choices.map((c) => c.label) };
 }));
 
-export interface SharedPlan { level: string; goal: Goal; ids: string[]; lv: Levers; gradual: boolean; by?: string; ballot?: Record<string, string>; hint?: boolean }
+export interface SharedPlan { level: string; goal: Goal; ids: string[]; lv: Levers; gradual: boolean; by?: string; ballot?: Record<string, string> }
 
 const NAME_MAX = 24;
 export const cleanName = (s: string) => s.replace(/[^\p{L}\p{N} .'’-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, NAME_MAX);
@@ -47,7 +46,6 @@ export function encodePlan(p: SharedPlan): string {
   if (lv) q.set('lv', lv);
   if (!p.gradual) q.set('ph', '0');
   if (p.by) q.set('by', cleanName(p.by));
-  if (p.hint != null) q.set('h', p.hint ? '1' : '0');
   if (p.ballot) {
     const b = BALLOT.map((x) => { const i = x.values.indexOf(p.ballot![x.key] ?? ''); return i < 0 ? '-' : String(i); }).join('');
     if (/\d/.test(b)) q.set('b', b);
@@ -73,8 +71,7 @@ export function decodePlan(q: URLSearchParams): SharedPlan | null {
     BALLOT.forEach((x, i) => { const k = Number(b[i]); if (b[i] !== '-' && x.values[k]) ballot![x.key] = x.values[k]; });
   }
   const by = q.get('by');
-  const h = q.get('h');
-  return { level: d.id, goal: d.goal, ids, lv, gradual: q.get('ph') !== '0', by: by ? cleanName(by) || undefined : undefined, ballot, hint: h === '1' ? true : h === '0' ? false : undefined };
+  return { level: d.id, goal: d.goal, ids, lv, gradual: q.get('ph') !== '0', by: by ? cleanName(by) || undefined : undefined, ballot };
 }
 
 /** Where a channel tag goes on links the player shares (`s`), so a later count can tell channels apart. */
@@ -87,11 +84,11 @@ export function planLink(p: SharedPlan, channel?: string, path = '') {
 export const siteRoot = () => SITE_URL.replace(/index\.html$/, '').replace(/([^/])$/, '$1/');
 
 /** Just the plan (cards, across-the-board changes, phase-in): what the server stores for a short link. */
-export const planCode = (p: Omit<SharedPlan, 'by' | 'ballot' | 'hint'>) => encodePlan({ ...p, by: undefined, ballot: undefined, hint: undefined });
+export const planCode = (p: Omit<SharedPlan, 'by' | 'ballot'>) => encodePlan({ ...p, by: undefined, ballot: undefined });
 
 /** A short link (?plan=<id>). The name and the answers to the big questions stay in the link, never on the server. */
-export function shortLink(id: string, p: Pick<SharedPlan, 'by' | 'ballot' | 'hint'>, path = '') {
-  const extra = new URLSearchParams(encodePlan({ level: DESK[0].id, goal: DESK[0].goal, ids: [], lv: { ...ZERO }, gradual: true, by: p.by, ballot: p.ballot, hint: p.hint }));
+export function shortLink(id: string, p: Pick<SharedPlan, 'by' | 'ballot'>, path = '') {
+  const extra = new URLSearchParams(encodePlan({ level: DESK[0].id, goal: DESK[0].goal, ids: [], lv: { ...ZERO }, gradual: true, by: p.by, ballot: p.ballot }));
   extra.delete('p');
   const rest = extra.toString();
   return `${siteRoot()}${path}?plan=${id}${rest ? '&' + rest : ''}`;

@@ -65,20 +65,14 @@ export function ChallengeShare({ level, plan, onShare }: { level: string; plan: 
 export type Outcome = 'won' | 'tied' | 'lost';
 interface Row { label: string; b: number; mine: ReactNode; theirs: ReactNode }
 
-/**
- * The head-to-head measures: stars, how hard each plan hits the economy, how many cards it takes,
- * and, when both are known, whether it was built by hand or taken from the free hint.
- */
-export function headToHead(mine: Assessment, theirs: Assessment, mineHint?: boolean, theirsHint?: boolean) {
+/** The head-to-head measures: stars, how hard each plan hits the economy, and how many cards it takes. */
+export function headToHead(mine: Assessment, theirs: Assessment) {
   const steep = (a: Assessment) => a.econ.peakStep;
   const rows: Row[] = [
     { label: 'Stars', b: mine.ev.stars - theirs.ev.stars, mine: <Stars n={mine.ev.stars} size="sm" />, theirs: <Stars n={theirs.ev.stars} size="sm" /> },
     { label: 'Steepest year for the economy', b: Math.abs(steep(mine) - steep(theirs)) < 0.0005 ? 0 : steep(theirs) - steep(mine), mine: <span className="num">{pct(steep(mine), 1)} of GDP · {RATING[mine.econ.rating]}</span>, theirs: <span className="num">{pct(steep(theirs), 1)} of GDP · {RATING[theirs.econ.rating]}</span> },
     { label: 'Policy cards used', b: theirs.shares.length - mine.shares.length, mine: <span className="num">{mine.shares.length}</span>, theirs: <span className="num">{theirs.shares.length}</span> },
   ];
-  if (mineHint != null && theirsHint != null) {
-    rows.push({ label: 'How it was built', b: (mineHint ? 0 : 1) - (theirsHint ? 0 : 1), mine: mineHint ? 'Free hint' : 'By hand', theirs: theirsHint ? 'Free hint' : 'By hand' });
-  }
   const wins = rows.filter((r) => r.b > 0).length;
   const losses = rows.filter((r) => r.b < 0).length;
   const same = mine.shares.length === theirs.shares.length && mine.shares.every((x) => theirs.shares.some((y) => y.id === x.id));
@@ -87,13 +81,13 @@ export function headToHead(mine: Assessment, theirs: Assessment, mineHint?: bool
 }
 
 /** Head-to-head on the same level, as a table. */
-export function HeadToHead({ mine, theirs, by, sam = true, auto = true, mineHint, theirsHint }: { mine: Assessment; theirs: Assessment; by: string; sam?: boolean; auto?: boolean; mineHint?: boolean; theirsHint?: boolean }) {
-  const { rows, outcome, same } = headToHead(mine, theirs, mineHint, theirsHint);
+export function HeadToHead({ mine, theirs, by, sam = true, auto = true }: { mine: Assessment; theirs: Assessment; by: string; sam?: boolean; auto?: boolean }) {
+  const { rows, outcome, same } = headToHead(mine, theirs);
   return (
     <div className="h2h">
       {outcome && sam && <SamSays mood={outcome === 'won' ? 'cheering' : outcome === 'tied' ? 'happy' : 'thinking'} compact auto={auto}>{CHALLENGE_LINES[outcome]}</SamSays>}
       {outcome && !sam && <p><strong>{CHALLENGE_LINES[outcome]}</strong></p>}
-      {same && <p className="small"><strong>Same cards as {by}.</strong> Swap one for a gentler card, or build yours by hand, to pull ahead.</p>}
+      {same && <p className="small"><strong>Same cards as {by}.</strong> Swap one for a gentler card, or do it with fewer, to pull ahead.</p>}
       <table className="h2h-table">
         <thead><tr><th scope="col"><span className="sr-only">Measure</span></th><th scope="col">You</th><th scope="col">{by}</th></tr></thead>
         <tbody>
@@ -107,7 +101,7 @@ export function HeadToHead({ mine, theirs, by, sam = true, auto = true, mineHint
           <tr><th scope="row">Who pays</th><td>{whoPays(mine)}</td><td>{whoPays(theirs)}</td></tr>
         </tbody>
       </table>
-      <p className="small muted">More stars, a gentler steepest year, fewer cards, and building it by hand each count as a win. Who pays is a matter of taste, so it doesn’t count either way.</p>
+      <p className="small muted">More stars, a gentler steepest year, and fewer cards each count as a win. Who pays is a matter of taste, so it doesn’t count either way.</p>
     </div>
   );
 }

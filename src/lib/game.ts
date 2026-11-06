@@ -29,7 +29,7 @@ export interface Evaluation {
   promiseKept: boolean;
 }
 
-export function evaluate(o: { met: boolean; econ: EconSummary; revenueShare: number; count: number; crossesRules: boolean; topLeft?: { name: string; pct: number; finishes: boolean } | null; heavySide: 'revenue' | 'spending' | null }): Evaluation {
+export function evaluate(o: { met: boolean; econ: EconSummary; revenueShare: number; count: number; crossesRules: boolean; heavySide: 'revenue' | 'spending' | null }): Evaluation {
   const gentle = o.econ.rating === 'gentle';
   const balanced = o.count > 0 && o.revenueShare >= 1 / 3 - 1e-9 && o.revenueShare <= 2 / 3 + 1e-9;
   const checks: Check[] = [
@@ -37,7 +37,7 @@ export function evaluate(o: { met: boolean; econ: EconSummary; revenueShare: num
       id: 'goal',
       label: 'Reach the goal',
       done: o.met,
-      tip: o.met ? 'Goal reached.' : o.topLeft ? (o.topLeft.finishes ? `Try “${o.topLeft.name}.” On its own it would finish the job with the least harm to the economy.` : `Add more cards. “${o.topLeft.name}” closes about ${Math.round(o.topLeft.pct * 100)}% of the gap.`) : 'Add cards until the bar reaches the goal line, or loosen the rules with across-the-board changes.',
+      tip: o.met ? 'Goal reached.' : 'Add cards until the bar reaches the goal line. If the cards run out, use the across-the-board changes.',
     },
     {
       id: 'gentle',

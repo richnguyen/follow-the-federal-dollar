@@ -32,7 +32,7 @@ export function takeLinkFromSearch() {
     // A short link (?plan=<id>) is looked up by the plan page.
     const id = q.get('plan');
     if (id && /^[0-9a-f]{12}$/.test(id)) keep.set('id', id);
-    for (const k of ['p', 'lv', 'ph', 'by', 'b', 'h']) { const v = q.get(k); if (v != null) keep.set(k, v); }
+    for (const k of ['p', 'lv', 'ph', 'by', 'b']) { const v = q.get(k); if (v != null) keep.set(k, v); }
     const daily = q.has('daily');
     const peoples = q.has('peoples');
     const room = (q.get('room') ?? '').toUpperCase();

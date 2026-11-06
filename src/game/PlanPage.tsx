@@ -71,7 +71,7 @@ export default function PlanPage({ param }: { param: string | null }) {
       <section className="card friendplan-quick" aria-label="The challenge">
         <div className="friendplan-quick-line">
           <Stars n={a.ev.stars} size="md" label={`${a.ev.stars} of 3 stars`} />
-          <span className="small">{a.shares.length} card{a.shares.length === 1 ? '' : 's'} · {whoPays(a)} · {RATING[a.econ.rating]}{plan.hint === true ? ' · built with the free hint' : plan.hint === false ? ' · built by hand' : ''}</span>
+          <span className="small">{a.shares.length} card{a.shares.length === 1 ? '' : 's'} · {whoPays(a)} · {RATING[a.econ.rating]}</span>
         </div>
         <button type="button" className="btn btn-primary btn-lg" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
         <span className="small muted">Opens level {stop.n} right away · about {stop.minutes} minutes · no sign-up</span>
@@ -96,11 +96,11 @@ export default function PlanPage({ param }: { param: string | null }) {
         <button type="button" className="btn btn-primary" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
         <a className="btn" href="#journey">Start the game from level 1</a>
       </div>
-      <p className="small muted">Beat {by === 'Your friend' ? 'their' : `${by}’s`} plan on stars, a gentler steepest year for the economy, fewer cards, or building yours by hand.</p>
+      <p className="small muted">Beat {by === 'Your friend' ? 'their' : `${by}’s`} plan on stars, a gentler steepest year for the economy, or fewer cards.</p>
 
       {mine && (
         <Section id="vs" title="Your plan against theirs" sub={`Your latest plan on level ${stop.n}, scored the same way.`}>
-          <HeadToHead mine={mine} theirs={a} by={by === 'Your friend' ? 'Them' : by} mineHint={mineSaved?.hint} theirsHint={plan.hint} />
+          <HeadToHead mine={mine} theirs={a} by={by === 'Your friend' ? 'Them' : by} />
         </Section>
       )}
       {agreement.of > 0 && (

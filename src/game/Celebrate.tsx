@@ -68,7 +68,7 @@ export function Celebration({ stop, stars, onClose, line, share, children, chall
           {challenge ? (
             <>
               <div className="celebrate-share">
-                <div className="small"><span className="stat-label">{challenge.outcome === 'lost' ? `Not yet ahead of ${challenge.by}` : `Your turn to challenge ${challenge.by}`}</span><div>{challenge.outcome === 'lost' ? 'Try again for more stars, a gentler economy, fewer cards, or a plan built by hand. Or send yours anyway.' : `Send your plan back and see if ${challenge.by} can top it.`}</div></div>
+                <div className="small"><span className="stat-label">{challenge.outcome === 'lost' ? `Not yet ahead of ${challenge.by}` : `Your turn to challenge ${challenge.by}`}</span><div>{challenge.outcome === 'lost' ? 'Try again for more stars, a gentler economy, or fewer cards. Or send yours anyway.' : `Send your plan back and see if ${challenge.by} can top it.`}</div></div>
                 <div className="celebrate-share-actions">
                   {challenge.outcome === 'lost'
                     ? <button type="button" className="btn btn-primary btn-lg" data-primary onClick={onClose}>Try again</button>
@@ -99,7 +99,7 @@ export function Celebration({ stop, stars, onClose, line, share, children, chall
                   <div>
                     <div className="stat-label">Up next · level {next.n} · {next.difficulty}{next.kind === 'desk' ? ' level' : ''}</div>
                     <strong>{next.title}</strong>
-                    {next.kind === 'desk' && <div className="small muted">A budget-desk level: you fix the budget yourself. Take your time; the hint is free and unlimited.</div>}
+                    {next.kind === 'desk' && <div className="small muted">A budget-desk level: you fix the budget yourself. Take your time.</div>}
                   </div>
                 </div>
               ) : (

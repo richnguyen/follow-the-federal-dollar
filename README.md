@@ -23,8 +23,11 @@ budget adviser.
   (Congress and the laws that moved deficits), and keeping his promises (Social Security).
   Three **budget-desk levels** (5, 8 and 10) are the hard "wall" levels, where the player fixes
   the budget with CBO-priced options. Each keeps a thin scoreboard pinned at the top while the
-  player scrolls through policy cards and ready-made plans, each linked to the closest real
-  proposal in Congress. Difficulty runs in a rhythm: easy, easy, easy, medium,
+  player scrolls through policy cards, each linked to the closest real proposal in Congress.
+  There are no hints and no plans to copy: the player works the plan out. The star tips say what
+  earns each star, never which card to play; when the cards alone can't reach the goal, the
+  across-the-board changes sit right under them. Ready-made plans (with the closest real budget
+  proposals) appear only after the player has met the goal, to compare and vote on. Difficulty runs in a rhythm: easy, easy, easy, medium,
   hard, then a breather, and so on up to a final super-hard level.
 - **Steps, checks and votes.** Each chapter is 4–6 short steps with a segmented progress bar.
   Quick checks give explanatory feedback and reveal the answer after two tries. Each chapter
@@ -67,8 +70,8 @@ budget adviser.
    settings). For everyone else, buttons and answers respond to the press.
 4. **Be generous with rewards.** Stars, certificates, adviser titles, fact cards from every
    chapter, and medals that reward taking part (voting, reading the original documents,
-   exploring the field guide, sharing) as much as winning. The budget-desk hint is free and
-   unlimited, and every level can be finished. The article's other tactic, levels tuned to be
+   exploring the field guide, sharing) as much as winning. Every level can be finished by hand,
+   with no hints to lean on. The article's other tactic, levels tuned to be
    "almost winnable" to sell boosters, is deliberately left out: there are no timers, lives,
    streak penalties, leaderboards, ads or purchases.
 5. **Make it easy to share.** Share buttons on the celebration card, fact cards, ballot and
@@ -82,15 +85,13 @@ accomplishment, creativity, friendly rivalry) and leaving out the pressure tacti
 expiring rewards, streaks that punish a missed day, public ranking of people).
 
 - **Challenge a friend** (`?p=…`): a finished budget-desk plan travels inside the link itself,
-  with an optional first name, whether it was built with the free hint, and, if the player
-  chooses, their answers to the big questions. The friend's first screen (`#plan`) is a short
+  with an optional first name and, if the player chooses, their answers to the big questions. The friend's first screen (`#plan`) is a short
   summary of the plan and one "Take the challenge" button that opens the same level right away,
   with no sign-up and nothing to read first.
-- **Challenge mode** on the desk: a banner shows the plan to beat; the free hint and the
-  scoreboard come first on phones; and when the cards alone can't reach the goal, the
+- **Challenge mode** on the desk: a banner shows the plan to beat; the scoreboard comes first on
+  phones; and when the cards alone can't reach the goal, the
   across-the-board changes sit right under them. Meeting the goal opens a live head-to-head
-  (stars, steepest year for the economy, cards used, and built by hand or with the hint) with no
-  pop-up, so the friend can keep improving. A win or a tie ends on "Send it back to <name>"; a loss
+  (stars, steepest year for the economy, cards used) with no pop-up, so the friend can keep improving. A win or a tie ends on "Send it back to <name>"; a loss
   ends on "Try again". Newcomers are pointed to level 1 at the end, and Uncle Sam's voice starts
   downloading only after the first tap. The share stats count each step: took the challenge, met
   the goal, sent a plan back.

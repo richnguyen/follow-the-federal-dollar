@@ -32,6 +32,8 @@ import { activeRoom, type RoomRef, setActiveRoom } from '../game/rooms';
 import { sendRoomPlan } from '../lib/backend';
 
 type Desk = DeskLevel;
+// The ground rules for the least-cost plan the efficiency score compares against.
+const LEAST_COST_RULES: Protect = { retirees: true, lowIncome: true, investment: true };
 
 const LEVER_NAME: Record<LeverId, string> = {
   revenues: 'Taxes', socialSecurity: 'Social Security', medicare: 'Medicare', medicaid: 'Medicaid',
@@ -80,11 +82,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const journey = useJourney();
   const buzz = useHaptics();
   const [gradual, setGradual] = useState(true);
-  const [protect, setProtect] = useState<Protect>({ retirees: true, lowIncome: true, investment: true });
-  const [mix, setMix] = useState(true);
   const [ids, setIds] = useState<string[]>([]);
   const [lv, setLv] = useState<Levers>({ ...ZERO });
-  const [loaded, setLoaded] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [sort, setSort] = useState<Sort>('impact');
   const [progress, setProgressState] = useState<Progress>(() => loadProgress());
@@ -132,24 +131,15 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     ...(slidersUsed && prog - progCards > 0.001 ? [{ id: 'sliders', label: 'Across-the-board changes', share: prog - progCards, side: (lv.revenues > 0 ? 'revenue' : 'spending') as 'revenue' | 'spending' }] : []),
   ];
 
-  const econPlan = useMemo(() => optimize(ctx, goal, protect, gradual, mix ? 1 / 3 : 0), [ctx, goal, protect, gradual, mix]);
+  // The least-cost plan: what the efficiency score measures against, and the ready-made "economists' plan".
+  const econPlan = useMemo(() => optimize(ctx, goal, LEAST_COST_RULES, gradual, 1 / 3), [ctx, goal, gradual]);
   const econCost = econPlan.met ? planCost(ctx, econPlan.ids) : null;
   const myCost = planCost(ctx, ids);
   const efficiency = met && !slidersUsed && econCost != null && myCost > 0 ? Math.min(100, Math.round((econCost / myCost) * 100)) : null;
 
-  // Coaching: the gentlest unused card that would finish the job on its own, else the biggest;
-  // cards that break the protections are suggested only when nothing else is left.
-  const remaining = Math.max(0, 1 - prog);
-  const isCrossing = (o: (typeof ctx.options)[number]) => o.econ.tags.some((t) => t === 'retirees' || t === 'lowIncome' || t === 'investment');
-  const unusedAll = ctx.options.filter((o) => !ids.includes(o.id) && (shareOf[o.id] ?? 0) > 0);
-  const unused = unusedAll.some((o) => !isCrossing(o)) ? unusedAll.filter((o) => !isCrossing(o)) : unusedAll;
-  const totalHarm = (o: (typeof ctx.options)[number]) => Math.max(0.01, score(o.econ)) * o.savings10;
-  const finisher = unused.filter((o) => shareOf[o.id] >= remaining * 1.02).sort((a, b) => totalHarm(a) - totalHarm(b))[0];
-  const biggest = [...unused].sort((a, b) => shareOf[b.id] - shareOf[a.id])[0];
-  const suggest = finisher ?? biggest;
+  // No hints: the player works out the plan. The stars' tips describe what earns each one, never which card to play.
   const ev = evaluate({
     met, econ, revenueShare, count: selected.length, crossesRules,
-    topLeft: suggest ? { name: suggest.name, pct: shareOf[suggest.id], finishes: !!finisher } : null,
     heavySide: selected.length ? (revenueShare > 2 / 3 ? 'revenue' : revenueShare < 1 / 3 ? 'spending' : null) : null,
   });
   const voted = Object.keys(votes.mine.options).length > 0 || !!votes.mine.plan;
@@ -157,7 +147,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // --- rewards: best stars per mission and badges, saved in this browser ---
   const first = useRef(true);
   useEffect(() => {
-    const earned = earnedBadges({ goal, ev, count: selected.length, revenueShare, efficiency: loaded === 'economists' ? null : efficiency, voted });
+    const earned = earnedBadges({ goal, ev, count: selected.length, revenueShare, efficiency, voted });
     const fresh = earned.filter((b) => !progress.badges.includes(b));
     const best = Math.max(progress.stars[goal] ?? 0, ev.stars);
     if (fresh.length || best !== (progress.stars[goal] ?? 0)) {
@@ -188,8 +178,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // The latest plan that meets the goal is kept, for challenges and the Budget Story.
   useEffect(() => {
     if (!met || !desk) return;
-    journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString(), hint: loaded === 'economists' });
-  }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
+    journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString() });
+  }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars]); // eslint-disable-line react-hooks/exhaustive-deps
   // Playing for a room: the plan that meets the goal is sent to the room (cards only).
   const [room, setRoom] = useState<RoomRef | null>(() => { const r = activeRoom(); return r && desk && r.level === desk.n ? r : null; });
   const [roomSent, setRoomSent] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
@@ -206,19 +196,18 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const challengeBy = challenge?.plan.by || 'Your friend';
   const byShort = challengeBy === 'Your friend' ? 'your friend' : challengeBy;
   const byCol = challengeBy === 'Your friend' ? 'Them' : challengeBy;
-  const hinted = loaded === 'economists';
-  const h2h = mineNow && theirs ? headToHead(mineNow, theirs, hinted, challenge?.plan.hint) : null;
+  const h2h = mineNow && theirs ? headToHead(mineNow, theirs) : null;
   // Someone who hasn't played anything else yet (they came straight to this level, say from a link).
   const newcomer = !!desk && !journey.done.some((id) => id !== desk.id);
   const challengeKey = challenge ? encodePlan(challenge.plan) : '';
   const returned = () => { if (challenge) countStep('returned', challengeKey); };
   useEffect(() => { if (met && challenge) countStep('met', challengeKey); }, [met, challengeKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars, hint: hinted } : null, { by: myName() || undefined, ballot: ballotFrom(journey.choices) });
+  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars } : null, { by: myName() || undefined, ballot: ballotFrom(journey.choices) });
   const shareText = desk ? `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars${h2h?.outcome === 'won' ? `, and beat ${byShort}’s plan` : ''}. Can you beat mine?` : undefined;
   const challengeResult = (inCard: boolean) => challenge && theirs && mineNow ? (
     <div className="challenge-result">
       <div className="stat-label">Your challenge from {challengeBy}</div>
-      <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={!inCard} auto={false} mineHint={hinted} theirsHint={challenge.plan.hint} />
+      <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={!inCard} auto={false} />
       <AgreementCard a={compare({ ids, ballot: ballotFrom(journey.choices) }, { ids: challenge.plan.ids, ballot: challenge.plan.ballot })} by={challengeBy === 'Your friend' ? 'your friend' : challengeBy} shareUrl={myLink} />
     </div>
   ) : null;
@@ -226,9 +215,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // Uncle Sam reacts to the plan as it changes, like a coach at the player's elbow.
   const steep = econ.peakStep > 0.01;
   const cardsCanWin = useMemo(() => goalMet(goal, run(ctx.options.map((o) => o.id), ZERO), ctx.startRatio), [goal, gradual, ctx]); // eslint-disable-line react-hooks/exhaustive-deps
-  const coach: { mood: Mood; line: string } = met && slidersUsed && loaded === 'economists'
-    ? { mood: 'cheering', line: COACH.metWithHint }
-    : met
+  const coach: { mood: Mood; line: string } = met
     ? (ev.stars === 3 ? { mood: 'cheering', line: COACH.met3 } : { mood: 'cheering', line: COACH.met })
     : react && ids.includes(react) && !steep && REACT[react]
       ? { mood: 'surprised', line: REACT[react] }
@@ -246,34 +233,13 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
 
   // --- actions ---
   const toggle = (id: string) => {
-    buzz('card'); setLoaded(null); setCopied('idle');
+    buzz('card'); setCopied('idle');
     const adding = !ids.includes(id);
     setReact(adding && REACT[id] && !told.current.has(id) ? id : null);
     if (adding) told.current.add(id);
     setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   };
-  // When no combination of cards reaches the goal (balancing the budget, for one), the free hint
-  // tops up with the smallest even mix of across-the-board tax increases and spending cuts, so no
-  // level is ever left unwinnable.
-  const topUp = (sel: string[]): Levers | null => {
-    const room = (id: LeverId) => LEVERS.find((l) => l.id === id)!;
-    for (let x = 1; x <= 40; x++) {
-      const lv: Levers = { ...ZERO, revenues: Math.min(x, room('revenues').max), defense: -Math.min(x, -room('defense').min), nondefense: -Math.min(x, -room('nondefense').min), otherMandatory: -Math.min(x, -room('otherMandatory').min) };
-      if (goalMet(goal, run(sel, lv), ctx.startRatio)) return lv;
-    }
-    return null;
-  };
-  const loadPlan = (pid: string) => {
-    const p = PRESETS.find((x) => x.id === pid)!;
-    const sel = p.optimizer ? econPlan.ids : p.ids ?? [];
-    setIds(sel);
-    setLv(p.optimizer && !econPlan.met ? topUp(sel) ?? { ...ZERO } : { ...ZERO });
-    setLoaded(pid);
-    setReact(null);
-    setCopied('idle');
-    document.getElementById('game')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  const reset = () => { setIds([]); setLv({ ...ZERO }); setLoaded(null); setReact(null); setCopied('idle'); };
+  const reset = () => { setIds([]); setLv({ ...ZERO }); setReact(null); setCopied('idle'); };
   const text = planText({ mission, names: selected.map((o) => o.name), deficit: pct(Math.max(0, last.deficit) / last.gdp, 1), debt: pct(last.debt / last.gdp, 0), stars: ev.stars, fy: lastFY });
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied('done'); } catch { setCopied('manual'); }
@@ -335,16 +301,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       <SplitBar revenue={revTen} spending={spTen} vertical={vertical} />
     </div>
   );
-  const efficiencyBlock = efficiency != null && loaded !== 'economists' ? (
-    <div className="sb-block small"><strong>Efficiency {efficiency}/100.</strong> {efficiency >= 91 ? 'Your plan is about as gentle on the economy as the least-cost plan.' : `The least-cost plan for this mission does about ${Math.round((1 - efficiency / 100) * 100)}% less economic harm. Try the hint to compare.`}</div>
+  const efficiencyBlock = efficiency != null ? (
+    <div className="sb-block small"><strong>Efficiency {efficiency}/100.</strong> {efficiency >= 91 ? 'Your plan is about as gentle on the economy as the least-cost plan.' : `The least-cost plan for this mission does about ${Math.round((1 - efficiency / 100) * 100)}% less economic harm.`}</div>
   ) : null;
-  const actionsBlock = (
-    <div className="sb-actions">
-      <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
-      <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
-      {met && <button type="button" className="btn btn-primary" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
-    </div>
-  );
   const copyBox = copied === 'manual' ? <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your plan, ready to copy" /> : null;
   const nextBlock = desk && met ? (
     <div className="sb-block sb-next">
@@ -432,14 +391,13 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             const pv = votes.plans[p.id] ?? 0;
             const pTot = Object.values(votes.plans).reduce((a, b) => a + b, 0);
             return (
-              <article key={p.id} className="card preset" data-on={loaded === p.id}>
+              <article key={p.id} className="card preset">
                 <div className="preset-head"><h3>{p.name}</h3><Stars n={pe.stars} size="sm" /></div>
                 <p className="small muted">{p.blurb}</p>
                 <SplitBar revenue={r} spending={s} />
                 <PlanProposal id={p.id} />
                 <p className="small">FY{lastFY}: deficit {pct(Math.max(0, sim.at(-1)!.deficit) / sim.at(-1)!.gdp, 1)} of GDP, debt {pct(sim.at(-1)!.debt / sim.at(-1)!.gdp, 0)}. {pe.met ? 'Meets the goal.' : 'Falls short of the goal.'}</p>
                 <div className="sb-actions">
-                  <button type="button" className="btn" onClick={() => loadPlan(p.id)} disabled={!sel.length}>{loaded === p.id ? 'Loaded' : 'Play this plan'}</button>
                   {votes.available && <button type="button" className={votes.mine.plan === p.id ? 'btn btn-primary' : 'btn'} aria-pressed={votes.mine.plan === p.id} disabled={votes.canVote === false} onClick={() => votes.votePlan(p.id)}>{votes.mine.plan === p.id ? 'My pick' : 'Pick this plan'}</button>}
                   {votes.available && <span className="small muted">{pv} of {pTot} vote{pTot === 1 ? '' : 's'}</span>}
                 </div>
@@ -450,17 +408,18 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const leversBlock = (inline: boolean) => (
     <details className="card more" open={inline || slidersUsed || undefined} id="levers">
       <summary className="chart-title">Across-the-board changes{inline ? '' : ' (advanced)'}</summary>
-      {inline && <p className="small"><strong>The cards alone can’t {mission.short.toLowerCase()}.</strong> Finish with these across-the-board changes, or take the free hint. Plans built by hand win the “How it was built” row.</p>}
+      {inline && <p className="small"><strong>The cards alone can’t {mission.short.toLowerCase()}.</strong> Finish with these across-the-board changes.</p>}
       <p className="small muted">Blunt tools: percentage changes to whole categories, from the {cbo.projShort}. They count toward the goal but not toward the efficiency score.</p>
         {LEVERS.map((l) => (
           <div className="range-row" key={l.id}>
             <label htmlFor={'lv-' + l.id}><span className="swatch" style={{ background: l.color }} />{l.label}</label>
-            <input id={'lv-' + l.id} type="range" min={l.min} max={l.max} step={1} value={lv[l.id]} onChange={(e) => { setLoaded(null); setLv((p) => ({ ...p, [l.id]: Number(e.target.value) })); }} />
+            <input id={'lv-' + l.id} type="range" min={l.min} max={l.max} step={1} value={lv[l.id]} onChange={(e) => setLv((p) => ({ ...p, [l.id]: Number(e.target.value) }))} />
             <output htmlFor={'lv-' + l.id}>{lv[l.id] > 0 ? '+' : ''}{lv[l.id]}%</output>
           </div>
         ))}
       </details>
   );
+  const levelDone = !!desk && (met || journey.done.includes(desk.id));
   const bestStars = desk ? Math.max(journey.stars[desk.id] ?? 0, ev.stars) : Math.max(progress.stars[goal] ?? 0, ev.stars);
 
   return (
@@ -487,8 +446,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       {challenge && theirs && (
         <div className="challenge-banner" role="note">
           <div>
-            <strong>Challenge from {challengeBy}:</strong> meet the goal, then beat {challengeBy === 'Your friend' ? 'their' : `${challengeBy}’s`} plan: <Stars n={theirs.ev.stars} size="sm" label={`${theirs.ev.stars} of 3 stars`} /> {theirs.shares.length} card{theirs.shares.length === 1 ? '' : 's'}, {theirs.econ.rating} on the economy{challenge.plan.hint === true ? ', built with the free hint' : challenge.plan.hint === false ? ', built by hand' : ''}.
-            <div className="small muted challenge-banner-more">Win on more stars, a gentler economy, fewer cards, or building yours by hand.</div>
+            <strong>Challenge from {challengeBy}:</strong> meet the goal, then beat {challengeBy === 'Your friend' ? 'their' : `${challengeBy}’s`} plan: <Stars n={theirs.ev.stars} size="sm" label={`${theirs.ev.stars} of 3 stars`} /> {theirs.shares.length} card{theirs.shares.length === 1 ? '' : 's'}, {theirs.econ.rating} on the economy.
+            <div className="small muted challenge-banner-more">Win on more stars, a gentler economy, or fewer cards.</div>
           </div>
           <button type="button" className="link-btn small" onClick={() => { dropChallenge(); setChallenge(null); }}>Drop the challenge</button>
         </div>
@@ -504,7 +463,6 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               {progressBlock}
               {challenge && <div className="small muted tb-cm-line">Economy: {econ.rating} · Who pays: {revTen + spTen ? `${Math.round(revenueShare * 100)}% taxes, ${Math.round((1 - revenueShare) * 100)}% cuts` : 'no cards yet'}</div>}
               <div className="sb-actions tb-actions">
-                <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
                 <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
                 {met && <a className="btn" href="#challenge" onClick={(e) => { e.preventDefault(); document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Challenge a friend</a>}
                 {met && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
@@ -523,7 +481,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                 <strong className="challenge-live-title">{h2h.outcome === 'won' ? `You’re ahead of ${byShort}!` : h2h.outcome === 'tied' ? `Dead even with ${byShort}` : `Goal met, but ${byShort}’s plan is still ahead`}</strong>
                 <span className="small muted">{h2h.outcome === 'lost' ? 'Keep going: every row below is a way to win.' : 'Send it back, or keep improving to win by more.'}</span>
               </div>
-              <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={false} mineHint={hinted} theirsHint={challenge.plan.hint} />
+              <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={false} />
               <div className="sb-actions">
                 {myLink && shareText && <ShareButton text={shareText} url={myLink} label={`Send it back to ${challengeBy === 'Your friend' ? 'your friend' : challengeBy}`} className={h2h.outcome === 'lost' ? 'btn' : 'btn btn-primary'} kind="plan" onShare={returned} />}
                 <button type="button" className={h2h.outcome === 'lost' ? 'btn btn-primary' : 'btn'} onClick={() => document.getElementById('deck-t')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>Keep improving</button>
@@ -538,10 +496,10 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             </Carousel>
             {deckNote}
           </section>
-          {challenge && !cardsCanWin && leversBlock(true)}
+          {!cardsCanWin && leversBlock(true)}
       </>
       <PlanForYou ids={ids} lv={lv} gradual={gradual} />
-      {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '', hint: hinted }} onShare={returned} />}
+      {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '' }} onShare={returned} />}
 
       <div className="plan-bar" aria-hidden="true">
         <Stars n={ev.stars} size="sm" />
@@ -549,12 +507,15 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         <span className="num">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
       </div>
 
-      <Section id="plans" title="Or try a ready-made plan" sub={`How each plan does on the “${mission.short}” goal, and the real proposal in Congress closest to it.${votes.available ? ' Pick the one you’d choose; results update live.' : ''}`}>
-        <Carousel label="ready-made plans" count={PRESETS.length}>
-          {presetEls}
-        </Carousel>
-        <VoteNote votes={votes} />
-      </Section>
+      {/* Ready-made plans stay hidden until the player has met this level's goal their own way. */}
+      {levelDone && (
+        <Section id="plans" title="How ready-made plans compare" sub={`Now that you’ve found your own way to the goal: how each plan does on “${mission.short}”, and the real proposal in Congress closest to it.${votes.available ? ' Pick the one you’d choose; results update live.' : ''}`}>
+          <Carousel label="ready-made plans" count={PRESETS.length}>
+            {presetEls}
+          </Carousel>
+          <VoteNote votes={votes} />
+        </Section>
+      )}
 
       <Section id="numbers" title="See the numbers" sub={`Your plan compared with the ${cbo.projShort}, which assumes ${cbo.projAssumes.replace(/^assuming /, '')}.`}>
         <div className="grid-2">
@@ -576,19 +537,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         </div>
       </Section>
 
-      <details className="card more">
-        <summary className="chart-title">Rules for the economists’ hint</summary>
-        <p className="small muted">The hint finds the plan that meets your mission with the least total harm to the economy. These rules limit what it may use.</p>
-        <div className="chips" role="group" aria-label="Hint rules">
-          <button type="button" className="chip" aria-pressed={mix} onClick={() => setMix(!mix)}>Mix taxes and cuts (each at least a third)</button>
-          <button type="button" className="chip" aria-pressed={protect.retirees} onClick={() => setProtect({ ...protect, retirees: !protect.retirees })}>Protect current retirees</button>
-          <button type="button" className="chip" aria-pressed={protect.lowIncome} onClick={() => setProtect({ ...protect, lowIncome: !protect.lowIncome })}>Protect low-income families</button>
-          <button type="button" className="chip" aria-pressed={protect.investment} onClick={() => setProtect({ ...protect, investment: !protect.investment })}>Protect public investment</button>
-        </div>
-        {!econPlan.met && <p className="small" style={{ marginTop: 8 }}>With these rules, even every allowed card falls short of this mission. Loosen a rule or use across-the-board changes.</p>}
-      </details>
-
-      {!(challenge && !cardsCanWin) && leversBlock(false)}
+      {cardsCanWin && leversBlock(false)}
 
       <details className="card more" id="method">
         <summary className="chart-title">How the scoring works</summary>
@@ -597,7 +546,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
           <li><strong>Drag on the economy.</strong> Each card’s drag is CBO’s estimated short-run effect on output per dollar for its type of policy (for example {MULT.corporate.lo}–{MULT.corporate.hi} for business taxes, {MULT.taxHigh.lo}–{MULT.taxHigh.hi} for taxes on higher earners, {MULT.purchases.lo}–{MULT.purchases.hi} for government purchases), using the midpoint, adjusted by 0.3 for long-run growth effects.</li>
           <li><strong>The economy gauge</strong> shows the plan’s steepest single-year tightening: gentle at 0.5% of GDP or less, moderate up to 1%, steep above that. These thresholds are this site’s, set in line with the IMF’s estimate that debt can be stabilized with roughly 3 to 4.5% of GDP of adjustment over about six years.</li>
           <li><strong>Stars:</strong> one for reaching the goal, one for staying gentle, and one for getting between a third and two-thirds of the savings from each of taxes and spending cuts, as most bipartisan deficit commissions did.</li>
-          <li><strong>Efficiency</strong> compares your plan’s total economic cost (dollars saved times drag per dollar) with the least-cost plan the hint finds under its rules.</li>
+          <li><strong>Efficiency</strong> compares your plan’s total economic cost (dollars saved times drag per dollar) with the least-cost combination of cards that meets the goal while protecting current retirees, low-income families, and public investment, with taxes and cuts each providing at least a third of the savings.</li>
         </ol>
         {OPTIONS_DATA.principles.length > 0 && (
           <div className="facts" style={{ marginTop: 12 }}>

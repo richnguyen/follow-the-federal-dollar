@@ -336,7 +336,7 @@ function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
       <ul className="takeaways">
         {level.takeaways.map((t) => <li key={t}>{t}</li>)}
       </ul>
-      {next?.kind === 'desk' && <div className="callout"><div className="callout-title">Up next: a hard level at the budget desk</div><p className="small">Level {next.n} asks you to fix the budget yourself: {next.title.toLowerCase()}. The hint is free and unlimited.</p></div>}
+      {next?.kind === 'desk' && <div className="callout"><div className="callout-title">Up next: a hard level at the budget desk</div><p className="small">Level {next.n} asks you to fix the budget yourself: {next.title.toLowerCase()}. Take your time.</p></div>}
       <div className="sb-actions">
         {next ? <a className="btn btn-primary" href={'#' + next.id}>Next: level {next.n}, {next.title}</a> : <a className="btn btn-primary" href="#journey">Back to the road map</a>}
         <a className="btn" href="#journey">See your progress</a>
