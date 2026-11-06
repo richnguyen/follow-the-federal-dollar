@@ -157,10 +157,10 @@ export interface DistrictRow {
   programs?: { code: string; name: string; amount: number }[];
 }
 
+/** Districts are in their own file (districts.json), loaded by the state page when needed. */
 export interface GeoData {
   fy: number;
   states: StateRow[];
-  districts: DistrictRow[];
   national: { total: number; population: number; perCapita: number; medicare: number };
   priorFY: number | null;
 }

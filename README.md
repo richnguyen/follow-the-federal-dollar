@@ -75,6 +75,29 @@ budget adviser.
    certificate use the phone's share sheet, falling back to the clipboard. On the public site,
    "Save image" makes a 1200×630 card with the level, stars, a fact and Uncle Sam.
 
+### Sharing and coming back
+
+Built from the Mambo.io list of 108 gamification elements, keeping the white-hat ones (meaning,
+accomplishment, creativity, friendly rivalry) and leaving out the pressure tactics (timers,
+expiring rewards, streaks that punish a missed day, public ranking of people).
+
+- **Challenge a friend** (`?p=…`): a finished budget-desk plan travels inside the link itself,
+  with an optional first name and, if the player chooses, their answers to the big questions.
+  The friend sees the plan (`#plan`), plays the same level straight away, and gets a
+  head-to-head (stars, steepest year for the economy, cards used) and an agreement count
+  ("you agree on 7 of 12 choices").
+- **Your Budget Story** (`#story`): six phone-story cards (1080×1920) drawn as SVG and saved as
+  PNG: a nonpartisan budget personality, the biggest move, the player's own tax receipt under the
+  plan, the debt path against current law, and the closest real proposal.
+- **A 10-second clip** of the plan bending the debt curve, with Uncle Sam's recorded voice, made
+  in the browser with a canvas and MediaRecorder (MP4 where supported, else WebM).
+- **The Daily Dollar** (`#daily`, `?daily`): five higher-or-lower calls a day on real federal
+  numbers, the same puzzle for everyone on a date, with a spoiler-free result grid to post.
+- **Uncle Sam reacts** the first time each policy card is played, with one true fact from CBO's
+  data, and the desk shows what the plan means for the player's own tax receipt.
+- Shared links carry a channel tag (`?s=x`, `wh`, `sh`…) so first visits can be counted by
+  channel once the shared backend is running ([`supabase/`](supabase/README.md)).
+
 Progress is saved in the browser. On the claude.ai artifact, which has a shared database, the
 game also keeps one anonymous record per player (levels finished, stars, first-try answers,
 medals) and one ballot per person, and "How everyone played" (`#results`, offered at the end of

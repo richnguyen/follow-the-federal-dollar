@@ -12,7 +12,7 @@ export type ShareResult = 'shared' | 'copied' | 'manual' | 'cancelled';
 export async function shareText(o: { title?: string; text: string; url?: string; files?: File[] }): Promise<ShareResult> {
   const url = o.url ?? SITE_URL;
   if (typeof navigator.share === 'function') {
-    const data: ShareData = { title: o.title ?? GAME_NAME, text: o.text, url };
+    const data: ShareData = { title: o.title ?? GAME_NAME, text: o.text, url: tagUrl(url, 'sh') };
     if (o.files?.length && typeof navigator.canShare === 'function' && navigator.canShare({ files: o.files })) data.files = o.files;
     try {
       await navigator.share(data);
@@ -23,14 +23,14 @@ export async function shareText(o: { title?: string; text: string; url?: string;
     }
   }
   try {
-    await navigator.clipboard.writeText(`${o.text} ${url}`);
+    await navigator.clipboard.writeText(`${o.text} ${tagUrl(url, 'cp')}`);
     return 'copied';
   } catch {
     return 'manual';
   }
 }
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 function wrap(text: string, max: number) {
   const words = text.split(/\s+/);
@@ -69,28 +69,70 @@ export async function shareCard(o: { eyebrow: string; title: string; stars?: num
   <text x="80" y="610" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#1d5a43">${esc((o.site ?? SITE_URL).replace(/^https?:\/\//, '').replace(/\/$/, ''))}</text>
   ${sam}
 </svg>`;
+  return svgToPng(svg, W, H);
+}
+
+export const svgSrc = (svg: string) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+
+/** Draws an SVG (as a string) onto a canvas of its size and returns the PNG. */
+export async function svgToImage(svg: string) {
   const img = new Image();
-  const src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = () => rej(new Error('card')); img.src = src; });
+  await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = () => rej(new Error('card')); img.src = svgSrc(svg); });
+  return img;
+}
+export async function svgToPng(svg: string, W: number, H: number): Promise<Blob | null> {
+  const img = await svgToImage(svg);
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
   const ctx = c.getContext('2d');
   if (!ctx) return null;
-  ctx.drawImage(img, 0, 0);
+  ctx.drawImage(img, 0, 0, W, H);
   return new Promise((res) => c.toBlob((b) => res(b), 'image/png'));
 }
 
+let measurer: CanvasRenderingContext2D | null = null;
+/** Wraps text to a pixel width, measured with the same font the card is drawn in. */
+export function wrapPx(text: string, font: string, maxWidth: number, maxLines = 99): string[] {
+  measurer ??= document.createElement('canvas').getContext('2d');
+  const width = (t: string) => { if (!measurer) return t.length * 20; measurer.font = font; return measurer.measureText(t).width; };
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let cur = '';
+  for (const w of words) {
+    const next = cur ? cur + ' ' + w : w;
+    if (width(next) > maxWidth && cur) { lines.push(cur); cur = w; } else cur = next;
+  }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines) { const keep = lines.slice(0, maxLines); keep[maxLines - 1] = keep[maxLines - 1].replace(/\s*\S*$/, '') + '…'; return keep; }
+  return lines;
+}
+
+/** Puts Uncle Sam's drawing (taken from the page) at a spot in a card, with page colors made literal. */
+export const placeSam = (samSvg: string | undefined, x: number, y: number, w: number) =>
+  samSvg ? samSvg.replace(/<svg[^>]*>/, `<svg x="${x}" y="${y}" width="${w}" height="${w * 1.25}" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">`).replace(/var\(--[^)]+\)/g, '#9aa19c') : '';
+
+/**
+ * Tags a link to this site with the channel it was shared on (?s=x), so the first visit it brings
+ * can be counted by channel later. Only links to this site are tagged.
+ */
+export function tagUrl(url: string, channel: string) {
+  if (!url.startsWith(SITE_URL) && !url.startsWith(PUBLIC_URL)) return url;
+  const [head, hash = ''] = url.split('#');
+  const q = head.includes('?') ? head.replace(/([?&])s=[^&]*&?/, '$1').replace(/[?&]$/, '') : head;
+  return `${q}${q.includes('?') ? '&' : '?'}s=${channel}${hash ? '#' + hash : ''}`;
+}
+
 /** Share pages of the big social networks: each opens with the post filled in, for the person to send. */
-export function socialLinks(text: string, url: string) {
-  const t = encodeURIComponent(text), u = encodeURIComponent(url), both = encodeURIComponent(`${text} ${url}`);
+export function socialLinks(text: string, url0: string) {
+  const t = encodeURIComponent(text);
   return [
-    { id: 'x', label: 'X', href: `https://x.com/intent/tweet?text=${t}&url=${u}` },
-    { id: 'facebook', label: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
-    { id: 'linkedin', label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
-    { id: 'reddit', label: 'Reddit', href: `https://www.reddit.com/submit?url=${u}&title=${encodeURIComponent(GAME_NAME)}` },
-    { id: 'bluesky', label: 'Bluesky', href: `https://bsky.app/intent/compose?text=${both}` },
-    { id: 'threads', label: 'Threads', href: `https://www.threads.net/intent/post?text=${both}` },
-    { id: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/?text=${both}` },
-    { id: 'email', label: 'Email', href: `mailto:?subject=${encodeURIComponent(GAME_NAME)}&body=${encodeURIComponent(`${text}\n\n${url}`)}` },
-  ];
+    { id: 'x', label: 'X', href: (u: string) => `https://x.com/intent/tweet?text=${t}&url=${encodeURIComponent(u)}` },
+    { id: 'facebook', label: 'Facebook', href: (u: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
+    { id: 'linkedin', label: 'LinkedIn', href: (u: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` },
+    { id: 'reddit', label: 'Reddit', href: (u: string) => `https://www.reddit.com/submit?url=${encodeURIComponent(u)}&title=${encodeURIComponent(GAME_NAME)}` },
+    { id: 'bluesky', label: 'Bluesky', href: (u: string) => `https://bsky.app/intent/compose?text=${encodeURIComponent(`${text} ${u}`)}` },
+    { id: 'threads', label: 'Threads', href: (u: string) => `https://www.threads.net/intent/post?text=${encodeURIComponent(`${text} ${u}`)}` },
+    { id: 'whatsapp', label: 'WhatsApp', href: (u: string) => `https://wa.me/?text=${encodeURIComponent(`${text} ${u}`)}` },
+    { id: 'email', label: 'Email', href: (u: string) => `mailto:?subject=${encodeURIComponent(GAME_NAME)}&body=${encodeURIComponent(`${text}\n\n${u}`)}` },
+  ].map((n) => ({ id: n.id, label: n.label, href: n.href(tagUrl(url0, n.id === 'x' ? 'x' : n.id.slice(0, 2))) }));
 }

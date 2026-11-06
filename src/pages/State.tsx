@@ -20,6 +20,13 @@ type Metric = 'perCapita' | 'total';
 
 export default function StatePage({ param }: { param: string | null }) {
   const states = geo.states;
+  // District detail is a separate file, fetched the first time this page opens.
+  const [allDistricts, setAllDistricts] = useState<DistrictRow[]>([]);
+  useEffect(() => {
+    let alive = true;
+    import('../data/generated/districts.json').then((m) => { if (alive) setAllDistricts(m.default as DistrictRow[]); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
   const initial = (param && states.find((s) => s.abbr.toLowerCase() === param)?.abbr) || load<string>('state', 'CA');
   const [abbr, setAbbr] = useState<string>(initial);
   const [metric, setMetric] = useState<Metric>('perCapita');
@@ -39,7 +46,7 @@ export default function StatePage({ param }: { param: string | null }) {
   const s = states.find((x) => x.abbr === abbr) ?? states[0];
   const ranked = useMemo(() => [...states].filter((x) => Number(x.fips) < 60 && x.fips !== '11').sort((a, b) => b.perCapita - a.perCapita), [states]);
   const rank = ranked.findIndex((x) => x.abbr === s.abbr) + 1;
-  const districts = geo.districts.filter((d) => d.state === s.abbr).sort((a, b) => a.code.localeCompare(b.code));
+  const districts = allDistricts.filter((d) => d.state === s.abbr).sort((a, b) => a.code.localeCompare(b.code));
   const d = districts.find((x) => x.code === dist) ?? null;
   const nat = geo.national;
   const fmtMap = metric === 'perCapita' ? (v: number) => dollars(v) : (v: number) => money(v);

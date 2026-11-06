@@ -1,26 +1,32 @@
-import { useEffect, useRef, useState, type JSX } from 'react';
+import { lazy, Suspense, useEffect, useRef, type JSX } from 'react';
 import { BrandMark } from './components/Guilloche';
 import { TooltipProvider } from './components/ui';
 import { budget } from './data';
 import { type Route, useHashRoute } from './lib/router';
 import { UnitsProvider } from './lib/units';
 import { LiveProvider } from './lib/live';
-import Overview from './pages/Overview';
-import Spending from './pages/Spending';
-import Revenue from './pages/Revenue';
-import Gap from './pages/Gap';
-import Debt from './pages/Debt';
-import Laws from './pages/Laws';
-import ProcessPage from './pages/Process';
-import StatePage from './pages/State';
-import SocialSecurity from './pages/SocialSecurity';
-import Receipt from './pages/Receipt';
-import Sandbox from './pages/Sandbox';
-import Glossary from './pages/Glossary';
-import Sources from './pages/Sources';
+// The game's own pages load with the app; the field guide, reference pages, and extras load the
+// first time they are opened, so a shared link opens fast on a phone.
+const Overview = lazy(() => import('./pages/Overview'));
+const Spending = lazy(() => import('./pages/Spending'));
+const Revenue = lazy(() => import('./pages/Revenue'));
+const Gap = lazy(() => import('./pages/Gap'));
+const Debt = lazy(() => import('./pages/Debt'));
+const Laws = lazy(() => import('./pages/Laws'));
+const ProcessPage = lazy(() => import('./pages/Process'));
+const StatePage = lazy(() => import('./pages/State'));
+const SocialSecurity = lazy(() => import('./pages/SocialSecurity'));
+const Receipt = lazy(() => import('./pages/Receipt'));
+const Sandbox = lazy(() => import('./pages/Sandbox'));
+const Glossary = lazy(() => import('./pages/Glossary'));
+const Sources = lazy(() => import('./pages/Sources'));
 import { VotesProvider } from './lib/votes';
 import { CommunityProvider } from './lib/community';
-import Results from './game/Results';
+const Results = lazy(() => import('./game/Results'));
+const PlanPage = lazy(() => import('./game/PlanPage'));
+const Story = lazy(() => import('./game/Story'));
+const Daily = lazy(() => import('./game/Daily'));
+import { activeChallenge } from './game/challenge';
 import { JourneyProvider, useJourney } from './game/state';
 import Journey from './game/Journey';
 import LevelPage from './game/LevelPage';
@@ -64,6 +70,9 @@ const TITLE: Partial<Record<Route, string>> = Object.fromEntries([
   ...FIELD_GUIDE.map((g) => [g.route, g.label]),
   ...REFERENCE.map((g) => [g.route, g.label]),
   ['results', 'How everyone played'],
+  ['plan', 'A plan from a friend'],
+  ['story', 'Your Budget Story'],
+  ['daily', 'The Daily Dollar'],
   ...STOPS.map((l) => [l.id, `Level ${l.n}: ${l.title}`]),
 ]);
 
@@ -98,12 +107,16 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   glossary: () => <Glossary />,
   sources: ({ param }) => <Sources param={param} />,
   results: () => <Results />,
+  plan: ({ param }) => <PlanPage param={param} />,
+  story: () => <Story />,
+  daily: () => <Daily />,
 };
 
 function DeskPage({ id }: { id: string }) {
   const j = useJourney();
   const d = DESK.find((x) => x.id === id)!;
-  if (!isUnlocked(id, j.done, j.settings.freeRoam)) return <DeskLocked id={id} />;
+  // A friend's challenge opens its level straight away.
+  if (!isUnlocked(id, j.done, j.settings.freeRoam) && activeChallenge()?.plan.level !== id) return <DeskLocked id={id} />;
   return <Sandbox key={id} desk={d} />;
 }
 
@@ -180,7 +193,9 @@ function Shell() {
       <main className="main" id="main">
         <div className="page" key={route}>
           <ChapterBanner route={route} />
-          <Page param={param} />
+          <Suspense fallback={<p className="small muted page-loading" role="status">Loading…</p>}>
+            <Page param={param} />
+          </Suspense>
           <footer className="footer">
             <nav className="footer-nav" aria-label="Field guide">
               <span className="stat-label">Field guide</span>

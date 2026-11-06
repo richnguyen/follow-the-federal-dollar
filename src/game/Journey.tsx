@@ -50,6 +50,8 @@ export default function Journey() {
           </SamSays>
           <div className="sb-actions">
             {next && <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a>}
+            <a className="btn" href="#daily">Today’s Daily Dollar</a>
+            {j.plans && Object.keys(j.plans).length > 0 && <a className="btn" href="#story">Your Budget Story</a>}
             <a className="btn" href="#overview">Skip the game and read the guide</a>
           </div>
         </div>

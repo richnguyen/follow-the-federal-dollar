@@ -1,5 +1,6 @@
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { load, save } from '../lib/storage';
+import type { SavedPlan } from './plans';
 
 // The player's journey: which levels are done, stars earned, quiz attempts, their choices on each
 // level's issue, and reading settings. Kept in this browser only (a per-viewer convenience).
@@ -17,6 +18,7 @@ export interface JourneyState {
   started: string | null;
   marks: string[]; // things the player has done outside the levels (documents opened, pages read, shares)
   medals: string[]; // medals already awarded (so each is announced once)
+  plans?: Record<string, SavedPlan>; // the latest plan that met each budget-desk level's goal
   settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string; haptics: boolean; voiceV?: number };
 }
 
@@ -63,6 +65,7 @@ interface Journey extends JourneyState {
   setSettings: (s: Partial<JourneyState['settings']>) => void;
   mark: (id: string) => void;
   award: (ids: string[]) => void;
+  savePlan: (level: string, plan: SavedPlan) => void;
   start: () => void;
   reset: () => void;
 }
@@ -110,8 +113,9 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
     setSettings: (s) => update((p) => ({ ...p, settings: { ...p.settings, ...s } })),
     mark: (id) => update((p) => (p.marks.includes(id) ? p : { ...p, marks: [...p.marks, id] })),
     award: (ids) => update((p) => ({ ...p, medals: [...p.medals, ...ids.filter((x) => !p.medals.includes(x))] })),
+    savePlan: (level, plan) => update((p) => ({ ...p, plans: { ...(p.plans ?? {}), [level]: plan } })),
     start: () => update((p) => (p.started ? p : { ...p, started: new Date().toISOString() })),
-    reset: () => update((p) => ({ ...DEFAULT, marks: [], medals: [], settings: p.settings })),
+    reset: () => update((p) => ({ ...DEFAULT, marks: [], medals: [], plans: {}, settings: p.settings })),
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

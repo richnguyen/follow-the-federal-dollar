@@ -345,7 +345,12 @@ const budget = {
 await writeJSON('src/data/generated/budget.json', budget);
 await writeJSON('src/data/generated/accounts.json', { fy: fyOf(accDate), root: accRoot });
 await writeJSON('src/data/generated/debt.json', debt);
-if (geo) await writeJSON('src/data/generated/geo.json', geo);
+// Congressional districts are large and only the state page needs them, so they load separately.
+if (geo) {
+  const { districts: dist, ...rest } = geo;
+  await writeJSON('src/data/generated/geo.json', rest);
+  await writeJSON('src/data/generated/districts.json', dist);
+}
 await writeJSON('src/data/generated/cbo.json', cbo);
 if (ssa) await writeJSON('src/data/generated/ssa.json', ssa);
 await writeJSON('src/data/generated/sources.json', sources);

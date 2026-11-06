@@ -71,6 +71,14 @@ async function clipUrl(key: string) {
   clipUrls.set(key, url);
   return url;
 }
+/** The recorded audio (MP3 bytes) for each sentence of a line, or null if any sentence has no recording. */
+export async function lineAudio(text: string): Promise<ArrayBuffer[] | null> {
+  const keys = toSentences(text).map(keyOf);
+  if (!keys.length || !keys.every((k) => MANIFEST[k])) return null;
+  const out: ArrayBuffer[] = [];
+  for (const k of keys) { const c = MANIFEST[k]; const buf = await loadBank(c[0]); out.push(buf.slice(c[1], c[1] + c[2])); }
+  return out;
+}
 export const prefetchVoice = (route: string) => { if (hasRecordings) loadBank(bankFor(route)).catch(() => {}); };
 
 // ---------- device voices (fallback, or by choice) ----------

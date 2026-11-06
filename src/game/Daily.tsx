@@ -1,0 +1,118 @@
+import { useState } from 'react';
+import { PageHead, Section } from '../components/ui';
+import { SOURCE_BY_ID } from '../data';
+import { grid, loadResults, puzzleFor, ROUNDS, saveResult, streak, todayKey } from './daily';
+import { useHaptics } from './haptics';
+import { DAILY_LINES } from './script';
+import { SITE_URL } from './share';
+import { ShareButton, SocialShare } from './ShareButton';
+import { useJourney } from './state';
+import { SamSays } from './UncleSam';
+
+// The Daily Dollar page: one chain of real federal numbers a day; call each next one higher or lower.
+
+const ratio = (a: number, b: number) => {
+  const r = b / a;
+  return r >= 1 ? `That’s ${r >= 10 ? Math.round(r) : r.toFixed(1)} times the number before.` : `That’s ${r < 0.1 ? 'under a tenth' : `${Math.round(r * 100)}%`} of the number before.`;
+};
+
+export default function Daily() {
+  const j = useJourney();
+  const buzz = useHaptics();
+  const key = todayKey();
+  const { n, pool, chain } = puzzleFor(key);
+  const [answers, setAnswers] = useState<boolean[]>(() => loadResults()[key] ?? []);
+  const [revealed, setRevealed] = useState(false);
+  const done = answers.length >= ROUNDS;
+  const round = Math.min(answers.length, ROUNDS - 1);
+  // While a call is showing its answer, stay on that round.
+  const i = revealed ? answers.length - 1 : answers.length;
+  const known = chain[Math.min(i, ROUNDS - 1)];
+  const next = chain[Math.min(i, ROUNDS - 1) + 1];
+  const score = answers.filter(Boolean).length;
+  const st = streak(loadResults(), key);
+
+  const call = (higher: boolean) => {
+    if (revealed || done) return;
+    const right = (next.value > known.value) === higher;
+    const a = [...answers, right];
+    setAnswers(a);
+    setRevealed(true);
+    buzz(right ? 'right' : 'wrong');
+    saveResult(key, a);
+    if (a.length >= ROUNDS) { j.mark('daily'); if (a.every(Boolean)) buzz('win'); }
+  };
+  const advance = () => setRevealed(false);
+  const shareTextStr = `The Daily Dollar #${n} · ${score}/${ROUNDS}\n${grid(answers)}\nHigher or lower, on real federal numbers.`;
+  const finished = done && !revealed;
+
+  return (
+    <>
+      <PageHead eyebrow={`The Daily Dollar · #${n}`} title="The Daily Dollar" lede={<>Today: <strong>{pool.title[0].toLowerCase() + pool.title.slice(1)}</strong>. Five quick calls. Is the next number higher or lower? Same puzzle for everyone today.</>} />
+      <SamSays mood={finished ? (score >= 4 ? 'cheering' : score >= 2 ? 'happy' : 'thinking') : 'happy'} auto compact>
+        {finished ? DAILY_LINES.score[score] : DAILY_LINES.intro}
+      </SamSays>
+
+      {!finished && (
+        <section className="card daily" aria-live="polite">
+          <div className="daily-progress" aria-label={`Call ${round + 1} of ${ROUNDS}`}>
+            {Array.from({ length: ROUNDS }, (_, k) => <span key={k} data-state={k < answers.length ? (answers[k] ? 'right' : 'wrong') : k === answers.length ? 'now' : ''} />)}
+          </div>
+          <div className="daily-pair">
+            <div className="daily-item">
+              <div className="stat-label">Known</div>
+              <strong>{known.label}</strong>
+              <div className="daily-value num">{known.shown}</div>
+            </div>
+            <div className="daily-vs" aria-hidden="true">vs.</div>
+            <div className="daily-item" data-revealed={revealed}>
+              <div className="stat-label">Higher or lower?</div>
+              <strong>{next.label}</strong>
+              <div className="daily-value num">{revealed ? next.shown : '?'}</div>
+              {revealed && <div className="small"><strong>{answers.at(-1) ? 'Right!' : 'Not this time.'}</strong> {ratio(known.value, next.value)}</div>}
+            </div>
+          </div>
+          {!revealed ? (
+            <div className="daily-actions" role="group" aria-label={`Is ${next.label} higher or lower than ${known.label}?`}>
+              <button type="button" className="btn btn-lg daily-btn" onClick={() => call(true)}>▲ Higher</button>
+              <button type="button" className="btn btn-lg daily-btn" onClick={() => call(false)}>▼ Lower</button>
+            </div>
+          ) : (
+            <div className="daily-actions"><button type="button" className="btn btn-primary btn-lg" onClick={advance} autoFocus>{done ? 'See my result' : 'Next call'}</button></div>
+          )}
+          <p className="small muted">Measured as {pool.unit}.</p>
+        </section>
+      )}
+
+      {finished && (
+        <section className="card daily-done">
+          <div className="daily-score"><span className="num">{score}</span><span className="small"> of {ROUNDS}</span></div>
+          <div className="daily-grid" aria-label={`${score} of ${ROUNDS} right`}>{grid(answers)}</div>
+          <p className="small">{st.run > 1 ? `${st.run} days in a row. ` : ''}You’ve played {st.played} day{st.played === 1 ? '' : 's'} so far. A new puzzle is ready tomorrow.</p>
+          <div className="sb-actions">
+            <ShareButton text={shareTextStr} url={`${SITE_URL}?daily`} label="Share my result" className="btn btn-primary" />
+            <a className="btn" href="#journey">Play the full game</a>
+          </div>
+          <SocialShare text={shareTextStr} url={`${SITE_URL}?daily`} />
+        </section>
+      )}
+
+      {(finished || answers.length > 0) && (
+        <Section id="numbers" title="Today’s numbers" sub="Every figure, and where it comes from.">
+          <ol className="daily-list">
+            {chain.slice(0, finished ? ROUNDS + 1 : answers.length + (revealed ? 1 : 0)).map((x) => {
+              const src = x.source.id ? SOURCE_BY_ID[x.source.id] : undefined;
+              const url = x.source.url ?? src?.url;
+              return (
+                <li key={x.id}>
+                  <strong>{x.label}</strong> <span className="num">{x.shown}</span>
+                  <div className="small muted">{url ? <a href={url} target="_blank" rel="noreferrer">{x.source.name}</a> : x.source.name}</div>
+                </li>
+              );
+            })}
+          </ol>
+        </Section>
+      )}
+    </>
+  );
+}

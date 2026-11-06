@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
 import { DIFF_COLOR, diffKey, LEVELS, STOPS, type Stop } from './levels';
@@ -17,7 +17,7 @@ export function factFor(stop: Stop) {
   return l ? l.takeaways[0] : `I met the goal “${stop.title.toLowerCase()}” using real options priced by the Congressional Budget Office.`;
 }
 
-export function Celebration({ stop, stars, onClose, line }: { stop: Stop; stars: number; onClose: () => void; line?: string }) {
+export function Celebration({ stop, stars, onClose, line, share, children }: { stop: Stop; stars: number; onClose: () => void; line?: string; share?: { text: string; url: string }; children?: ReactNode }) {
   const next = STOPS[stop.n] as Stop | undefined; // n is 1-based, so this is the following level
   const primary = useRef<HTMLAnchorElement>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -32,7 +32,8 @@ export function Celebration({ stop, stars, onClose, line }: { stop: Stop; stars:
   }, [onClose]); // eslint-disable-line react-hooks/exhaustive-deps
   const say = line ?? CHEER[stars];
   const fact = factFor(stop);
-  const text = `I just finished level ${stop.n} of “${GAME_NAME}” with ${stars} of 3 stars. ${fact}`;
+  const text = share?.text ?? `I just finished level ${stop.n} of “${GAME_NAME}” with ${stars} of 3 stars. ${fact}`;
+  const url = share?.url ?? SITE_URL;
   const card = () => shareCard({ eyebrow: `Level ${stop.n} of ${STOPS.length} complete`, title: stop.title, stars, fact, color: DIFF_COLOR[stop.difficulty], samSvg: box.current?.querySelector('svg.sam')?.outerHTML });
   return (
     <div className="celebrate-scrim" onClick={onClose}>
@@ -53,10 +54,11 @@ export function Celebration({ stop, stars, onClose, line }: { stop: Stop; stars:
             <figcaption>— {stop.quote.who}, <span className="muted">{stop.quote.where}</span></figcaption>
           </figure>
           <div className="celebrate-share">
-            <div className="small"><span className="stat-label">Your fact card</span><div>{fact}</div></div>
-            <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={SITE_URL} /></div>
-            <SocialShare text={text} url={SITE_URL} />
+            <div className="small"><span className="stat-label">{share ? 'Challenge a friend' : 'Your fact card'}</span><div>{share ? 'Send your plan as a link. Your friend plays the same level and sees how much you two agree.' : fact}</div></div>
+            <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={url} label={share ? 'Send the challenge' : 'Share'} /></div>
+            <SocialShare text={text} url={url} />
           </div>
+          {children}
           {next ? (
             <div className="celebrate-next" data-diff={diffKey(next.difficulty)}>
               <span className="celebrate-next-icon"><LevelIcon id={next.icon} size={22} /></span>
@@ -67,12 +69,13 @@ export function Celebration({ stop, stars, onClose, line }: { stop: Stop; stars:
               </div>
             </div>
           ) : (
-            <p className="small">That was the final level. See how your game and your votes compare with everyone who has played, or find your Informed Budget Voter certificate on the road map.</p>
+            <p className="small">That was the final level. Your Budget Story is ready: your budget personality and your biggest moves, as cards to share. You can also see how everyone played.</p>
           )}
           <div className="celebrate-actions">
             {next
               ? <a ref={primary} className="btn btn-primary btn-lg" href={'#' + next.id} onClick={onClose}>Play level {next.n}</a>
-              : <a ref={primary} className="btn btn-primary btn-lg" href="#results" onClick={onClose}>See how everyone played</a>}
+              : <a ref={primary} className="btn btn-primary btn-lg" href="#story" onClick={onClose}>See your Budget Story</a>}
+            {!next && <a className="btn" href="#results" onClick={onClose}>How everyone played</a>}
             <a className="btn" href="#journey" onClick={onClose}>Road map</a>
             <button type="button" className="btn" onClick={onClose}>Stay here</button>
           </div>

@@ -13,7 +13,8 @@
     "data": "NODE_USE_ENV_PROXY=1 node scripts/fetch-all.mjs && node scripts/build-data.mjs",
     "data:build": "node scripts/build-data.mjs",
     "voice:collect": "node scripts/voice/collect.mjs http://localhost:5173/",
-    "voice:synth": "python3 scripts/voice/synth.py scripts/voice/lines.json ${KOKORO_DIR:-.kokoro} public/voice src/data/generated/voice.json"
+    "voice:synth": "python3 scripts/voice/synth.py scripts/voice/lines.json ${KOKORO_DIR:-.kokoro} public/voice src/data/generated/voice.json",
+    "test:db": "node supabase/tests/rls.test.mjs"
   },
   "dependencies": {
     "d3": "7.9.0",
@@ -23,6 +24,7 @@
     "us-atlas": "3.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.2.17",
     "@types/d3": "7.4.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",

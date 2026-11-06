@@ -18,7 +18,11 @@ import { useJourney } from '../game/state';
 import { SamSays } from '../game/UncleSam';
 import type { Mood } from '../game/voice';
 import { useHaptics } from '../game/haptics';
-import { COACH, DESK_PARTY } from '../game/script';
+import { COACH, DESK_PARTY, REACT } from '../game/script';
+import { PlanForYou } from '../game/PlanForYou';
+import { activeChallenge, type Challenge, dropChallenge } from '../game/challenge';
+import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead } from '../game/ChallengeParts';
+import { ballotFrom, compare, myName, planLink } from '../game/plans';
 
 type Desk = DeskLevel;
 
@@ -80,6 +84,10 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const [copied, setCopied] = useState<'idle' | 'done' | 'manual'>('idle');
   const votes = useVotes();
   const toasts = useToasts();
+  // Uncle Sam's fact about a card, the first time it is played on this visit.
+  const [react, setReact] = useState<string | null>(null);
+  const told = useRef(new Set<string>());
+  const [challenge, setChallenge] = useState<Challenge | null>(() => { const c = activeChallenge(); return c && desk && c.plan.level === desk.id ? c : null; });
   const mission = MISSIONS.find((m) => m.id === goal)!;
 
   // --- model ---
@@ -169,6 +177,24 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   }, [met, ev.stars, deskStop.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const nextStop = desk ? STOPS[desk.n] : undefined;
 
+  // The latest plan that meets the goal is kept, for challenges and the Budget Story.
+  useEffect(() => {
+    if (!met || !desk) return;
+    journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString() });
+  }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars]); // eslint-disable-line react-hooks/exhaustive-deps
+  const theirs = challenge ? assessShared(challenge.plan) : null;
+  const mineNow = challenge && met ? assessShared({ goal, ids, lv, gradual, stars: ev.stars, at: '' }) : null;
+  const challengeBy = challenge?.plan.by || 'Your friend';
+  const myLink = desk ? planLink({ level: desk.id, goal, ids, lv, gradual, by: myName() || undefined, ballot: ballotFrom(journey.choices) }) : undefined;
+  const shareText = desk ? `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars. Can you beat my plan?` : undefined;
+  const challengeResult = (inCard: boolean) => challenge && theirs && mineNow ? (
+    <div className="challenge-result">
+      <div className="stat-label">Your challenge from {challengeBy}</div>
+      <HeadToHead mine={mineNow} theirs={theirs} by={challengeBy === 'Your friend' ? 'Them' : challengeBy} sam={!inCard} auto={false} />
+      <AgreementCard a={compare({ ids, ballot: ballotFrom(journey.choices) }, { ids: challenge.plan.ids, ballot: challenge.plan.ballot })} by={challengeBy === 'Your friend' ? 'your friend' : challengeBy} shareUrl={myLink} />
+    </div>
+  ) : null;
+
   // Uncle Sam reacts to the plan as it changes, like a coach at the player's elbow.
   const steep = econ.peakStep > 0.01;
   const cardsCanWin = useMemo(() => goalMet(goal, run(ctx.options.map((o) => o.id), ZERO), ctx.startRatio), [goal, gradual, ctx]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -176,6 +202,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     ? { mood: 'cheering', line: COACH.metWithHint }
     : met
     ? (ev.stars === 3 ? { mood: 'cheering', line: COACH.met3 } : { mood: 'cheering', line: COACH.met })
+    : react && ids.includes(react) && !steep && REACT[react]
+      ? { mood: 'surprised', line: REACT[react] }
     : prog <= 0.001
       ? { mood: 'worried', line: goal === 'stabilize' ? COACH.startStabilize : COACH.start }
       : steep
@@ -189,7 +217,13 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             : { mood: 'thinking', line: COACH.begun };
 
   // --- actions ---
-  const toggle = (id: string) => { buzz('card'); setLoaded(null); setCopied('idle'); setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id])); };
+  const toggle = (id: string) => {
+    buzz('card'); setLoaded(null); setCopied('idle');
+    const adding = !ids.includes(id);
+    setReact(adding && REACT[id] && !told.current.has(id) ? id : null);
+    if (adding) told.current.add(id);
+    setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
+  };
   // When no combination of cards reaches the goal (balancing the budget, for one), the free hint
   // tops up with the smallest even mix of across-the-board tax increases and spending cuts, so no
   // level is ever left unwinnable.
@@ -207,10 +241,11 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     setIds(sel);
     setLv(p.optimizer && !econPlan.met ? topUp(sel) ?? { ...ZERO } : { ...ZERO });
     setLoaded(pid);
+    setReact(null);
     setCopied('idle');
     document.getElementById('game')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  const reset = () => { setIds([]); setLv({ ...ZERO }); setLoaded(null); setCopied('idle'); };
+  const reset = () => { setIds([]); setLv({ ...ZERO }); setLoaded(null); setReact(null); setCopied('idle'); };
   const text = planText({ mission, names: selected.map((o) => o.name), deficit: pct(Math.max(0, last.deficit) / last.gdp, 1), debt: pct(last.debt / last.gdp, 0), stars: ev.stars, fy: lastFY });
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied('done'); } catch { setCopied('manual'); }
@@ -396,6 +431,14 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
 
 
 
+      {challenge && theirs && (
+        <div className="challenge-banner" role="note">
+          <div>
+            <strong>Challenge from {challengeBy}:</strong> meet this goal and beat {challengeBy === 'Your friend' ? 'their' : `${challengeBy}’s`} plan ({theirs.ev.stars} of 3 stars, {theirs.shares.length} card{theirs.shares.length === 1 ? '' : 's'}, a {theirs.econ.rating} steepest year for the economy).
+          </div>
+          <button type="button" className="btn" onClick={() => { dropChallenge(); setChallenge(null); }}>Drop the challenge</button>
+        </div>
+      )}
       <>
           <section className="topboard card" id="game" aria-label="Scoreboard">
             <div className="tb-coach">{coachBlock}</div>
@@ -408,8 +451,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               <div className="sb-actions tb-actions">
                 <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
                 <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
+                {met && <a className="btn" href="#challenge" onClick={(e) => { e.preventDefault(); document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Challenge a friend</a>}
                 {met && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
-                {met && (nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#journey">See your certificate</a>)}
+                {met && (nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#story">See your Budget Story</a>)}
               </div>
               {copyBox}
             </div>
@@ -425,6 +469,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             {deckNote}
           </section>
       </>
+      {challenge && mineNow && <section className="card" aria-label="Challenge result">{challengeResult(false)}</section>}
+      <PlanForYou ids={ids} lv={lv} gradual={gradual} />
+      {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '' }} />}
 
       <div className="plan-bar" aria-hidden="true">
         <Stars n={ev.stars} size="sm" />
@@ -514,7 +561,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       <Toasts items={toasts.items} />
       {party != null && desk && (
         <Celebration stop={STOP_BY_ID[desk.id]} stars={party} onClose={() => setParty(null)}
-          line={DESK_PARTY[party]} />
+          line={DESK_PARTY[party]} share={myLink && shareText ? { url: myLink, text: shareText } : undefined}>
+          {challengeResult(true)}
+        </Celebration>
       )}
     </>
   );
