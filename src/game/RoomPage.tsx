@@ -80,7 +80,11 @@ export default function RoomPage({ param }: { param: string | null }) {
       </>
     );
   }
-  if (!room || !d) return <p className="small muted" role="status">Opening the room…</p>;
+  if (!room || !d) {
+    return error
+      ? <><PageHead eyebrow="Play as a group" title="A room" /><div className="callout small" role="status">{error}</div></>
+      : <p className="small muted" role="status">Opening the room…</p>;
+  }
 
   const a = assess(d.goal, roomIds, ZERO, true);
   const sum = a.shares.reduce((s, x) => s + Math.max(0, x.share), 0);
