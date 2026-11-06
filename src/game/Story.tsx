@@ -107,7 +107,7 @@ function buildCards(level: string, plan: SavedPlan, o: { name: string; stars: nu
     id: 'challenge', color: COLORS.gold, sam: true,
     eyebrow: 'Can you beat my plan?',
     title: 'Your turn',
-    body: near ? `My plan is closest to “${near.name}”${proposal && !('none' in proposal) ? `, and to the real proposal ${proposal.name}` : ''}. Play free and see if you can do better.` : 'Play free and see if you can do better.',
+    body: proposal && !('none' in proposal) ? `My plan is closest to the real proposal ${proposal.name}. Play free and see if you can do better.` : 'Play free and see if you can do better.',
     chips: ['10 levels', 'Real CBO numbers', 'No sign-up'],
     alt: 'Your turn: can you beat my plan? Play free.',
   });

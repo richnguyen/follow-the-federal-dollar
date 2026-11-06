@@ -17,7 +17,7 @@ are all refused, and a real browser sign-in succeeds).
 
 | Table | One row per | Holds | Who can read it |
 | --- | --- | --- | --- |
-| `ballots` | player | support/oppose on cards, favorite ready-made plan, answers to the big questions | only that player |
+| `ballots` | player | support/oppose on cards, answers to the big questions (and a favorite ready-made plan from earlier versions, no longer asked) | only that player |
 | `players` | player | levels done, stars, first-try quiz results, medals, state (if picked), first-visit channel | only that player |
 | `plans` | finished budget-desk plan | the plan part of the link, cards, stars | only its creator; others open one by its short-link id |
 | `rooms` | room | 6-character code, name, the budget-desk level it plays | only its starter; others open it by its code |

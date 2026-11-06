@@ -4,7 +4,7 @@ import { geo } from '../data';
 import { backendOn, rpc } from '../lib/backend';
 import { pct } from '../lib/format';
 import { useCommunity } from '../lib/community';
-import { OPTIONS_DATA, PRESETS } from '../lib/planData';
+import { OPTIONS_DATA } from '../lib/planData';
 import { load } from '../lib/storage';
 import { useVotes } from '../lib/votes';
 import { LevelIcon } from './icons';
@@ -99,7 +99,6 @@ export default function Results() {
     const sb = b.t.support + b.t.oppose ? b.t.support / (b.t.support + b.t.oppose) : -1;
     return sb - sa;
   });
-  const planTotal = v.available ? Object.values(v.plans).reduce((a, b) => a + b, 0) : v.mine.plan ? 1 : 0;
 
   return (
     <div className="results">
@@ -213,15 +212,6 @@ export default function Results() {
               <Split yes={tl.support} no={tl.oppose} mine={myOption(o.id)} />
             </li>
           ))}
-        </ol>
-      </Section>
-
-      <Section id="plans" title="Ready-made plans" sub="Which plan players picked as their favorite.">
-        <ol className="rlist">
-          {PRESETS.map((p) => {
-            const k = v.available ? v.plans[p.id] ?? 0 : v.mine.plan === p.id ? 1 : 0;
-            return <Row key={p.id} label={p.name} share={planTotal ? k / planTotal : 0} note={planTotal ? `${pct(k / planTotal, 0)} · ${k}` : '0'} mine={v.mine.plan === p.id} />;
-          })}
         </ol>
       </Section>
 

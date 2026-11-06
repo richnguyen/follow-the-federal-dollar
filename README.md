@@ -26,9 +26,10 @@ budget adviser.
   player scrolls through policy cards, each linked to the closest real proposal in Congress.
   There are no hints and no plans to copy: the player works the plan out. The star tips say what
   earns each star, never which card to play; when the cards alone can't reach the goal, the
-  across-the-board changes sit right under them. Ready-made plans (with the closest real budget
-  proposals) appear only after the player has met the goal, to compare and vote on. Difficulty runs in a rhythm: easy, easy, easy, medium,
-  hard, then a breather, and so on up to a final super-hard level.
+  across-the-board changes sit right under them. There are no ready-made plans to load or pick
+  from; a finished plan is matched to the closest real budget proposal on a shared plan's page and
+  in the Budget Story. Difficulty runs in a rhythm: easy, easy, easy, medium, hard, then a
+  breather, and so on up to a final super-hard level.
 - **Steps, checks and votes.** Each chapter is 4–6 short steps with a segmented progress bar.
   Quick checks give explanatory feedback and reveal the answer after two tries. Each chapter
   ends with one vote on a real policy choice. Level 7 explains each major law: what it did and

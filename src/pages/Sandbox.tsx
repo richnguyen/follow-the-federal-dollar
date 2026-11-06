@@ -3,13 +3,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { TimeChart } from '../components/charts';
 import { DragBars, EconMeter, GapBar, type GapSegment, LeverIcon, SIDE_COLOR, SplitBar, Stars, Toasts, useToasts, useTween } from '../components/game';
 import { Carousel } from '../components/Carousel';
-import { Accomplishments, CongressLink, PlanProposal } from '../game/DeskExtras';
+import { Accomplishments, CongressLink } from '../game/DeskExtras';
 import { ChartFrame, Legend, PageHead, Section, Seg, Term } from '../components/ui';
 import { budget, cbo } from '../data';
 import { dateLabel, dollars, money, pct } from '../lib/format';
 import { BADGES, earnedBadges, evaluate, loadProgress, MISSIONS, planText, type Progress, saveProgress } from '../lib/game';
 import { economics, extraFor, type Goal, goalMet, MULT, mid, optimize, optionPath, type PlanContext, planCost, type Protect, score, shortfall } from '../lib/plan';
-import { OPTIONS_DATA, PRESETS, withEcon } from '../lib/planData';
+import { OPTIONS_DATA, withEcon } from '../lib/planData';
 import { LEVERS, type LeverId, type Levers, simulate, ZERO } from '../lib/sandbox';
 import { type Choice, useVotes } from '../lib/votes';
 import { Celebration } from '../game/Celebrate';
@@ -131,7 +131,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     ...(slidersUsed && prog - progCards > 0.001 ? [{ id: 'sliders', label: 'Across-the-board changes', share: prog - progCards, side: (lv.revenues > 0 ? 'revenue' : 'spending') as 'revenue' | 'spending' }] : []),
   ];
 
-  // The least-cost plan: what the efficiency score measures against, and the ready-made "economists' plan".
+  // The least-cost plan: what the efficiency score measures against.
   const econPlan = useMemo(() => optimize(ctx, goal, LEAST_COST_RULES, gradual, 1 / 3), [ctx, goal, gradual]);
   const econCost = econPlan.met ? planCost(ctx, econPlan.ids) : null;
   const myCost = planCost(ctx, ids);
@@ -379,32 +379,6 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               );
             })
   );
-  const presetEls = (
-    PRESETS.map((p) => {
-            const sel = p.optimizer ? econPlan.ids : p.ids ?? [];
-            const sim = run(sel, ZERO);
-            const e = economics(ctx, sel, ZERO, gradual);
-            const opts = ctx.options.filter((o) => sel.includes(o.id));
-            const r = opts.filter((o) => o.side === 'revenue').reduce((a, o) => a + o.savings10, 0);
-            const s = opts.filter((o) => o.side === 'spending').reduce((a, o) => a + o.savings10, 0);
-            const pe = evaluate({ met: goalMet(goal, sim, ctx.startRatio), econ: e, revenueShare: r + s ? r / (r + s) : 0, count: opts.length, crossesRules: false, heavySide: null });
-            const pv = votes.plans[p.id] ?? 0;
-            const pTot = Object.values(votes.plans).reduce((a, b) => a + b, 0);
-            return (
-              <article key={p.id} className="card preset">
-                <div className="preset-head"><h3>{p.name}</h3><Stars n={pe.stars} size="sm" /></div>
-                <p className="small muted">{p.blurb}</p>
-                <SplitBar revenue={r} spending={s} />
-                <PlanProposal id={p.id} />
-                <p className="small">FY{lastFY}: deficit {pct(Math.max(0, sim.at(-1)!.deficit) / sim.at(-1)!.gdp, 1)} of GDP, debt {pct(sim.at(-1)!.debt / sim.at(-1)!.gdp, 0)}. {pe.met ? 'Meets the goal.' : 'Falls short of the goal.'}</p>
-                <div className="sb-actions">
-                  {votes.available && <button type="button" className={votes.mine.plan === p.id ? 'btn btn-primary' : 'btn'} aria-pressed={votes.mine.plan === p.id} disabled={votes.canVote === false} onClick={() => votes.votePlan(p.id)}>{votes.mine.plan === p.id ? 'My pick' : 'Pick this plan'}</button>}
-                  {votes.available && <span className="small muted">{pv} of {pTot} vote{pTot === 1 ? '' : 's'}</span>}
-                </div>
-              </article>
-            );
-          })
-  );
   const leversBlock = (inline: boolean) => (
     <details className="card more" open={inline || slidersUsed || undefined} id="levers">
       <summary className="chart-title">Across-the-board changes{inline ? '' : ' (advanced)'}</summary>
@@ -419,7 +393,6 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         ))}
       </details>
   );
-  const levelDone = !!desk && (met || journey.done.includes(desk.id));
   const bestStars = desk ? Math.max(journey.stars[desk.id] ?? 0, ev.stars) : Math.max(progress.stars[goal] ?? 0, ev.stars);
 
   return (
@@ -495,6 +468,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               {cardEls}
             </Carousel>
             {deckNote}
+            <VoteNote votes={votes} />
           </section>
           {!cardsCanWin && leversBlock(true)}
       </>
@@ -507,15 +481,6 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         <span className="num">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
       </div>
 
-      {/* Ready-made plans stay hidden until the player has met this level's goal their own way. */}
-      {levelDone && (
-        <Section id="plans" title="How ready-made plans compare" sub={`Now that you’ve found your own way to the goal: how each plan does on “${mission.short}”, and the real proposal in Congress closest to it.${votes.available ? ' Pick the one you’d choose; results update live.' : ''}`}>
-          <Carousel label="ready-made plans" count={PRESETS.length}>
-            {presetEls}
-          </Carousel>
-          <VoteNote votes={votes} />
-        </Section>
-      )}
 
       <Section id="numbers" title="See the numbers" sub={`Your plan compared with the ${cbo.projShort}, which assumes ${cbo.projAssumes.replace(/^assuming /, '')}.`}>
         <div className="grid-2">

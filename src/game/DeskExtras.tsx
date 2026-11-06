@@ -4,7 +4,7 @@ import { BADGES } from '../lib/game';
 import { AwardIcon } from './icons';
 
 // Budget-desk extras: the accomplishments shown under a level's title, and the links from each
-// policy card and ready-made plan to the closest real proposal in Congress.
+// policy card, and from a finished plan, to the closest real proposal in Congress.
 
 interface Bill { bill: string; congress: number; title: string; sponsor: string; year: number; url: string; match: string }
 interface Plan { name: string; by: string; year: number; url: string; match: string }

@@ -120,7 +120,7 @@ export default function PlanPage({ param }: { param: string | null }) {
             </div>
           ))}
         </div>
-        {near && <div style={{ marginTop: 10 }}><PlanProposal id={near.id} /><p className="small muted">Their plan is closest to the ready-made plan “{near.name}”.</p></div>}
+        {near && <div style={{ marginTop: 10 }}><PlanProposal id={near.id} /></div>}
       </Section>
 
       {answered.length > 0 && (
