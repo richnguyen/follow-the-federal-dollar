@@ -25,6 +25,7 @@ export function takeLinkFromSearch() {
     const isPlan = keep.has('p') || keep.has('id');
     if (!isPlan && !daily && !s) return;
     const hash = isPlan ? '#plan?' + keep.toString() : daily ? '#daily' : location.hash;
-    history.replaceState(null, '', location.pathname + hash);
+    // A link through a preview page (/p/<kind>/) lands on the game's root.
+    history.replaceState(null, '', location.pathname.replace(/p\/[^/]+\/?$/, '') + hash);
   } catch { /* not allowed in this frame */ }
 }

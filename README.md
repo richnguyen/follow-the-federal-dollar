@@ -99,6 +99,12 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   record so first visits can be counted by channel.
 - Short links (`?plan=<id>`) for finished plans, and rankings of policy cards and states (never of
   people) on "How everyone played".
+- **Link previews that match the plan.** Crawlers ignore the query string, so a shared link goes
+  through one of 54 small static pages, `/p/<level>-<stars>-<personality>/`, each with its own
+  1200×630 card ("Can you beat The Steady Hand's 3-star plan?"); people are forwarded to the plan
+  at once. No server is involved. Regenerate the pages and cards with `npm run previews` (dev
+  server running) after changing their wording in `src/game/previews.ts` or the card's look in
+  `src/game/OgCard.tsx`.
 
 Progress is saved in the browser. The game also keeps one anonymous record per player (levels
 finished, stars, first-try answers, medals) and one ballot per person, and "How everyone played"

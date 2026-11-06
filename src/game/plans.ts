@@ -75,20 +75,23 @@ export function decodePlan(q: URLSearchParams): SharedPlan | null {
 }
 
 /** Where a channel tag goes on links the player shares (`s`), so a later count can tell channels apart. */
-export function planLink(p: SharedPlan, channel?: string) {
+export function planLink(p: SharedPlan, channel?: string, path = '') {
   const q = encodePlan(p);
-  return `${SITE_URL}?${q}${channel ? `&s=${channel}` : ''}`;
+  return `${siteRoot()}${path}?${q}${channel ? `&s=${channel}` : ''}`;
 }
+
+/** The site's root URL, ending in a slash. */
+export const siteRoot = () => SITE_URL.replace(/index\.html$/, '').replace(/([^/])$/, '$1/');
 
 /** Just the plan (cards, across-the-board changes, phase-in): what the server stores for a short link. */
 export const planCode = (p: Omit<SharedPlan, 'by' | 'ballot'>) => encodePlan({ ...p, by: undefined, ballot: undefined });
 
 /** A short link (?plan=<id>). The name and the answers to the big questions stay in the link, never on the server. */
-export function shortLink(id: string, p: Pick<SharedPlan, 'by' | 'ballot'>) {
+export function shortLink(id: string, p: Pick<SharedPlan, 'by' | 'ballot'>, path = '') {
   const extra = new URLSearchParams(encodePlan({ level: DESK[0].id, goal: DESK[0].goal, ids: [], lv: { ...ZERO }, gradual: true, by: p.by, ballot: p.ballot }));
   extra.delete('p');
   const rest = extra.toString();
-  return `${SITE_URL}?plan=${id}${rest ? '&' + rest : ''}`;
+  return `${siteRoot()}${path}?plan=${id}${rest ? '&' + rest : ''}`;
 }
 
 export const myName = () => load<string>('name', '');
@@ -148,7 +151,7 @@ export function closestPreset(ids: string[]) {
 
 // ---------- the player's budget personality ----------
 export interface Archetype { id: string; name: string; line: string }
-const ARCHETYPES: Record<string, Archetype> = {
+export const ARCHETYPES: Record<string, Archetype> = {
   'revenue-gentle': { id: 'revenue-gentle', name: 'The Fair-Share Builder', line: 'You closed the gap mostly with revenue, chosen to go easy on the economy. You’d rather ask more of the tax code than cut what people count on.' },
   'revenue-bold': { id: 'revenue-bold', name: 'The Tax Reformer', line: 'You made big changes to the tax code to close the gap fast. Bold, and you kept spending for the programs people count on.' },
   'balanced-gentle': { id: 'balanced-gentle', name: 'The Steady Hand', line: 'You split the load between taxes and spending cuts and phased it in gently, the way most bipartisan deficit commissions have.' },

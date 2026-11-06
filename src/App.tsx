@@ -26,6 +26,7 @@ const Results = lazy(() => import('./game/Results'));
 const PlanPage = lazy(() => import('./game/PlanPage'));
 const Story = lazy(() => import('./game/Story'));
 const Daily = lazy(() => import('./game/Daily'));
+const OgCard = lazy(() => import('./game/OgCard'));
 import { activeChallenge } from './game/challenge';
 import { JourneyProvider, useJourney } from './game/state';
 import Journey from './game/Journey';
@@ -110,6 +111,7 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   plan: ({ param }) => <PlanPage param={param} />,
   story: () => <Story />,
   daily: () => <Daily />,
+  'og-card': ({ param }) => <OgCard param={param} />,
 };
 
 function DeskPage({ id }: { id: string }) {

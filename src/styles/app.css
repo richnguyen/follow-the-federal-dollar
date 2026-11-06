@@ -1275,3 +1275,23 @@ html.modal-open { overflow: hidden; }
 .ts-box .ts-label { display: none; margin: 0 0 8px; font-size: 0.875rem; color: var(--ink); }
 .ts-box[data-show="true"] { padding: 12px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring), 0 8px 24px rgba(0, 0, 0, 0.18); }
 .ts-box[data-show="true"] .ts-label { display: block; }
+
+/* ---------- link-preview card (photographed by scripts/make-previews.mjs) ---------- */
+.ogcard { position: fixed; inset: 0 auto auto 0; z-index: 10000; width: 1200px; height: 630px; display: grid; grid-template-columns: minmax(0, 1fr) 330px; background: #f2f4ef; color: #111b16; overflow: hidden; }
+.ogcard *, .ogcard *::before, .ogcard *::after { animation: none !important; transition: none !important; }
+.ogcard-band { position: absolute; inset: 0 0 auto 0; height: 18px; background: var(--og); }
+.ogcard-main { padding: 50px 24px 30px 72px; display: flex; flex-direction: column; min-width: 0; }
+.ogcard-eyebrow { font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: #1d5a43; font-weight: 500; white-space: nowrap; }
+.ogcard-title { font-family: var(--font-display); font-weight: 800; font-size: 92px; line-height: 0.9; text-transform: uppercase; margin-top: 14px; letter-spacing: 0.005em; }
+.ogcard-goal { font-size: 28px; font-weight: 600; color: #2b3530; margin-top: 14px; }
+.ogcard-stars { margin-top: 8px; font-size: 58px; line-height: 1; letter-spacing: 6px; }
+.ogcard-stars span { color: #d6dbd5; }
+.ogcard-stars span[data-on="true"] { color: #c9a645; }
+.ogcard-person { margin-top: 16px; padding: 14px 20px; background: #ffffff; border-radius: 14px; box-shadow: 0 0 0 2px #d6dbd5; }
+.ogcard-k { font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: #47524c; }
+.ogcard-name { font-family: var(--font-display); font-weight: 800; font-size: 42px; line-height: 1; text-transform: uppercase; color: var(--og); margin-top: 4px; }
+.ogcard-line { font-size: 20px; line-height: 1.3; color: #2b3530; margin-top: 6px; }
+.ogcard-foot { margin-top: auto; font-size: 19px; color: #47524c; white-space: nowrap; }
+.ogcard-foot strong { color: #111b16; }
+.ogcard-sam { display: flex; align-items: flex-end; justify-content: center; padding-bottom: 30px; }
+.ogcard-sam svg { width: 310px; height: auto; }

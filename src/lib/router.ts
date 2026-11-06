@@ -6,7 +6,7 @@ export const ROUTES = [
   'journey', 'level-1', 'level-2', 'level-3', 'level-4', 'level-5', 'level-6', 'level-7', 'level-8',
   'level-9', 'level-10',
   'overview', 'spending', 'revenue', 'gap', 'debt', 'laws', 'process', 'state', 'social-security',
-  'receipt', 'glossary', 'sources', 'results', 'plan', 'story', 'daily',
+  'receipt', 'glossary', 'sources', 'results', 'plan', 'story', 'daily', 'og-card',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 
@@ -14,6 +14,8 @@ export function parseHash(hash: string): { route: Route; param: string | null } 
   const raw = hash.replace(/^#/, '');
   // A shared plan carries its details after "plan?", as in a query string (names keep their case).
   if (/^plan\?/i.test(raw)) return { route: 'plan', param: raw.slice(5) };
+  // The link-preview card that scripts/make-previews.mjs photographs.
+  if (/^og-card\?/i.test(raw)) return { route: 'og-card', param: raw.slice(8) };
   const h = raw.toLowerCase();
   if (h.startsWith('state-')) return { route: 'state', param: h.slice(6) };
   if (h.startsWith('sources-')) return { route: 'sources', param: h.slice(8) };
