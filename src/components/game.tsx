@@ -168,13 +168,21 @@ export function Toasts({ items }: { items: { key: number; text: string }[] }) {
   );
 }
 
+// One stack of toasts for the whole app (medals, desk badges), shown by the app's single
+// <Toasts>, so two messages never land on the same spot.
+type ToastItem = { key: number; text: string };
+let toastItems: ToastItem[] = [];
+let toastKey = 0;
+const toastSubs = new Set<(t: ToastItem[]) => void>();
+const setToastItems = (f: (p: ToastItem[]) => ToastItem[]) => { toastItems = f(toastItems); toastSubs.forEach((s) => s(toastItems)); };
+
 export function useToasts() {
-  const [items, setItems] = useState<{ key: number; text: string }[]>([]);
-  const n = useRef(0);
+  const [items, setItems] = useState<ToastItem[]>(toastItems);
+  useEffect(() => { toastSubs.add(setItems); setItems(toastItems); return () => { toastSubs.delete(setItems); }; }, []);
   const push = (text: string) => {
-    const key = ++n.current;
-    setItems((p) => [...p.slice(-1), { key, text }]);
-    window.setTimeout(() => setItems((p) => p.filter((x) => x.key !== key)), 4000);
+    const key = ++toastKey;
+    setToastItems((p) => [...p.slice(-1), { key, text }]);
+    window.setTimeout(() => setToastItems((p) => p.filter((x) => x.key !== key)), 4000);
   };
   return { items, push };
 }

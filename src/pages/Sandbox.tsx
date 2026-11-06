@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { TimeChart } from '../components/charts';
-import { DragBars, EconMeter, GapBar, type GapSegment, LeverIcon, SIDE_COLOR, SplitBar, Stars, Toasts, useToasts, useTween } from '../components/game';
+import { DragBars, EconMeter, GapBar, type GapSegment, LeverIcon, SIDE_COLOR, SplitBar, Stars, useToasts, useTween } from '../components/game';
 import { Carousel } from '../components/Carousel';
 import { Accomplishments, CongressLink } from '../game/DeskExtras';
 import { ChartFrame, Legend, PageHead, Section, Seg, Term } from '../components/ui';
@@ -30,8 +30,25 @@ import { ballotFrom, compare, myName } from '../game/plans';
 import { useShareLink } from '../game/shortlinks';
 import { activeRoom, type RoomRef, setActiveRoom } from '../game/rooms';
 import { sendRoomPlan } from '../lib/backend';
+import { load, save } from '../lib/storage';
 
 type Desk = DeskLevel;
+
+interface Draft { ids: string[]; lv: Levers; gradual: boolean }
+const draftKey = (desk: Desk | undefined, c: Challenge | null) => (desk ? desk.id + (c ? ':' + encodePlan(c.plan) : '') : '');
+function readDraft(key: string): Draft | null {
+  if (!key) return null;
+  const d = load<Record<string, Draft>>('desk-draft', {})[key];
+  if (!d || !Array.isArray(d.ids)) return null;
+  const known = new Set(OPTIONS_DATA.options.map((o) => o.id));
+  return { ids: d.ids.filter((id) => known.has(id)), lv: { ...ZERO, ...d.lv }, gradual: d.gradual !== false };
+}
+function writeDraft(key: string, d: Draft | null) {
+  if (!key) return;
+  const all = load<Record<string, Draft>>('desk-draft', {});
+  if (d) all[key] = d; else delete all[key];
+  save('desk-draft', Object.fromEntries(Object.entries(all).slice(-12)));
+}
 // The ground rules for the least-cost plan the efficiency score compares against.
 const LEAST_COST_RULES: Protect = { retirees: true, lowIncome: true, investment: true };
 
@@ -81,9 +98,14 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const [goal, setGoal] = useState<Goal>(desk?.goal ?? 'stabilize');
   const journey = useJourney();
   const buzz = useHaptics();
-  const [gradual, setGradual] = useState(true);
-  const [ids, setIds] = useState<string[]>([]);
-  const [lv, setLv] = useState<Levers>({ ...ZERO });
+  // A friend's challenge for this level, if the player took one.
+  const [challenge, setChallenge] = useState<Challenge | null>(() => { const c = activeChallenge(); return c && desk && c.plan.level === desk.id ? c : null; });
+  // The plan in progress is kept for each level (and each friend's challenge), so a call, a
+  // locked screen, or a reload drops the player back exactly where they were.
+  const [draft] = useState(() => readDraft(draftKey(desk, challenge)));
+  const [gradual, setGradual] = useState(draft?.gradual ?? true);
+  const [ids, setIds] = useState<string[]>(draft?.ids ?? []);
+  const [lv, setLv] = useState<Levers>(draft?.lv ?? { ...ZERO });
   const [filter, setFilter] = useState<Filter>('all');
   const [sort, setSort] = useState<Sort>('impact');
   const [progress, setProgressState] = useState<Progress>(() => loadProgress());
@@ -93,7 +115,6 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // Uncle Sam's fact about a card, the first time it is played on this visit.
   const [react, setReact] = useState<string | null>(null);
   const told = useRef(new Set<string>());
-  const [challenge, setChallenge] = useState<Challenge | null>(() => { const c = activeChallenge(); return c && desk && c.plan.level === desk.id ? c : null; });
   const mission = MISSIONS.find((m) => m.id === goal)!;
 
   // --- model ---
@@ -181,6 +202,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString() });
   }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars]); // eslint-disable-line react-hooks/exhaustive-deps
   // Playing for a room: the plan that meets the goal is sent to the room (cards only).
+  useEffect(() => { if (desk) writeDraft(draftKey(desk, challenge), ids.length || slidersUsed ? { ids, lv, gradual } : null); }, [ids.join(), Object.values(lv).join(), gradual, challenge]); // eslint-disable-line react-hooks/exhaustive-deps
   const [room, setRoom] = useState<RoomRef | null>(() => { const r = activeRoom(); return r && desk && r.level === desk.n ? r : null; });
   const [roomSent, setRoomSent] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
   useEffect(() => {
@@ -475,10 +497,14 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       <PlanForYou ids={ids} lv={lv} gradual={gradual} />
       {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '' }} onShare={returned} />}
 
-      <div className="plan-bar" aria-hidden="true">
-        <Stars n={ev.stars} size="sm" />
-        <span className="plan-bar-track"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
-        <span className="num">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
+      {/* On phones: where the plan stands, always in view, and the next step once the goal is met. */}
+      <div className="plan-bar">
+        <span aria-hidden="true"><Stars n={ev.stars} size="sm" /></span>
+        <span className="plan-bar-track" aria-hidden="true"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
+        <span className="num" aria-hidden="true">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
+        {met && desk && (challenge && h2h
+          ? <button type="button" className="btn btn-primary" onClick={() => document.getElementById('vs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>See how you did</button>
+          : nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#story">Your Budget Story</a>)}
       </div>
 
 
@@ -532,7 +558,6 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       </details>
 
       {desk && <p className="fineprint-link small">This level’s full chapters and the original documents are in <a href={'#sources-' + desk.id}>Sources &amp; methods</a>.</p>}
-      <Toasts items={toasts.items} />
       {party != null && desk && (
         <Celebration stop={STOP_BY_ID[desk.id]} stars={party} onClose={() => setParty(null)}
           line={h2h?.outcome ? CHALLENGE_LINES[h2h.outcome] : DESK_PARTY[party]} share={myLink && shareText ? { url: myLink, text: shareText } : undefined}

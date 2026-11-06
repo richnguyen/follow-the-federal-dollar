@@ -45,6 +45,7 @@ import { LevelIcon, LockIcon } from './game/icons';
 import { NarrationProvider, prefetchVoice, useNarrator } from './game/voice';
 import { earnedMedals, MEDALS } from './game/medals';
 import { useHaptics } from './game/haptics';
+import { noteLevel } from './game/resume';
 import { Toasts, useToasts } from './components/game';
 
 const FIELD_GUIDE_ROUTES = ['overview', 'spending', 'revenue', 'receipt', 'state', 'gap', 'debt', 'process', 'laws', 'social-security'];
@@ -201,6 +202,7 @@ function Shell() {
   useEffect(() => {
     narrator.stop();
     if (FIELD_GUIDE_ROUTES.includes(route)) journey.mark('page:' + route);
+    noteLevel(route);
     if (journey.settings.narration) prefetchVoice(route);
     window.scrollTo({ top: 0 });
     document.title = route === 'journey' ? 'Help Uncle Sam Balance the Budget' : `${TITLE[route] ?? ''} · Help Uncle Sam Balance the Budget`;

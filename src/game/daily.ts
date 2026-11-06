@@ -120,4 +120,10 @@ export function streak(r: Results, key: string) {
   return { played: played.length, run };
 }
 
+/** How long until the next puzzle (local midnight), as "5 h 12 min" or "12 min". */
+export function untilNext(now = new Date()) {
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const m = Math.max(1, Math.round((next.getTime() - now.getTime()) / 60000));
+  return m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
+}
 export const grid = (answers: boolean[]) => answers.map((a) => (a ? '🟦' : '⬜')).join('');

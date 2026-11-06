@@ -56,6 +56,7 @@ function LevelRun({ level }: { level: Level }) {
   const [i, setI] = useState(() => (j.done.includes(level.id) ? level.steps.length : firstOpen < 0 ? level.steps.length : firstOpen));
   const top = useRef<HTMLDivElement>(null);
   const [party, setParty] = useState<number | null>(null);
+  const buzz = useHaptics();
   useEffect(() => { j.start(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const go = (n: number) => {
@@ -68,7 +69,7 @@ function LevelRun({ level }: { level: Level }) {
       const stars = chapterStars(level, j.quiz);
       j.completeLevel(level.id, stars);
       setParty(stars);
-    }
+    } else buzz('step');
     go(i + 1);
   };
 
@@ -104,9 +105,8 @@ function LevelRun({ level }: { level: Level }) {
           <div className="level-nav">
             <button type="button" className="btn" onClick={() => go(Math.max(0, i - 1))} disabled={i === 0}>Back</button>
             <button type="button" className="btn btn-primary" onClick={finishStep} disabled={!quizOk}>
-              {step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
+              {!quizOk ? 'Answer to continue' : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
             </button>
-            {!quizOk && <span className="small muted">Answer the question to continue.</span>}
             <span className="keyhint small muted" aria-hidden="true">{step.kind === 'quiz' ? <><kbd>1</kbd>–<kbd>{step.quiz!.choices.length}</kbd> answer · </> : null}<kbd>Enter</kbd> continue · <kbd>←</kbd> back</span>
           </div>
         </section>

@@ -27,6 +27,10 @@ function useDeskBadges() {
 
 type Menu = 'levels' | 'acc' | 'settings' | null;
 
+// Pages that have their own main button (play, continue, take the challenge), so the bar's
+// "Continue" button would only compete with it.
+const GAME_PAGE = (route: string) => route === 'journey' || route === 'plan' || !!STOP_BY_ID[route];
+
 /** A button with a panel; the levels one also opens on hover, with a short grace period. */
 function Pop({ id, open, setOpen, hover = false, button, children, className = '' }: { id: Exclude<Menu, null>; open: Menu; setOpen: (m: Menu) => void; hover?: boolean; button: (p: { 'aria-expanded': boolean; 'aria-controls': string; onClick: () => void }) => ReactNode; children: ReactNode; className?: string }) {
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -138,7 +142,7 @@ export function StatusBar({ route }: { route: string }) {
         </Pop>
 
         <div className="ab-right">
-          {next && next.id !== route && (
+          {next && !GAME_PAGE(route) && (
             <a className="btn btn-primary stb-go" href={'#' + next.id}><span className="ab-hide-sm">{done || j.started ? 'Continue: level ' : 'Start level '}</span><span className="ab-show-sm">Play </span>{next.n}</a>
           )}
           {n.supported && (
@@ -151,6 +155,10 @@ export function StatusBar({ route }: { route: string }) {
           <Pop id="settings" open={open} setOpen={setOpen} className="ab-settings" button={(p) => (
             <button type="button" className="ab-btn" {...p} title="Settings"><GearIcon /><span className="ab-label">Settings</span></button>
           )}>
+            <div className="ab-more-links">
+              <a className="btn" href="#glossary"><BookIcon /> Glossary</a>
+              <a className="btn" href="#sources"><DocIcon /> Methods</a>
+            </div>
             <div className="ab-panel-head"><strong>Settings</strong><span className="small muted">Saved in this browser</span></div>
             <ReadingSettings />
           </Pop>

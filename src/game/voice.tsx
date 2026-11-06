@@ -1,5 +1,6 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import manifestJson from '../data/generated/voice.json';
+import { suspendSounds } from './sfx';
 import { useJourney } from './state';
 
 // Uncle Sam's voice. By default his lines play from recordings made ahead of time with Kokoro,
@@ -51,10 +52,19 @@ export const DESK_LEVELS = ['level-5', 'level-8', 'level-10'];
 export const bankFor = (route: string) => (DESK_LEVELS.includes(route) ? 'desk' : /^level-\d+$/.test(route) ? route : 'common');
 
 const banks = new Map<string, Promise<ArrayBuffer>>();
+// Each bank's URL carries a short fingerprint of its clips, so a phone never pairs a cached older
+// recording with newer clip offsets (and the offline cache can keep each version safely).
+// The claude.ai artifact serves its files as they are, so it skips the fingerprint.
+const versions = new Map<string, string>();
+function bankVersion(b: string) {
+  if (__ARTIFACT__) return '';
+  if (!versions.has(b)) versions.set(b, '?v=' + keyOf(JSON.stringify(Object.entries(MANIFEST).filter(([, c]) => c[0] === b))));
+  return versions.get(b)!;
+}
 function loadBank(b: string) {
   let p = banks.get(b);
   if (!p) {
-    p = fetch(`voice/${b}.mp3`).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); });
+    p = fetch(`voice/${b}.mp3${bankVersion(b)}`).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); });
     p.catch(() => setTimeout(() => banks.delete(b), 30000)); // allow a retry later
     banks.set(b, p);
   }
@@ -260,6 +270,14 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
   }, [recorded, speakDevice, halt, finish]);
 
   speakRef.current = speak;
+
+  // A call, a locked screen, or switching apps: Uncle Sam stops mid-sentence instead of talking on
+  // in the background, and the sound effects pause.
+  useEffect(() => {
+    const vis = () => { if (document.hidden) { stop(); suspendSounds(); } };
+    document.addEventListener('visibilitychange', vis);
+    return () => document.removeEventListener('visibilitychange', vis);
+  }, [stop]);
 
   const canAutoplay = useCallback(() => {
     const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;

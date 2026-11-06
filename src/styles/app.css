@@ -621,10 +621,12 @@ html[data-text="larger"] { font-size: 125%; }
 .level-head { display: flex; flex-direction: column; gap: 10px; }
 .steptrack { display: flex; flex-direction: column; gap: 8px; }
 .steptrack-bar { display: flex; gap: 4px; }
-.steptrack-seg { flex: 1; height: 8px; border: 0; padding: 0; border-radius: 999px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); cursor: pointer; }
+/* Each segment is a taller, invisible button around the thin bar, so it's easy to tap. */
+.steptrack-seg { flex: 1; height: 20px; margin-block: -6px; border: 0; padding: 0; background: transparent; cursor: pointer; position: relative; }
+.steptrack-seg::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 8px; margin-top: -4px; border-radius: 999px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
 .steptrack-seg:disabled { cursor: default; }
-.steptrack-seg[data-done="true"] { background: var(--accent); box-shadow: none; }
-.steptrack-seg[data-current="true"] { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); }
+.steptrack-seg[data-done="true"]::before { background: var(--accent); box-shadow: none; }
+.steptrack-seg[data-current="true"]::before { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); }
 .steptrack-labels { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8125rem; color: var(--muted); }
 .steptrack-labels li[data-done="true"] { color: var(--ink-2); }
 .steptrack-labels li[data-done="true"] span { color: var(--accent); font-weight: 700; }
@@ -1364,3 +1366,88 @@ html.modal-open { overflow: hidden; }
   .challenge-banner .challenge-banner-more { display: none; }
   .challenge-banner { padding: 10px 12px; font-size: 0.875rem; }
 }
+
+
+/* ---------- phones and touch screens ----------
+   Thumb-friendly: every control is at least 44 x 44 px on a touch screen; the main action on a
+   level step, the celebration, and the budget desk sits in a bar at the bottom of the screen;
+   and the first screen leads with the game, not the intro text. */
+@media (pointer: coarse) {
+  a, button, summary, label, input, select, [role="button"] { touch-action: manipulation; }
+  .btn, .btn-sm { min-height: 44px; }
+  .btn-sm { padding-inline: 14px; }
+  .seg button { min-height: 44px; }
+  .social-link { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  .seg button { min-width: 44px; }
+  .pcard-add { min-height: 48px; }
+  details > summary { padding-block: 12px; }
+  .bubble-listen { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; margin: 0 0 -10px; }
+  .link-btn:not(p .link-btn) { display: inline-flex; align-items: center; min-height: 44px; }
+  .carousel-btn { width: 44px; height: 44px; }
+  .icon-btn { min-width: 44px; min-height: 44px; }
+  .congress a { display: flex; align-items: center; min-height: 44px; }
+  .footer-nav a, .factcard-actions a { display: inline-flex; align-items: center; min-height: 44px; }
+  .select { min-height: 44px; }
+  .switch { min-height: 44px; }
+  .switch input { width: 22px; height: 22px; flex: none; }
+  .starpop-btn { min-height: 44px; }
+  .celebrate-x { min-width: 44px; min-height: 44px; }
+  .vote-btn, .chip { min-height: 44px; }
+  .steptrack-seg { height: 44px; margin-block: -18px; }
+  .ab-btn, .ab-icon { height: 44px; min-width: 44px; justify-content: center; }
+  .ab-level, .stb-acc-btn, .stb-go { min-height: 44px; }
+}
+
+/* Glossary and Methods move into the settings menu on phones, so the top bar keeps five controls. */
+.ab-more-links { display: none; }
+@media (max-width: 640px) {
+  .ab-right > .ab-btn[href="#glossary"], .ab-right > .ab-btn[href="#sources"] { display: none; }
+  .ab-more-links { display: flex; gap: 8px; margin-bottom: 10px; }
+  .ab-more-links a { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 640px) {
+  .page { gap: 28px; }
+  /* Toasts drop in under the top bar, clear of the action bar at the bottom. */
+  .toasts { top: calc(64px + env(safe-area-inset-top, 0px)); bottom: auto; left: 12px; right: 12px; align-items: center; }
+
+  /* Level steps: a smaller title and Uncle Sam beside his words, then the step's action bar. */
+  .level-head .page-title { font-size: clamp(1.9rem, 9vw, 2.4rem); }
+  .level-head .lede { font-size: var(--step-0); }
+  .level-stage .samsays:not(.compact) { flex-direction: row; align-items: flex-start; gap: 10px; }
+  .level-stage .samsays:not(.compact) .sam { width: 64px; }
+  .level-stage .samsays:not(.compact) .bubble::before { left: -9px; top: 22px; bottom: auto; transform: rotate(45deg); }
+  .level-nav {
+    position: sticky; bottom: 0; z-index: 30; flex-wrap: nowrap; gap: 8px;
+    margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+    padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--line);
+  }
+  .level-nav .btn { min-height: 50px; }
+  .level-nav .btn-primary { flex: 1; min-width: 0; font-size: 1.0625rem; }
+
+  /* The celebration opens as a sheet from the bottom, with its next step pinned in reach. */
+  .celebrate-scrim { padding: 0; place-items: end stretch; }
+  .celebrate { width: 100%; border-radius: 18px 18px 0 0; max-height: calc(100dvh - 20px - env(safe-area-inset-top, 0px)); }
+  .celebrate-actions {
+    position: sticky; bottom: 0; z-index: 2; margin: 0 -20px -20px;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -10px 18px -14px rgba(0, 0, 0, 0.35);
+  }
+  .celebrate-actions .btn-primary { flex: 1 1 100%; min-height: 52px; font-size: 1.0625rem; }
+  .celebrate-actions .btn:not(.btn-primary), .celebrate-actions [data-primary-wrap] + .btn { flex: 1 1 0; justify-content: center; }
+  .celebrate-actions [data-primary-wrap] { flex: 1 1 100%; display: flex; }
+  .celebrate-actions [data-primary-wrap] .btn { flex: 1; justify-content: center; min-height: 52px; }
+
+  /* The budget desk: the scoreboard and the cards come first; badges live in the top bar's menu. */
+  .page:has(> .topboard) > .page-head .lede, .page:has(> .topboard) > .accomp { display: none; }
+  .page:has(> .topboard) > .page-head .page-title { font-size: clamp(1.9rem, 9vw, 2.4rem); }
+  .tb-coach .bubble { max-height: none; overflow: visible; }
+  .plan-bar .btn { min-height: 44px; padding-block: 6px; margin-left: auto; }
+}
+
+/* The journey's "Today" row: what's new since the last visit. */
+.today { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; }
+.today-row { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; margin-inline: -4px; border-radius: var(--radius-sm); color: var(--ink); text-decoration: none; min-height: 44px; }
+.today-row:hover { background: var(--surface-2); }
+.today-row strong::after { content: " →"; color: var(--accent); }

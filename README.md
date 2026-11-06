@@ -65,10 +65,13 @@ budget adviser.
    data palette.
 2. **Don't slow down.** Nothing waits for an animation or for Uncle Sam to finish speaking.
    Keyboard play: 1–4 or A–D to answer, Enter or → to continue, ← to go back. The celebration
-   card closes with one tap or Escape, and Continue in the top bar jumps straight back in.
-3. **Feedback you can feel.** On phones that support vibration: a tick for a right answer, a
-   soft double tap for a miss, a short flourish for a finished level or a medal (switchable in
-   settings). For everyone else, buttons and answers respond to the press.
+   card closes with one tap or Escape, and Continue in the top bar jumps straight back in
+   (it hides on pages that already have their own main button, so each screen has one).
+3. **Feedback you can feel and hear.** On phones that support vibration: a tick for a right
+   answer, a soft double tap for a miss, a short flourish for a finished level or a medal. Every
+   one of those moments also plays a short, quiet sound, synthesized in the browser with no files
+   to download, so iPhones (which can't vibrate from a web page) get feedback too. Each has its
+   own switch in settings, and buttons and answers respond to the press.
 4. **Be generous with rewards.** Stars, certificates, adviser titles, fact cards from every
    chapter, and medals that reward taking part (voting, reading the original documents,
    exploring the field guide, sharing) as much as winning. Every level can be finished by hand,
@@ -78,6 +81,33 @@ budget adviser.
 5. **Make it easy to share.** Share buttons on the celebration card, fact cards, ballot and
    certificate use the phone's share sheet, falling back to the clipboard. On the public site,
    "Save image" makes a 1200×630 card with the level, stars, a fact and Uncle Sam.
+
+### Built for phones
+
+Most players are on a phone, often for a few minutes at a time. The game was measured on an
+emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
+
+- **Thumb-friendly.** Every control is at least 44 × 44 px on a touch screen. On a level step,
+  Back and Continue sit in a bar pinned to the bottom of the screen; the celebration opens as a
+  sheet from the bottom with its next step pinned in reach; and the budget desk's bottom bar
+  shows the stars, the progress, and "Play the next level" once the goal is met.
+- **Less on screen.** Five controls in the top bar (Glossary and Methods move into the settings
+  menu); on the desk, the scoreboard and cards come straight after the title. Medal and badge
+  messages share one stack under the top bar.
+- **Interruptions.** A call, a locked screen, or a closed tab loses nothing: level steps,
+  answers, and the plan in progress on the desk (for each level, and for each friend's challenge)
+  are saved as they happen, and Uncle Sam stops talking when the app goes to the background.
+- **Fast return visits, and offline.** On the public site a service worker (`public/sw.js`)
+  keeps the game's files: the page itself comes from the network first (so a release shows up at
+  once), built files and fingerprinted voice recordings come from the saved copy. A return visit
+  opens in about 0.2 s, and the game plays with no connection at all; the shared database,
+  CAPTCHA and live Treasury data always go to the network.
+- **Install it.** A web app manifest and home-screen icons (`public/manifest.webmanifest`,
+  `public/icons/`, drawn by `scripts/make-icons.mjs`) let players add the game to their home
+  screen; opened from there, it returns to the level they were playing.
+- **Something new each day.** Returning players see a "Today" card on the road map: today's
+  Daily Dollar (or when the next one is ready) and, on the public site, their People's Budget
+  move.
 
 ### Sharing and coming back
 
@@ -213,7 +243,9 @@ estimates and labels them as the President's budget.
 - `src/game/` the game layer: `levels.tsx` (level content; every figure and quiz answer is computed
   from the data), `LevelPage.tsx` (step wizard), `Journey.tsx` (road map), `Celebrate.tsx`
   (level-complete card), `StatusBar.tsx`, `LawExplorer.tsx`, `quotes.ts`, `state.tsx` (progress
-  and settings), `voice.tsx` (speech: voice choice, mood prosody), `UncleSam.tsx` (character).
+  and settings), `voice.tsx` (speech: voice choice, mood prosody), `UncleSam.tsx` (character),
+  `haptics.ts` and `sfx.ts` (vibration and sound feedback), `resume.ts` (reopening the installed
+  app where the player left off).
 - `src/pages/` one file per field-guide section; `src/components/charts.tsx` the D3-based charts;
   `src/components/USMap.tsx` the state map; `src/lib/` formatting, categories, tax and sandbox math.
 - `src/data/types.ts` is the contract between the pipeline and the app.

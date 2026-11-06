@@ -7,6 +7,8 @@ import { OPTIONS_DATA } from '../lib/planData';
 import { useVotes } from '../lib/votes';
 import { LevelIcon, LockIcon } from './icons';
 import { diffKey, isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } from './levels';
+import { dayNumber, loadResults, ROUNDS, todayKey, untilNext } from './daily';
+import { backendOn } from '../lib/backend';
 import { MEDALS } from './medals';
 import { GAME_NAME, SITE_URL } from './share';
 import { ShareButton } from './ShareButton';
@@ -66,6 +68,8 @@ export default function Journey() {
           <p className="small muted">Easy levels explain one part of the budget in a few short steps, a couple of questions, and one vote. Every few levels comes a hard one at the budget desk, where you fix the budget yourself. The full chapters and original documents are always one click away.</p>
         </div>
       </section>
+
+      {!fresh && <Today />}
 
       <Section id="together" title="Play with others" sub="Ways to play with friends, family, a class, or everyone at once.">
         <ul className="together">
@@ -180,6 +184,26 @@ export default function Journey() {
 
       <p className="fineprint-link small">Every level’s full chapter and the original government documents behind its numbers are listed in <a href="#sources">Sources &amp; methods</a>.</p>
     </div>
+  );
+}
+
+/** Something new every day, for players coming back: today's Daily Dollar and People's Budget move. */
+function Today() {
+  const key = todayKey();
+  const played = loadResults()[key];
+  const right = played?.filter(Boolean).length ?? 0;
+  return (
+    <section className="card today" aria-label="Today">
+      <span className="stat-label">Today</span>
+      <a className="today-row" href="#daily">
+        <strong>The Daily Dollar #{dayNumber(key)}</strong>
+        <span className="small muted">{played && played.length >= ROUNDS ? `You got ${right} of ${ROUNDS}. The next one is ready in ${untilNext()}.` : 'Today’s puzzle is ready: five higher-or-lower calls, about a minute.'}</span>
+      </a>
+      {backendOn() && <a className="today-row" href="#peoples">
+        <strong>The People’s Budget</strong>
+        <span className="small muted">Your one move for today: push one card in or out of everyone’s budget.</span>
+      </a>}
+    </section>
   );
 }
 

@@ -19,7 +19,7 @@ export interface JourneyState {
   marks: string[]; // things the player has done outside the levels (documents opened, pages read, shares)
   medals: string[]; // medals already awarded (so each is announced once)
   plans?: Record<string, SavedPlan>; // the latest plan that met each budget-desk level's goal
-  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string; haptics: boolean; voiceV?: number };
+  settings: { text: TextSize; theme: ThemeChoice; freeRoam: boolean; narration: boolean; voice: string; haptics: boolean; sounds: boolean; voiceV?: number };
 }
 
 const DEFAULT: JourneyState = {
@@ -32,7 +32,7 @@ const DEFAULT: JourneyState = {
   started: null,
   marks: [],
   medals: [],
-  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto', haptics: true, voiceV: 2 },
+  settings: { text: 'normal', theme: 'system', freeRoam: false, narration: true, voice: 'auto', haptics: true, sounds: true, voiceV: 2 },
 };
 
 // Version 1 numbered seven chapter levels and three separate budget-desk missions. Version 2 folds

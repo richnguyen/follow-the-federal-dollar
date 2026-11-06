@@ -5,10 +5,11 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 // Two builds from one codebase:
 //   `vite build`                 -> dist/           standalone site (live Treasury refresh enabled)
 //   `vite build --mode artifact` -> dist-artifact/  one self-contained HTML file (data baked in)
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, command }) => ({
   base: './',
   plugins: [react(), ...(mode === 'artifact' ? [viteSingleFile()] : [])],
-  define: { __ARTIFACT__: JSON.stringify(mode === 'artifact') },
+  // __OFFLINE__: the public site's production build registers the service worker (public/sw.js).
+  define: { __ARTIFACT__: JSON.stringify(mode === 'artifact'), __OFFLINE__: JSON.stringify(command === 'build' && mode !== 'artifact') },
   build: {
     outDir: mode === 'artifact' ? 'dist-artifact' : 'dist',
     chunkSizeWarningLimit: 4000,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PageHead, Section } from '../components/ui';
 import { SOURCE_BY_ID } from '../data';
-import { grid, loadResults, puzzleFor, ROUNDS, saveResult, streak, todayKey } from './daily';
+import { grid, loadResults, puzzleFor, ROUNDS, saveResult, streak, todayKey, untilNext } from './daily';
 import { useHaptics } from './haptics';
 import { DAILY_LINES } from './script';
 import { SITE_URL } from './share';
@@ -88,7 +88,7 @@ export default function Daily() {
         <section className="card daily-done">
           <div className="daily-score"><span className="num">{score}</span><span className="small"> of {ROUNDS}</span></div>
           <div className="daily-grid" aria-label={`${score} of ${ROUNDS} right`}>{grid(answers)}</div>
-          <p className="small">{st.run > 1 ? `${st.run} days in a row. ` : ''}You’ve played {st.played} day{st.played === 1 ? '' : 's'} so far. A new puzzle is ready tomorrow.</p>
+          <p className="small">{st.run > 1 ? `${st.run} days in a row. ` : ''}You’ve played {st.played} day{st.played === 1 ? '' : 's'} so far. The next puzzle is ready in {untilNext()}.</p>
           <div className="sb-actions">
             <ShareButton text={shareTextStr} url={`${SITE_URL}?daily`} label="Share my result" className="btn btn-primary" />
             <a className="btn" href="#journey">Play the full game</a>

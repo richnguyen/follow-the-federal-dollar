@@ -3,6 +3,7 @@ import { Seg } from '../components/ui';
 import { type TextSize, type ThemeChoice, useJourney } from './state';
 import { hasRecordings, isMaleVoice, pickVoice, useNarrator } from './voice';
 import { hapticsSupported } from './haptics';
+import { playSound, soundsSupported } from './sfx';
 import { VOICE_TEST } from './script';
 
 /** Reading and play settings: text size, theme, Uncle Sam's voice, and free roam. */
@@ -44,6 +45,7 @@ export function ReadingSettings({ compact = false }: { compact?: boolean }) {
             ? 'This device has no male English voice, so a female one is standing in. Choose Uncle Sam’s own voice above for his real voice.'
             : 'Device voices vary in quality. Choose Uncle Sam’s own voice above for his recorded voice.'}</p>
       )}
+      {soundsSupported && <label className="switch"><input type="checkbox" checked={s.sounds} onChange={(e) => { j.setSettings({ sounds: e.target.checked }); if (e.target.checked) playSound('right'); }} /> Quiet sound effects on taps, answers, and wins</label>}
       {hapticsSupported && <label className="switch"><input type="checkbox" checked={s.haptics} onChange={(e) => j.setSettings({ haptics: e.target.checked })} /> Gentle vibration on answers and wins (this device supports it)</label>}
       <label className="switch"><input type="checkbox" checked={s.freeRoam} onChange={(e) => j.setSettings({ freeRoam: e.target.checked })} /> Free roam: unlock every level</label>
       {!compact && (
