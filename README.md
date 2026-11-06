@@ -111,6 +111,10 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
 - **Pass the budget** (`#chain`): each person adds one card or takes one out, then passes the link
   on; the chain lives entirely in the link (goal, turns, optional first names), so it needs no
   server. Every link can branch.
+- **Share stats** (`#stats`, linked from "How everyone played"): shares made, shared links opened,
+  and new players whose first visit came through a shared link, by channel and kind of link, with
+  the viral coefficient K = shares per player × new players per share. Counts are anonymous daily
+  tallies; a player's channel is the first tagged link that brought them.
 - **Link previews that match the plan.** Crawlers ignore the query string, so a shared link goes
   through one of 54 small static pages, `/p/<level>-<stars>-<personality>/`, each with its own
   1200×630 card ("Can you beat The Steady Hand's 3-star plan?"); people are forwarded to the plan

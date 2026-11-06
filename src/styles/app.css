@@ -1343,3 +1343,7 @@ html.modal-open { overflow: hidden; }
 .chain-pass { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .chain-pass .section-title { margin: 0; }
 .chain-name { max-width: 320px; margin-bottom: 12px; }
+
+/* ---------- share stats ---------- */
+.stats-k { margin-top: 12px; }
+.stats-table th[scope="row"] { font-weight: 600; }

@@ -113,7 +113,7 @@ export default function Journey() {
                   <>
                     <ul className="factcard-list">{l.takeaways.map((t) => <li key={t}>{t}</li>)}</ul>
                     <div className="factcard-actions">
-                      <ShareButton className="btn btn-sm" text={`Did you know? ${l.takeaways[0]} (from “${GAME_NAME}”, built on official U.S. government data)`} url={SITE_URL + '#' + l.id} />
+                      <ShareButton kind="level" className="btn btn-sm" text={`Did you know? ${l.takeaways[0]} (from “${GAME_NAME}”, built on official U.S. government data)`} url={SITE_URL + '#' + l.id} />
                       {l.deepDive[0] && <a className="small" href={'#' + l.deepDive[0].route}>The full chapter</a>}
                     </div>
                   </>
@@ -168,7 +168,7 @@ export default function Journey() {
               <div className="eyebrow">Certificate</div>
               <div className="complete-title">Informed Budget Voter</div>
               <p className="small muted">For learning where federal money comes from and goes, why the government borrows, how Congress budgets, what the future holds for Social Security, and for casting a vote on each.</p>
-              <div className="sb-actions" style={{ marginTop: 8 }}><ShareButton text={`I finished all ${STOPS.length} levels of “${GAME_NAME}” and earned ${stars} of ${MAX_STARS} stars. I’m an Informed Budget Voter.`} /></div>
+              <div className="sb-actions" style={{ marginTop: 8 }}><ShareButton kind="level" text={`I finished all ${STOPS.length} levels of “${GAME_NAME}” and earned ${stars} of ${MAX_STARS} stars. I’m an Informed Budget Voter.`} /></div>
             </div>
           </div>
         )}
@@ -215,7 +215,7 @@ function Ballot() {
       <div className="sb-actions" style={{ marginTop: 12 }}>
         <span className="small muted">{cast.length} of {rows.length} questions answered.</span>
         {cast.length > 0 && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my ballot'}</button>}
-        {cast.length > 0 && <ShareButton text={text} />}
+        {cast.length > 0 && <ShareButton kind="level" text={text} />}
       </div>
       {copied === 'manual' && <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your ballot, ready to copy" />}
     </div>

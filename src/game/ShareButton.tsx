@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useHaptics } from './haptics';
-import { shareText, SITE_URL, socialLinks } from './share';
+import type { LinkKind } from '../lib/backend';
+import { countShare } from '../lib/backend';
+import { linkKind, shareText, SITE_URL, socialLinks } from './share';
 import { useJourney } from './state';
 
 /** A Share button (share sheet → clipboard → text to copy) and, on the public site, "Save image". */
-export function ShareButton({ text, title, url, card, label = 'Share', className = 'btn' }: { text: string; title?: string; url?: string; card?: () => Promise<Blob | null>; label?: string; className?: string }) {
+export function ShareButton({ text, title, url, card, label = 'Share', className = 'btn', kind }: { text: string; title?: string; url?: string; card?: () => Promise<Blob | null>; label?: string; className?: string; kind?: LinkKind }) {
   const j = useJourney();
   const buzz = useHaptics();
   const [state, setState] = useState<'idle' | 'copied' | 'shared' | 'manual'>('idle');
@@ -13,7 +15,7 @@ export function ShareButton({ text, title, url, card, label = 'Share', className
     if (card && typeof navigator.canShare === 'function' && typeof navigator.share === 'function') {
       try { const b = await card(); if (b) files = [new File([b], 'uncle-sam-budget.png', { type: 'image/png' })]; } catch { /* text only */ }
     }
-    const r = await shareText({ title, text, url, files });
+    const r = await shareText({ title, text, url, files, kind });
     if (r === 'cancelled') return;
     if (r !== 'manual') { j.mark('share'); buzz('tap'); }
     setState(r === 'shared' ? 'shared' : r);
@@ -39,14 +41,14 @@ export function ShareButton({ text, title, url, card, label = 'Share', className
 }
 
 /** A row of social networks to post to; each opens that network's own share page in a new tab. */
-export function SocialShare({ text, url = SITE_URL }: { text: string; url?: string }) {
+export function SocialShare({ text, url = SITE_URL, kind }: { text: string; url?: string; kind?: LinkKind }) {
   const j = useJourney();
   return (
     <div className="social" role="group" aria-label="Share on social media">
       <span className="stat-label">Post it</span>
       <div className="social-links">
-        {socialLinks(text, url).map((s) => (
-          <a key={s.id} className="social-link" data-net={s.id} href={s.href} target="_blank" rel="noopener noreferrer" onClick={() => j.mark('share')}>{s.label}</a>
+        {socialLinks(text, url, kind).map((s) => (
+          <a key={s.id} className="social-link" data-net={s.id} href={s.href} target="_blank" rel="noopener noreferrer" onClick={() => { j.mark('share'); countShare(kind ?? linkKind(url), s.ch); }}>{s.label}</a>
         ))}
       </div>
     </div>

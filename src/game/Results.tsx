@@ -225,6 +225,7 @@ export default function Results() {
         </ol>
       </Section>
 
+      {c.source === 'site' && <p className="small"><a href="#stats">Share stats: how sharing brings in new players</a></p>}
       <p className="small muted">This is an informal tally of the people who played {where}, not a scientific survey: they chose to play, and each counts once. Percentages of a handful of players move a lot with each new one.</p>
     </div>
   );

@@ -55,8 +55,8 @@ export function Celebration({ stop, stars, onClose, line, share, children }: { s
           </figure>
           <div className="celebrate-share">
             <div className="small"><span className="stat-label">{share ? 'Challenge a friend' : 'Your fact card'}</span><div>{share ? 'Send your plan as a link. Your friend plays the same level and sees how much you two agree.' : fact}</div></div>
-            <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={url} label={share ? 'Send the challenge' : 'Share'} /></div>
-            <SocialShare text={text} url={url} />
+            <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={url} label={share ? 'Send the challenge' : 'Share'} kind={share ? 'plan' : 'level'} /></div>
+            <SocialShare text={text} url={url} kind={share ? 'plan' : 'level'} />
           </div>
           {children}
           {next ? (

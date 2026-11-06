@@ -31,6 +31,7 @@ const Peoples = lazy(() => import('./game/Peoples'));
 const Rooms = lazy(() => import('./game/Rooms'));
 const RoomPage = lazy(() => import('./game/RoomPage'));
 const Chain = lazy(() => import('./game/Chain'));
+const StatsPage = lazy(() => import('./game/Stats'));
 import { activeChallenge } from './game/challenge';
 import { activeRoom } from './game/rooms';
 import { JourneyProvider, useJourney } from './game/state';
@@ -83,6 +84,7 @@ const TITLE: Partial<Record<Route, string>> = Object.fromEntries([
   ['rooms', 'Rooms'],
   ['room', 'A room'],
   ['chain', 'Pass the budget'],
+  ['stats', 'Share stats'],
   ...STOPS.map((l) => [l.id, `Level ${l.n}: ${l.title}`]),
 ]);
 
@@ -125,6 +127,7 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   rooms: () => <Rooms />,
   room: ({ param }) => <RoomPage param={param} />,
   chain: ({ param }) => <Chain param={param} />,
+  stats: () => <StatsPage />,
 };
 
 function DeskPage({ id }: { id: string }) {

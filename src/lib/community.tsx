@@ -1,7 +1,7 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LEVELS, STOPS } from '../game/levels';
 import { useJourney } from '../game/state';
-import { backendOn, rpc, upsertOwn } from './backend';
+import { BackendError, backendOn, rpc, upsertOwn } from './backend';
 import { load, save } from './storage';
 
 // How everyone played. Each player keeps one anonymous record: which levels they finished, their
@@ -167,7 +167,12 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     const t = setTimeout(async () => {
       if (s.source === 'site') {
         try {
-          await upsertOwn('players', { record: { ...mine, updated: new Date().toISOString() }, state: /^[A-Z]{2}$/.test(state) ? state : null, channel: /^[a-z0-9-]{1,16}$/.test(channel) ? channel : null });
+          const row = { record: { ...mine, updated: new Date().toISOString() }, state: /^[A-Z]{2}$/.test(state) ? state : null, channel: /^[a-z0-9-]{1,16}$/.test(channel) ? channel : null };
+          const cameFrom = load<string>('src-kind', '');
+          // Where the player first came from (the share-stats migration adds this column; before it
+          // runs, the record is saved without it).
+          try { await upsertOwn('players', { ...row, came_from: /^(plan|story|clip|daily|peoples|room|chain|level|site)$/.test(cameFrom) ? cameFrom : null }); }
+          catch (e) { if (e instanceof BackendError && e.status === 400) await upsertOwn('players', row); else throw e; }
           sent.current = body;
           save('sent-record', body);
           setSavedOnce(true);

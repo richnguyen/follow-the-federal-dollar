@@ -160,6 +160,25 @@ await as(U[6], 'insert into public.room_members (room) values ($1)', [closing]);
 await as(U[5], 'delete from public.rooms where code = $1', [closing]);
 ok((await as(null, 'select public.get_room($1) as r', [closing])).rows[0].r === null, 'the starter can close a room, and its memberships go with it');
 
+// Share stats: anonymous counts of shares and opened links, and where new players came from.
+for (let k = 0; k < 3; k++) await as(null, `select public.count_share('plan', 'wh')`);
+await as(U[1], `select public.count_share('story', 'x')`);
+await as(null, `select public.count_arrival('plan', 'wh')`);
+await as(null, `select public.count_arrival('plan', 'wh')`);
+await as(null, `select public.count_share('nonsense', 'wh')`);
+await as(null, `select public.count_share('plan', 'myspace')`);
+ok(await fails(() => as(null, `insert into public.share_counts (day, kind, channel, shares) values (current_date, 'plan', 'x', 999)`)), 'nobody writes the counts directly');
+ok((await as(null, 'select * from public.share_counts')).rows.length === 0 && (await as(U[1], 'select * from public.share_counts')).rows.length === 0, 'nobody reads the counts directly');
+await as(U[2], `update public.players set came_from = 'plan', channel = 'wh' where user_id = $1`, [U[2]]);
+ok(await fails(() => as(U[3], `update public.players set came_from = 'spam' where user_id = $1`, [U[3]])), 'came_from must be a known kind of link');
+const ss = (await as(null, 'select public.share_stats(30) as s')).rows[0].s;
+console.log('  share_stats:', JSON.stringify(ss));
+ok(ss.shares.plan.wh === 3 && ss.shares.story.x === 1 && !ss.shares.nonsense && !(ss.shares.plan.myspace), 'shares by kind and channel; unknown ones ignored');
+ok(ss.arrivals.plan.wh === 2 && ss.daily.length === 1 && ss.daily[0].shares === 4 && ss.daily[0].arrivals === 2, 'opened links, and the daily totals');
+ok(ss.players.plan.wh === 1 && ss.players.site.wh === 5 && ss.players.site.direct === 1 && ss.players_all === 7, 'new players by where they came from');
+await db.query(`update public.players set created_at = now() - interval '60 days' where user_id = $1`, [U[2]]);
+ok(!(await as(null, 'select public.share_stats(30) as s')).rows[0].s.players.plan, 'players outside the window are left out');
+
 // Deleting a user removes their data.
 await db.query('delete from auth.users where id = $1', [U[0]]);
 ok((await as(null, 'select public.ballot_totals() as t')).rows[0].t.voters === 2, 'deleting a user removes their ballot');

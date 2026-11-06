@@ -159,7 +159,7 @@ export default function Story() {
       const blobs = await Promise.all(cards.map((_, i) => png(i)));
       files = blobs.filter(Boolean).map((b, i) => new File([b!], `budget-story-${i + 1}.png`, { type: 'image/png' }));
     } catch { files = undefined; }
-    const r = await shareText({ text, url: link, files });
+    const r = await shareText({ text, url: link, files, kind: 'story' });
     setBusy(false);
     if (r === 'shared' || r === 'copied') j.mark('share');
     setMsg(r === 'copied' ? 'Copied the text and link. Save the images to post them with it.' : r === 'manual' ? `Copy this to share: ${text} ${link}` : '');
@@ -185,7 +185,7 @@ export default function Story() {
           <a className="btn" href={'#' + sp.level}>Change my plan</a>
         </div>
         {msg && <p className="small" role="status">{msg}</p>}
-        <SocialShare text={text} url={link} />
+        <SocialShare text={text} url={link} kind="story" />
         <p className="small muted">The link carries your plan{Object.keys(ballotFrom(j.choices)).length ? ' and your answers to the big questions' : ''}, so friends can try to beat it. Your salary stays in this browser; the cards show only how your own taxes would change (set your salary on the <a href="#receipt">tax receipt</a> page).</p>
       </Section>
       <ClipMaker level={sp.level} plan={sp.plan} samSvg={samSvg} />

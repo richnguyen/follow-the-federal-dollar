@@ -1,5 +1,7 @@
+import { countArrival, LINK_KINDS, type LinkKind, todayUTC } from '../lib/backend';
 import { load, save } from '../lib/storage';
 import type { SharedPlan } from './plans';
+import { linkKind } from './share';
 
 // The challenge a player accepted from a friend's link, kept in this browser until they finish
 // or drop it. Only one at a time.
@@ -15,7 +17,17 @@ export function takeLinkFromSearch() {
   try {
     const q = new URLSearchParams(location.search);
     const s = q.get('s');
-    if (s && /^[a-z0-9-]{1,16}$/.test(s) && !load<string>('src', '')) save('src', s);
+    if (s && /^[a-z0-9-]{1,16}$/.test(s)) {
+      // What kind of link it was, and where it was shared: the first one is kept with the player's
+      // record, and every opened link is counted once per browser per day (no identity is sent).
+      const k = q.get('k') as LinkKind | null;
+      const kind: LinkKind = k && LINK_KINDS.includes(k) ? k : linkKind(location.href);
+      if (!load<string>('src', '')) { save('src', s); save('src-kind', kind); }
+      const day = todayUTC();
+      const seen = Object.fromEntries(Object.entries(load<Record<string, string>>('opened', {})).filter(([, d]) => d === day));
+      const key = `${kind}:${s}`;
+      if (!seen[key]) { seen[key] = day; save('opened', seen); countArrival(kind, s); }
+    }
     const keep = new URLSearchParams();
     // A short link (?plan=<id>) is looked up by the plan page.
     const id = q.get('plan');

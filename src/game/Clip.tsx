@@ -177,7 +177,7 @@ export function ClipMaker({ level, plan, samSvg }: { level: string; plan: SavedP
   const share = async () => {
     if (!video) return;
     const file = new File([video.blob], `uncle-sam-plan.${video.ext}`, { type: video.blob.type });
-    const r = await shareText({ title: GAME_NAME, text: 'My plan for Uncle Sam’s budget. Can you beat it?', files: [file] });
+    const r = await shareText({ title: GAME_NAME, text: 'My plan for Uncle Sam’s budget. Can you beat it?', files: [file], kind: 'clip' });
     if (r === 'shared' || r === 'copied') j.mark('share');
   };
 

@@ -1,3 +1,4 @@
+import { countShare, type LinkKind } from '../lib/backend';
 // Sharing: the system share sheet where the browser has one, otherwise the clipboard, otherwise a
 // box of text to copy by hand. Links always point at the public site.
 
@@ -13,10 +14,28 @@ export const GAME_NAME = 'Help Uncle Sam Balance the Budget';
 
 export type ShareResult = 'shared' | 'copied' | 'manual' | 'cancelled';
 
-export async function shareText(o: { title?: string; text: string; url?: string; files?: File[] }): Promise<ShareResult> {
+/** What a link opens, for the share stats: read from the link itself. */
+export function linkKind(url: string): LinkKind {
+  if (/\/p\/room\/|[?&]room=/.test(url)) return 'room';
+  if (/\/p\/chain\/|[?&]chain(&|=|$)/.test(url)) return 'chain';
+  if (/\/p\/peoples\/|[?&]peoples(&|=|$)/.test(url)) return 'peoples';
+  if (/[?&]daily(&|=|$)/.test(url)) return 'daily';
+  if (/\/p\/[^/]+\/|[?&](p|plan)=/.test(url)) return 'plan';
+  return 'site';
+}
+
+export async function shareText(o: { title?: string; text: string; url?: string; files?: File[]; kind?: LinkKind }): Promise<ShareResult> {
   const url = o.url ?? SITE_URL;
+  const kind = o.kind ?? linkKind(url);
+  const r = await shareTextInner(o, url, kind);
+  if (r === 'shared') countShare(kind, 'sh');
+  if (r === 'copied') countShare(kind, 'cp');
+  return r;
+}
+
+async function shareTextInner(o: { title?: string; text: string; files?: File[] }, url: string, kind: LinkKind): Promise<ShareResult> {
   if (typeof navigator.share === 'function') {
-    const data: ShareData = { title: o.title ?? GAME_NAME, text: o.text, url: tagUrl(url, 'sh') };
+    const data: ShareData = { title: o.title ?? GAME_NAME, text: o.text, url: tagUrl(url, 'sh', kind) };
     if (o.files?.length && typeof navigator.canShare === 'function' && navigator.canShare({ files: o.files })) data.files = o.files;
     try {
       await navigator.share(data);
@@ -27,7 +46,7 @@ export async function shareText(o: { title?: string; text: string; url?: string;
     }
   }
   try {
-    await navigator.clipboard.writeText(`${o.text} ${tagUrl(url, 'cp')}`);
+    await navigator.clipboard.writeText(`${o.text} ${tagUrl(url, 'cp', kind)}`);
     return 'copied';
   } catch {
     return 'manual';
@@ -119,15 +138,17 @@ export const placeSam = (samSvg: string | undefined, x: number, y: number, w: nu
  * Tags a link to this site with the channel it was shared on (?s=x), so the first visit it brings
  * can be counted by channel later. Only links to this site are tagged.
  */
-export function tagUrl(url: string, channel: string) {
+export function tagUrl(url: string, channel: string, kind?: LinkKind) {
   if (!url.startsWith(SITE_URL) && !url.startsWith(PUBLIC_URL)) return url;
   const [head, hash = ''] = url.split('#');
-  const q = head.includes('?') ? head.replace(/([?&])s=[^&]*&?/, '$1').replace(/[?&]$/, '') : head;
-  return `${q}${q.includes('?') ? '&' : '?'}s=${channel}${hash ? '#' + hash : ''}`;
+  const q = head.includes('?') ? head.replace(/([?&])s=[^&]*&?/, '$1').replace(/([?&])k=[^&]*&?/, '$1').replace(/[?&]$/, '') : head;
+  // The kind goes along only where the link itself can't tell (a Budget Story's plan link, say).
+  const k = kind && kind !== linkKind(url) ? `&k=${kind}` : '';
+  return `${q}${q.includes('?') ? '&' : '?'}s=${channel}${k}${hash ? '#' + hash : ''}`;
 }
 
 /** Share pages of the big social networks: each opens with the post filled in, for the person to send. */
-export function socialLinks(text: string, url0: string) {
+export function socialLinks(text: string, url0: string, kind?: LinkKind) {
   const t = encodeURIComponent(text);
   return [
     { id: 'x', label: 'X', href: (u: string) => `https://x.com/intent/tweet?text=${t}&url=${encodeURIComponent(u)}` },
@@ -138,5 +159,5 @@ export function socialLinks(text: string, url0: string) {
     { id: 'threads', label: 'Threads', href: (u: string) => `https://www.threads.net/intent/post?text=${encodeURIComponent(`${text} ${u}`)}` },
     { id: 'whatsapp', label: 'WhatsApp', href: (u: string) => `https://wa.me/?text=${encodeURIComponent(`${text} ${u}`)}` },
     { id: 'email', label: 'Email', href: (u: string) => `mailto:?subject=${encodeURIComponent(GAME_NAME)}&body=${encodeURIComponent(`${text}\n\n${u}`)}` },
-  ].map((n) => ({ id: n.id, label: n.label, href: n.href(tagUrl(url0, n.id === 'x' ? 'x' : n.id.slice(0, 2))) }));
+  ].map((n) => { const ch = n.id === 'x' ? 'x' : n.id.slice(0, 2); return { id: n.id, ch, label: n.label, href: n.href(tagUrl(url0, ch, kind)) }; });
 }

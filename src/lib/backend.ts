@@ -145,3 +145,19 @@ export const sendRoomPlan = (code: string, cards: string[], stars: number) =>
 
 /** Closes a room the player started (its memberships go with it). */
 export const closeRoom = (code: string) => call<null>(`rooms?code=eq.${code}`, { method: 'DELETE', auth: true, prefer: 'return=minimal' });
+
+// ---------- share stats: anonymous counts of shares and opened links ----------
+export type LinkKind = 'plan' | 'story' | 'clip' | 'daily' | 'peoples' | 'room' | 'chain' | 'level' | 'site';
+export const LINK_KINDS: LinkKind[] = ['plan', 'story', 'clip', 'daily', 'peoples', 'room', 'chain', 'level', 'site'];
+export const CHANNELS = ['x', 'fa', 'li', 're', 'bl', 'th', 'wh', 'em', 'sh', 'cp'] as const;
+
+/** Counts one share (fire and forget; nothing identifies who shared). */
+export function countShare(kind: LinkKind, channel: string) {
+  if (!backendOn() || !(CHANNELS as readonly string[]).includes(channel)) return;
+  rpc('count_share', { p_kind: kind, p_channel: channel }).catch(() => {});
+}
+/** Counts one opened link. */
+export function countArrival(kind: LinkKind, channel: string) {
+  if (!backendOn() || !(CHANNELS as readonly string[]).includes(channel)) return;
+  rpc('count_arrival', { p_kind: kind, p_channel: channel }).catch(() => {});
+}
