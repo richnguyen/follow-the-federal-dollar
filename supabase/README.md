@@ -42,16 +42,21 @@ Everyone can read totals through functions that return counts only: `ballot_tota
    Both are meant to be public: they go in the website, and row-level security decides what
    each visitor can do. **Never share or commit the secret key (`sb_secret_…`) or the database
    password.**
-5. **Before a big launch: turn on CAPTCHA.** Supabase recommends it with anonymous sign-ins,
+5. **Turn on CAPTCHA (Cloudflare Turnstile).** Supabase recommends it with anonymous sign-ins,
    because otherwise a script could create accounts in bulk.
-   1. In a free Cloudflare account, go to **Turnstile → Add widget**, add the domain
-      `balancethebudget.us`, and choose the **Invisible** or **Managed** mode.
-   2. In Supabase: **Authentication → Attack Protection → Enable CAPTCHA protection**, choose
-      **Turnstile**, and paste the Turnstile **secret key**.
-   3. Send the Turnstile **site key** (public) so the game can pass a token when it signs in.
+   1. The widget exists (site key `0x4AAAAAAF1rV7BXsS9-nG51`, domain `balancethebudget.us`); the
+      game already sends a fresh token with every anonymous sign-in
+      ([`src/lib/turnstile.ts`](../src/lib/turnstile.ts)).
+   2. In the Cloudflare dashboard, open **Turnstile**, select the widget, and copy its
+      **secret key**.
+   3. In Supabase: **Authentication → Attack Protection → Enable CAPTCHA protection**, choose
+      **Turnstile**, paste the secret key, and save. Supabase Auth then calls Cloudflare's
+      siteverify on the server for each sign-in and refuses any without a valid, unused token.
+      The secret lives only there: never in this repository, the site, or a chat.
 
    Supabase also limits anonymous sign-ins per IP address; the limit is under
-   **Authentication → Rate Limits**.
+   **Authentication → Rate Limits**. Copies of the game away from the real domain use
+   Cloudflare's test site key, so they can't sign in once CAPTCHA is on; that is intended.
 
 ## Checking the schema locally
 

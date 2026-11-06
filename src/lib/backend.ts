@@ -1,4 +1,5 @@
 import { load, save } from './storage';
+import { turnstileToken } from './turnstile';
 
 // The public site's shared database (Supabase): anonymous sign-in and a few table and function
 // calls over plain HTTPS, without the full client library. The URL and the publishable key are
@@ -52,7 +53,12 @@ export async function existingSession(): Promise<Session | null> {
 export async function session(): Promise<Session | null> {
   const s = await existingSession();
   if (s) return s;
-  pending ??= authCall('signup', { data: {} }).finally(() => { pending = null; });
+  // A fresh Turnstile token goes with the sign-in; Supabase Auth verifies it with Cloudflare on the
+  // server (see turnstile.ts). Without CAPTCHA switched on in Supabase, the token is simply ignored.
+  pending ??= (async () => {
+    const token = await turnstileToken();
+    return authCall('signup', { data: {}, ...(token ? { gotrue_meta_security: { captcha_token: token } } : {}) });
+  })().finally(() => { pending = null; });
   return (current = await pending);
 }
 
