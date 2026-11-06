@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PageHead, Section } from '../components/ui';
+import { ActionBar } from '../components/ActionBar';
 import { SOURCE_BY_ID } from '../data';
 import { ReminderControl } from './reminders';
 import { grid, loadResults, longDate, nextTheme, puzzleFor, ROUNDS, saveResult, span, streak, type Theme, themeBlurb, todayKey, untilNext } from './daily';
@@ -88,12 +89,12 @@ export default function Daily({ param = null }: { param?: string | null }) {
             </div>
           </div>
           {!revealed ? (
-            <div className="daily-actions" role="group" aria-label={`Is ${next.label} higher or lower than ${known.label}?`}>
+            <ActionBar className="daily-actions" label={`Is ${next.label} higher or lower than ${known.label}?`}>
               <button type="button" className="btn btn-lg daily-btn" onClick={() => call(true)}>▲ Higher</button>
               <button type="button" className="btn btn-lg daily-btn" onClick={() => call(false)}>▼ Lower</button>
-            </div>
+            </ActionBar>
           ) : (
-            <div className="daily-actions"><button type="button" className="btn btn-primary btn-lg" onClick={advance} autoFocus>{done ? 'See my result' : 'Next call'}</button></div>
+            <ActionBar className="daily-actions" label="Next"><button type="button" className="btn btn-primary btn-lg" onClick={advance} autoFocus>{done ? 'See my result' : 'Next call'}</button></ActionBar>
           )}
           <p className="small muted">Measured as {pool.unit}.</p>
         </section>
@@ -103,13 +104,13 @@ export default function Daily({ param = null }: { param?: string | null }) {
         <section className="card daily-done">
           <div className="daily-score"><span className="num">{score}</span><span className="small"> of {ROUNDS}</span></div>
           <div className="daily-grid" aria-label={`${score} of ${ROUNDS} right`}>{grid(answers)}</div>
-          {preview ? <p className="small">That was a preview, so it isn’t saved. <a href="#daily">Play today’s puzzle</a></p> : <>
+          {preview ? <><p className="small">That was a preview, so it isn’t saved.</p><ActionBar label="Next"><a className="btn btn-primary" href="#daily">Play today’s puzzle</a></ActionBar></> : <>
           <p className="small">{st.run > 1 ? `${st.run} days in a row. ` : ''}You’ve played {st.played} day{st.played === 1 ? '' : 's'} so far. The next puzzle is ready in {untilNext()}.{theme && theme.day < theme.days ? ` ${theme.name} goes on through ${longDate(theme.end)}.` : ''}</p>
           {upcoming && <p className="small daily-upcoming"><strong>Coming up: {upcoming.name}, {span(upcoming)}.</strong> {upcoming.id === 'tax' ? 'A week of puzzles about taxes, ending on Tax Day.' : 'A week of puzzles about the budget, starting the day the President’s budget request is due.'}</p>}
-          <div className="sb-actions">
+          <ActionBar label="Share">
             <ShareButton text={shareTextStr} url={`${SITE_URL}?daily`} label="Share my result" className="btn btn-primary" />
             <a className="btn" href="#journey">Play the full game</a>
-          </div>
+          </ActionBar>
           <SocialShare text={shareTextStr} url={`${SITE_URL}?daily`} />
           <ReminderControl where="daily" />
           </>}

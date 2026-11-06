@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ActionBar } from '../components/ActionBar';
 import congress from '../data/curated/congress.json';
 import { Carousel } from '../components/Carousel';
 import { PageHead, Section } from '../components/ui';
@@ -135,7 +136,7 @@ export default function Story() {
       <>
         <PageHead eyebrow="Your Budget Story" title="Your Budget Story" lede="Six cards about how you’d run Uncle Sam’s books: your budget personality, your biggest move, and what your plan means for your own taxes." />
         <SamSays mood="thinking" auto>{STORY_LINES.locked}</SamSays>
-        <div className="sb-actions"><a className="btn btn-primary" href={'#' + first.id}>Go to level {first.n}</a></div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href={'#' + first.id}>Go to level {first.n}</a></ActionBar>
       </>
     );
   }
@@ -179,11 +180,11 @@ export default function Story() {
             </figure>
           ))}
         </Carousel>
-        <div className="sb-actions" style={{ marginTop: 12 }}>
+        <ActionBar label="Share">
           <button type="button" className="btn btn-primary" onClick={shareAll} disabled={busy}>{busy ? 'Preparing…' : 'Share my story'}</button>
-          {!__ARTIFACT__ && <button type="button" className="btn" onClick={saveAll} disabled={busy}>Save all {cards.length} images</button>}
           <a className="btn" href={'#' + sp.level}>Change my plan</a>
-        </div>
+        </ActionBar>
+        {!__ARTIFACT__ && <div className="sb-actions" style={{ marginTop: 12 }}><button type="button" className="btn" onClick={saveAll} disabled={busy}>Save all {cards.length} images</button></div>}
         {msg && <p className="small" role="status">{msg}</p>}
         <SocialShare text={text} url={link} kind="story" />
         <p className="small muted">The link carries your plan{Object.keys(ballotFrom(j.choices)).length ? ' and your answers to the big questions' : ''}, so friends can try to beat it. Your salary stays in this browser; the cards show only how your own taxes would change (set your salary on the <a href="#receipt">tax receipt</a> page).</p>

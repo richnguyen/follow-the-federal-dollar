@@ -442,16 +442,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 button.btn:disabled { opacity: 0.55; cursor: not-allowed; }
 details > summary { list-style-position: inside; }
 
-.plan-bar { display: none; }
-@media (max-width: 900px) {
-  .plan-bar {
-    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; gap: 12px; align-items: center; flex-wrap: wrap;
-    background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--line);
-    padding-block: 10px calc(10px + env(safe-area-inset-bottom, 0px));
-    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
-    font-size: var(--step--1); font-weight: 600;
-  }
-}
 
 @media (max-width: 640px) {
   .seg { flex-wrap: wrap; border-radius: 14px; }
@@ -1418,12 +1408,6 @@ html.modal-open { overflow: hidden; }
   .level-stage .samsays:not(.compact) { flex-direction: row; align-items: flex-start; gap: 10px; }
   .level-stage .samsays:not(.compact) .sam { width: 64px; }
   .level-stage .samsays:not(.compact) .bubble::before { left: -9px; top: 22px; bottom: auto; transform: rotate(45deg); }
-  .level-nav {
-    position: sticky; bottom: 0; z-index: 30; flex-wrap: nowrap; gap: 8px;
-    margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
-    padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px));
-    background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--line);
-  }
   .level-nav .btn { min-height: 50px; }
   .level-nav .btn-primary { flex: 1; min-width: 0; font-size: 1.0625rem; }
 
@@ -1444,7 +1428,6 @@ html.modal-open { overflow: hidden; }
   .page:has(> .topboard) > .page-head .lede, .page:has(> .topboard) > .accomp { display: none; }
   .page:has(> .topboard) > .page-head .page-title { font-size: clamp(1.9rem, 9vw, 2.4rem); }
   .tb-coach .bubble { max-height: none; overflow: visible; }
-  .plan-bar .btn { min-height: 44px; padding-block: 6px; margin-left: auto; }
 }
 
 /* The journey's "Today" row: what's new since the last visit. */
@@ -1479,3 +1462,39 @@ html.modal-open { overflow: hidden; }
 .daily-theme[data-theme="budget"] { background: var(--accent-wash); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, var(--line)); }
 .daily-theme-tag { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); font-weight: 600; }
 .daily-upcoming { padding: 8px 10px; border-radius: var(--radius-sm); background: var(--surface-2); }
+
+/* ---------- the action bar ----------
+   Each screen's forward actions (continue, take the challenge, play the next level, share) sit
+   in one bar. On phones and tablets it's fixed to the bottom of the screen, so the actions
+   available are always in the same place; on wide screens it stays where the page puts it. */
+.actionbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+@media (min-width: 901px) { .actionbar-phone { display: none !important; } }
+@media (max-width: 900px) {
+  .actionbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; margin: 0;
+    flex-wrap: nowrap; gap: 8px;
+    padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    background: color-mix(in srgb, var(--surface) 95%, transparent); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); box-shadow: 0 -10px 22px -18px rgba(0, 0, 0, 0.4);
+  }
+  .actionbar .btn { min-height: 48px; justify-content: center; text-align: center; line-height: 1.2; white-space: normal; padding-inline: 14px; }
+  .actionbar > .btn-primary, .plan-bar-buttons > .btn-primary { flex: 1 1 0; min-width: 0; font-size: 1.0625rem; }
+  .actionbar > .btn:not(.btn-primary), .plan-bar-buttons > .btn:not(.btn-primary) { flex: 0 1 auto; }
+  .actionbar > .daily-btn { flex: 1 1 0; }
+  .actionbar .keyhint { display: none; }
+  .actionbar .share-manual { position: absolute; left: 12px; right: 12px; bottom: calc(100% + 8px); }
+  /* One bar per screen: the app's default bar gives way when the page brings its own, and a
+     button the bar already offers isn't repeated in the page. */
+  body:has(.page .actionbar) .actionbar-default { display: none; }
+  .bar-dup { display: none !important; }
+  .main { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+  /* The top bar's Continue button moves down to the action bar. */
+  .ab-right .stb-go { display: none; }
+  /* The budget desk's bar: where the plan stands, then its actions. */
+  .plan-bar { flex-wrap: wrap; gap: 8px 12px; font-size: var(--step--1); font-weight: 600; }
+  .plan-bar-row { display: flex; align-items: center; gap: 12px; flex: 1 1 100%; }
+  .plan-bar-buttons { display: flex; gap: 8px; flex: 1 1 100%; }
+  .plan-bar-buttons > .btn-hint { flex: 1 1 0; }
+}
+.plan-bar-row .plan-bar-track { flex: 1; }
+.journey-skip { display: inline-flex; align-items: center; min-height: 44px; margin-top: 6px; }

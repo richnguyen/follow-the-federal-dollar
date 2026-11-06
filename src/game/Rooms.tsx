@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ActionBar } from '../components/ActionBar';
 import { PageHead, Section } from '../components/ui';
 import { backendOn, createRoom, getRoom, joinRoom, ROOM_CODE } from '../lib/backend';
 import { DESK } from './levels';
@@ -25,7 +26,7 @@ export default function Rooms() {
       <>
         <PageHead eyebrow="Play as a group" title="Rooms" lede="A class, an office, or a family plays together, and the group builds one plan." />
         <SamSays mood="happy" auto>{ROOM_LINES.offline}</SamSays>
-        <div className="sb-actions"><a className="btn btn-primary" href={`${PUBLIC_SITE}#rooms`} target="_blank" rel="noreferrer">Open rooms on balancethebudget.us</a></div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href={`${PUBLIC_SITE}#rooms`} target="_blank" rel="noreferrer">Open rooms on balancethebudget.us</a></ActionBar>
       </>
     );
   }

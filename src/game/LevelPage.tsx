@@ -4,6 +4,7 @@ import { OPTIONS_DATA } from '../lib/planData';
 import { type Choice, useVotes } from '../lib/votes';
 import { Celebration } from './Celebrate';
 import { Stars } from '../components/game';
+import { ActionBar } from '../components/ActionBar';
 import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
 import { chapterStars, checksOf, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
@@ -27,8 +28,8 @@ function Locked({ level }: { level: Level }) {
     <div className="level">
       <LevelHead level={level} />
       <SamSays mood="thinking" auto>{lockedLine(unlockText(level.id))}</SamSays>
+      {next && <ActionBar label="Next step"><a className="btn btn-primary" href={'#' + next.id}>Go to level {next.n}: {next.title}</a></ActionBar>}
       <div className="sb-actions" style={{ marginTop: 16 }}>
-        {next && <a className="btn btn-primary" href={'#' + next.id}>Go to level {next.n}: {next.title}</a>}
         <button type="button" className="btn" onClick={() => j.setSettings({ freeRoam: true })}>Unlock every level (free roam)</button>
         {level.deepDive.map((d) => <a key={d.route} className="btn" href={'#' + d.route}>Read the full chapter: {d.label}</a>)}
       </div>
@@ -103,13 +104,13 @@ function LevelRun({ level }: { level: Level }) {
         <section className="level-stage" aria-live="polite" aria-labelledby="step-label">
           <div className="step-count" id="step-label">Step {i + 1} of {level.steps.length} · {step.label}</div>
           <StepBody key={level.id + step.id} step={step} />
-          <div className="level-nav">
+          <ActionBar className="level-nav" label="Step">
             <button type="button" className="btn" onClick={() => go(Math.max(0, i - 1))} disabled={i === 0}>Back</button>
             <button type="button" className="btn btn-primary" onClick={finishStep} disabled={!quizOk}>
               {!quizOk ? (step.quiz?.guess ? 'Make a guess to continue' : 'Answer to continue') : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
             </button>
             <span className="keyhint small muted" aria-hidden="true">{step.kind === 'quiz' ? <><kbd>1</kbd>–<kbd>{step.quiz!.choices.length}</kbd> answer · </> : null}<kbd>Enter</kbd> continue · <kbd>←</kbd> back</span>
-          </div>
+          </ActionBar>
         </section>
       ) : (
         <Complete level={level} onReview={() => { j.retry(level.steps.filter((x) => x.quiz).map((x) => x.quiz!.id)); go(0); }} />
@@ -345,11 +346,11 @@ function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
         {level.takeaways.map((t) => <li key={t}>{t}</li>)}
       </ul>
       {next?.kind === 'desk' && <div className="callout"><div className="callout-title">Up next: a hard level at the budget desk</div><p className="small">Level {next.n} asks you to fix the budget yourself: {next.title.toLowerCase()}. Take your time.</p></div>}
-      <div className="sb-actions">
+      <p className="small"><a href="#journey">See your progress on the road map</a></p>
+      <ActionBar label="Next">
         {next ? <a className="btn btn-primary" href={'#' + next.id}>Next: level {next.n}, {next.title}</a> : <a className="btn btn-primary" href="#journey">Back to the road map</a>}
-        <a className="btn" href="#journey">See your progress</a>
         <button type="button" className="btn" onClick={onReview}>Replay this level</button>
-      </div>
+      </ActionBar>
     </section>
   );
 }

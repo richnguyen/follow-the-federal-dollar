@@ -93,12 +93,19 @@ budget adviser.
 Most players are on a phone, often for a few minutes at a time. The game was measured on an
 emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
 
-- **Thumb-friendly.** Every control is at least 44 × 44 px on a touch screen. On a level step,
-  Back and Continue sit in a bar pinned to the bottom of the screen; the celebration opens as a
-  sheet from the bottom with its next step pinned in reach; and the budget desk's bottom bar
-  shows the stars, the progress, and "Play the next level" once the goal is met.
+- **One action bar.** Every screen's forward actions sit in one bar
+  (`src/components/ActionBar.tsx`), fixed to the bottom of the screen on phones and tablets
+  (900 px or narrower) so players always know where to look: Back and Continue on a level step,
+  the next level after one, Higher and Lower on the Daily Dollar, Take the challenge on a friend's
+  plan, the hint or the next steps (with the stars and progress) on the budget desk, Share on the
+  People's Budget and the Budget Story, and, on pages with no action of their own, the chapter's
+  level or the next level to play. One bar per screen; a button the bar holds isn't repeated in the
+  page. On wide screens the same buttons stay where the page puts them. The celebration opens as
+  a sheet from the bottom with its next step pinned in reach.
+- **Thumb-friendly.** Every control is at least 44 × 44 px on a touch screen.
 - **Less on screen.** Five controls in the top bar (Glossary and Methods move into the settings
-  menu); on the desk, the scoreboard and cards come straight after the title. Medal and badge
+  menu, and Continue moves down to the action bar); the footer is one line, with the field guide
+  and the note about the figures in Sources & methods; on the desk, the scoreboard and cards come straight after the title. Medal and badge
   messages share one stack under the top bar.
 - **Interruptions.** A call, a locked screen, or a closed tab loses nothing: level steps,
   answers, and the plan in progress on the desk (for each level, and for each friend's challenge)

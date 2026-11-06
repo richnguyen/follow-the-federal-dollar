@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Stars } from '../components/game';
 import { Section } from '../components/ui';
+import { ActionBar } from '../components/ActionBar';
 import { budget } from '../data';
 import { moneyWords } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
@@ -51,11 +52,11 @@ export default function Journey() {
                   ? JOURNEY_LINES.hardNext(rank.name.toLowerCase(), next.n)
                   : JOURNEY_LINES.back(rank.name.toLowerCase())}
           </SamSays>
-          <div className="sb-actions">
-            {next && <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a>}
-            {j.plans && Object.keys(j.plans).length > 0 && <a className="btn" href="#story">Your Budget Story</a>}
-            <a className="btn" href="#overview">Skip the game and read the guide</a>
-          </div>
+          <ActionBar label="Play">
+            {next ? <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a> : <a className="btn btn-primary btn-lg" href="#story">See your Budget Story</a>}
+            {next && j.plans && Object.keys(j.plans).length > 0 && <a className="btn" href="#story">Your Budget Story</a>}
+          </ActionBar>
+          <a className="small journey-skip" href="#overview">Skip the game and read the guide</a>
         </div>
         <div className="card journey-progress" aria-label="Your progress">
           <div className="jp-rank">

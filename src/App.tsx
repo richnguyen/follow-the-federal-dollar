@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, type JSX } from 'react';
 import { BrandMark } from './components/Guilloche';
 import { TooltipProvider } from './components/ui';
-import { budget } from './data';
 import { type Route, useHashRoute } from './lib/router';
 import { UnitsProvider } from './lib/units';
 import { LiveProvider } from './lib/live';
@@ -47,6 +46,7 @@ import { earnedMedals, MEDALS } from './game/medals';
 import { useHaptics } from './game/haptics';
 import { noteLevel } from './game/resume';
 import { Toasts, useToasts } from './components/game';
+import { ActionBar } from './components/ActionBar';
 
 const FIELD_GUIDE_ROUTES = ['overview', 'spending', 'revenue', 'receipt', 'state', 'gap', 'debt', 'process', 'laws', 'social-security'];
 
@@ -154,12 +154,34 @@ function DeskLocked({ id }: { id: string }) {
         <div className="callout-title">Locked for now</div>
         <p className="small">Finish level {prev.n}, {prev.title}, to open this level. You can also unlock everything with free roam in settings.</p>
         <div className="sb-actions">
-          <a className="btn btn-primary" href={'#' + prev.id}>Go to level {prev.n}</a>
           <button type="button" className="btn" onClick={() => j.setSettings({ freeRoam: true })}>Unlock every level (free roam)</button>
         </div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href={'#' + prev.id}>Go to level {prev.n}: {prev.title}</a></ActionBar>
       </div>
     </div>
   );
+}
+
+/**
+ * The action bar on pages with no action of their own (the field guide, reference pages, results):
+ * the level this chapter belongs to, or else the next level to play. Phones and tablets only; on
+ * wide screens the top bar's Continue button does this job.
+ */
+function DefaultActions({ route }: { route: Route }) {
+  const j = useJourney();
+  const chapter = CHAPTER_LEVEL[route];
+  const next = STOPS.find((s) => !j.done.includes(s.id) && isUnlocked(s.id, j.done, j.settings.freeRoam));
+  if (route === 'og-card') return null;
+  let action: JSX.Element;
+  if (chapter) {
+    const l = STOP_BY_ID[chapter];
+    action = <a className="btn btn-primary" href={'#' + chapter}>{j.done.includes(chapter) ? 'Replay' : 'Play'} level {l.n}: {l.title}</a>;
+  } else if (next) {
+    action = <a className="btn btn-primary" href={'#' + next.id}>{j.done.length || j.started ? `Continue: level ${next.n}, ${next.title}` : 'Start level 1'}</a>;
+  } else {
+    action = <a className="btn btn-primary" href="#story">See your Budget Story</a>;
+  }
+  return <ActionBar className="actionbar-default" phoneOnly label="Next step">{action}</ActionBar>;
 }
 
 function ChapterBanner({ route }: { route: Route }) {
@@ -218,15 +240,11 @@ function Shell() {
             <Page param={param} />
           </Suspense>
           <footer className="footer">
-            <nav className="footer-nav" aria-label="Field guide">
-              <span className="stat-label">Field guide</span>
-              {FIELD_GUIDE.map((g) => <a key={g.route} href={'#' + g.route}>{g.label}</a>)}
-            </nav>
-            <span>Figures are nominal dollars for federal fiscal years (October 1 – September 30) unless noted. Every chart links to the official dataset it was drawn from; see <a href="#sources">Sources & methods</a>. Official data from the U.S. Treasury, OMB, the Census Bureau, the IRS, and USAspending.gov; Treasury data through {budget.mtsLatestDate}.</span>
             <span>Independent civic education project. Not affiliated with any government agency.</span>
           </footer>
         </div>
       </main>
+      <DefaultActions route={route} />
       <MedalWatcher />
     </>
   );

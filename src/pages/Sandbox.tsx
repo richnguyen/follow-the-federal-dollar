@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { TimeChart } from '../components/charts';
 import { DragBars, EconMeter, GapBar, type GapSegment, LeverIcon, SIDE_COLOR, SplitBar, Stars, useToasts, useTween } from '../components/game';
 import { Carousel } from '../components/Carousel';
+import { ActionBar } from '../components/ActionBar';
 import { Accomplishments, CongressLink } from '../game/DeskExtras';
 import { ChartFrame, Legend, PageHead, Section, Seg, Term } from '../components/ui';
 import { budget, cbo } from '../data';
@@ -288,7 +289,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     setHint({ line: `${HINT_LINES.card(pick.name)} ${finisher ? HINT_LINES.finishes : HINT_LINES.bigShare}`, card: pick.id });
     requestAnimationFrame(() => document.querySelector(`[data-card="${pick.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }));
   };
-  const hintButton = desk?.hint ? <button type="button" className="btn btn-hint" onClick={giveHint}>Hint</button> : null;
+  // On phones the hint lives in the bottom action bar; the scoreboard's copy is for wide screens.
+  // (once the goal is met the bar holds the next steps, so the scoreboard's Hint gives the star tips).
+  const hintButton = desk?.hint ? <button type="button" className={'btn btn-hint' + (met ? '' : ' bar-dup')} onClick={giveHint}>Hint</button> : null;
   const text = planText({ mission, names: selected.map((o) => o.name), deficit: pct(Math.max(0, last.deficit) / last.gdp, 1), debt: pct(last.debt / last.gdp, 0), stars: ev.stars, fy: lastFY });
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied('done'); } catch { setCopied('manual'); }
@@ -443,6 +446,21 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         ))}
       </details>
   );
+  const toChallenge = (e: React.MouseEvent) => { e.preventDefault(); document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  // The bottom bar's actions: the hint before the goal (level 5); after it, the challenge or the next level.
+  const barButtons = !met
+    ? (desk?.hint ? <button type="button" className="btn btn-hint" onClick={giveHint}>Hint</button> : null)
+    : challenge && h2h
+      ? <>
+          {myLink && shareText && <ShareButton text={shareText} url={myLink} label={`Send it back to ${byShort}`} className={h2h.outcome === 'lost' ? 'btn' : 'btn btn-primary'} kind="plan" onShare={returned} />}
+          <button type="button" className={h2h.outcome === 'lost' ? 'btn btn-primary' : 'btn'} onClick={() => setParty(ev.stars)}>I’m done</button>
+        </>
+      : desk
+        ? <>
+            <a className="btn" href="#challenge" onClick={toChallenge}>Challenge a friend</a>
+            {nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#story">Your Budget Story</a>}
+          </>
+        : null;
   const bestStars = desk ? Math.max(journey.stars[desk.id] ?? 0, ev.stars) : Math.max(progress.stars[goal] ?? 0, ev.stars);
 
   return (
@@ -488,9 +506,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               <div className="sb-actions tb-actions">
                 {hintButton}
                 <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
-                {met && <a className="btn" href="#challenge" onClick={(e) => { e.preventDefault(); document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Challenge a friend</a>}
+                {met && <a className="btn bar-dup" href="#challenge" onClick={toChallenge}>Challenge a friend</a>}
                 {met && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
-                {met && (nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#story">See your Budget Story</a>)}
+                {met && (nextStop ? <a className="btn btn-primary bar-dup" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary bar-dup" href="#story">See your Budget Story</a>)}
               </div>
               {copyBox}
             </div>
@@ -507,9 +525,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               </div>
               <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={false} />
               <div className="sb-actions">
-                {myLink && shareText && <ShareButton text={shareText} url={myLink} label={`Send it back to ${challengeBy === 'Your friend' ? 'your friend' : challengeBy}`} className={h2h.outcome === 'lost' ? 'btn' : 'btn btn-primary'} kind="plan" onShare={returned} />}
+                {myLink && shareText && <ShareButton text={shareText} url={myLink} label={`Send it back to ${challengeBy === 'Your friend' ? 'your friend' : challengeBy}`} className={h2h.outcome === 'lost' ? 'btn bar-dup' : 'btn btn-primary bar-dup'} kind="plan" onShare={returned} />}
                 <button type="button" className={h2h.outcome === 'lost' ? 'btn btn-primary' : 'btn'} onClick={() => document.getElementById('deck-t')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>Keep improving</button>
-                <button type="button" className="btn" onClick={() => setParty(ev.stars)}>I’m done</button>
+                <button type="button" className="btn bar-dup" onClick={() => setParty(ev.stars)}>I’m done</button>
               </div>
               <AgreementCard a={compare({ ids, ballot: ballotFrom(journey.choices) }, { ids: challenge.plan.ids, ballot: challenge.plan.ballot })} by={byShort} shareUrl={myLink} />
             </section>
@@ -526,16 +544,15 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       <PlanForYou ids={ids} lv={lv} gradual={gradual} />
       {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '' }} onShare={returned} />}
 
-      {/* On phones: where the plan stands, always in view, and the next step once the goal is met. */}
-      <div className="plan-bar">
-        <span aria-hidden="true"><Stars n={ev.stars} size="sm" /></span>
-        <span className="plan-bar-track" aria-hidden="true"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
-        <span className="num" aria-hidden="true">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
-        {!met && hintButton}
-        {met && desk && (challenge && h2h
-          ? <button type="button" className="btn btn-primary" onClick={() => document.getElementById('vs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>See how you did</button>
-          : nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#story">Your Budget Story</a>)}
-      </div>
+      {/* Phones and tablets: where the plan stands, always in view, with this screen's actions. */}
+      <ActionBar className="plan-bar" phoneOnly label="Your plan">
+        <div className="plan-bar-row" aria-hidden="true">
+          <Stars n={ev.stars} size="sm" />
+          <span className="plan-bar-track"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
+          <span className="num">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
+        </div>
+        {barButtons && <div className="plan-bar-buttons">{barButtons}</div>}
+      </ActionBar>
 
 
       <Section id="numbers" title="See the numbers" sub={`Your plan compared with the ${cbo.projShort}, which assumes ${cbo.projAssumes.replace(/^assuming /, '')}.`}>

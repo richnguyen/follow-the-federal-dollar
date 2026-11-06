@@ -14,6 +14,7 @@ import { useShareLink } from './shortlinks';
 import { PLAN_LINES } from './script';
 import { useJourney } from './state';
 import { SamSays } from './UncleSam';
+import { ActionBar } from '../components/ActionBar';
 
 // A friend's shared plan (#plan?p=…): what they did, how it scored, and the challenge to beat it.
 
@@ -41,7 +42,7 @@ export default function PlanPage({ param }: { param: string | null }) {
       <div className="level">
         <header className="level-head"><h1 className="page-title">A plan from a friend</h1></header>
         <SamSays mood="worried" auto>{PLAN_LINES.broken}</SamSays>
-        <div className="sb-actions"><a className="btn btn-primary" href="#journey">Start the game</a></div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href="#journey">Start the game</a></ActionBar>
       </div>
     );
   }
@@ -73,7 +74,7 @@ export default function PlanPage({ param }: { param: string | null }) {
           <Stars n={a.ev.stars} size="md" label={`${a.ev.stars} of 3 stars`} />
           <span className="small">{a.shares.length} card{a.shares.length === 1 ? '' : 's'} · {whoPays(a)} · {RATING[a.econ.rating]}</span>
         </div>
-        <button type="button" className="btn btn-primary btn-lg" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
+        <button type="button" className="btn btn-primary btn-lg bar-dup" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
         <span className="small muted">Opens level {stop.n} right away · about {stop.minutes} minutes · no sign-up</span>
       </section>
       <SamSays mood="surprised" compact auto>{mine ? PLAN_LINES.played : PLAN_LINES.intro}</SamSays>
@@ -92,10 +93,10 @@ export default function PlanPage({ param }: { param: string | null }) {
         </div>
       </section>
 
-      <div className="sb-actions plan-cta">
+      <ActionBar className="plan-cta" label="The challenge">
         <button type="button" className="btn btn-primary" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
-        <a className="btn" href="#journey">Start the game from level 1</a>
-      </div>
+        <a className="btn" href="#journey">Start from level 1</a>
+      </ActionBar>
       <p className="small muted">Beat {by === 'Your friend' ? 'their' : `${by}’s`} plan on stars, a gentler steepest year for the economy, or fewer cards.</p>
 
       {mine && (

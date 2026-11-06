@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ActionBar } from '../components/ActionBar';
 import { EconMeter, GapBar, type GapSegment, SplitBar } from '../components/game';
 import { PageHead, Section } from '../components/ui';
 import { assess, CTX, LAST_FY } from '../lib/assess';
@@ -141,10 +142,10 @@ export default function Chain({ param }: { param: string | null }) {
         <section className="card chain-pass" aria-labelledby="pass-t">
           <h2 className="section-title" id="pass-t">{a.met ? 'Share how your chain did it' : 'Now pass it on'}</h2>
           <p className="small">Your change: you {mine.add ? 'added' : 'took out'} “{NAME[mine.card]}”. Send the link to one person, or a few: each one starts their own branch of the chain.</p>
-          <div className="sb-actions">
+          <ActionBar label="Pass it on">
             <ShareButton text={shareText} url={link} label={a.met ? 'Share the chain' : 'Pass it on'} className="btn btn-primary" />
             <button type="button" className="btn" onClick={() => setMine(null)}>Change my turn</button>
-          </div>
+          </ActionBar>
           <SocialShare text={shareText} url={link} />
         </section>
       ) : full ? (

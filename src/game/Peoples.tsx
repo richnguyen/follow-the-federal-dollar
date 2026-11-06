@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActionBar } from '../components/ActionBar';
 import { EconMeter, GapBar, type GapSegment, SplitBar } from '../components/game';
 import { PageHead, Section } from '../components/ui';
 import { assess, CTX, LAST_FY } from '../lib/assess';
@@ -98,7 +99,7 @@ export default function Peoples() {
       <>
         <PageHead eyebrow="Everyone’s budget" title="The People’s Budget" lede="One budget, built by everyone who plays: each person gets one move a day, pushing one policy card in or out." />
         <SamSays mood="happy" auto>{PEOPLES_LINES.offline}</SamSays>
-        <div className="sb-actions"><a className="btn btn-primary" href={`${PUBLIC_SITE}?peoples`} target="_blank" rel="noreferrer">Open the People’s Budget</a></div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href={`${PUBLIC_SITE}?peoples`} target="_blank" rel="noreferrer">Open the People’s Budget</a></ActionBar>
       </>
     );
   }
@@ -184,7 +185,7 @@ export default function Peoples() {
       )}
 
       <Section id="share" title="Bring more hands">
-        <div className="sb-actions"><ShareButton text={shareText} url={shareUrl} label="Share the People’s Budget" className="btn btn-primary" /></div>
+        <ActionBar label="Share"><ShareButton text={shareText} url={shareUrl} label="Share the People’s Budget" className="btn btn-primary" /></ActionBar>
         <SocialShare text={shareText} url={shareUrl} />
       </Section>
 

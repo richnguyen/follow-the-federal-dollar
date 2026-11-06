@@ -1,4 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ActionBar } from '../components/ActionBar';
 import { EconMeter, GapBar, type GapSegment, SplitBar } from '../components/game';
 import { PageHead, Section } from '../components/ui';
 import { assess, CTX, LAST_FY } from '../lib/assess';
@@ -67,7 +68,7 @@ export default function RoomPage({ param }: { param: string | null }) {
       <>
         <PageHead eyebrow="Play as a group" title="A room" />
         <SamSays mood="happy" auto>{ROOM_LINES.offline}</SamSays>
-        <div className="sb-actions"><a className="btn btn-primary" href={`${PUBLIC_SITE}?room=${encodeURIComponent(code)}`} target="_blank" rel="noreferrer">Open the room on balancethebudget.us</a></div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href={`${PUBLIC_SITE}?room=${encodeURIComponent(code)}`} target="_blank" rel="noreferrer">Open the room on balancethebudget.us</a></ActionBar>
       </>
     );
   }
@@ -76,7 +77,7 @@ export default function RoomPage({ param }: { param: string | null }) {
       <>
         <PageHead eyebrow="Play as a group" title="Room not found" />
         <SamSays mood="worried" auto>{ROOM_LINES.missing}</SamSays>
-        <div className="sb-actions"><a className="btn btn-primary" href="#rooms">Start or join a room</a></div>
+        <ActionBar label="Next step"><a className="btn btn-primary" href="#rooms">Start or join a room</a></ActionBar>
       </>
     );
   }
@@ -127,13 +128,18 @@ export default function RoomPage({ param }: { param: string | null }) {
         <div className="room-join-side">
           <div className="small">{members} {members === 1 ? 'member' : 'members'} · {t?.plans ?? room.plans} plan{(t?.plans ?? room.plans) === 1 ? '' : 's'} sent · join at <strong>balancethebudget.us</strong> with this code</div>
           {joined ? (
-            <div className="sb-actions">
-              <a className="btn btn-primary" href={'#' + d.id} onClick={() => setActiveRoom(ref)}>{me?.cards ? `Play level ${d.n} again` : `Play level ${d.n} for the room`}</a>
-              {!playing && <button type="button" className="btn" onClick={() => setActiveRoom(ref)}>Play for this room</button>}
-              <button type="button" className="btn" onClick={leave} disabled={busy != null}>Leave the room</button>
-            </div>
+            <>
+              <ActionBar label="The room">
+                <a className="btn btn-primary" href={'#' + d.id} onClick={() => setActiveRoom(ref)}>{me?.cards ? `Play level ${d.n} again` : `Play level ${d.n} for the room`}</a>
+                <ShareButton text={shareText} url={link} label="Invite" className="btn" />
+              </ActionBar>
+              <div className="sb-actions">
+                {!playing && <button type="button" className="btn" onClick={() => setActiveRoom(ref)}>Play for this room</button>}
+                <button type="button" className="btn" onClick={leave} disabled={busy != null}>Leave the room</button>
+              </div>
+            </>
           ) : (
-            <div className="sb-actions"><button type="button" className="btn btn-primary" onClick={join} disabled={busy != null}>{busy === 'join' ? 'Joining…' : 'Join this room'}</button></div>
+            <ActionBar label="The room"><button type="button" className="btn btn-primary" onClick={join} disabled={busy != null}>{busy === 'join' ? 'Joining…' : 'Join this room'}</button></ActionBar>
           )}
           {joined && <div className="small muted">{me?.cards ? `Your plan is in: ${me.cards.length} cards, ${me.stars ?? 0} of 3 stars.` : `When you meet the goal on level ${d.n}, your plan joins the room’s.`}</div>}
           {!joined && <div className="small muted">Joining takes a quick, private check that you’re a person. The room sees totals, never who did what.</div>}
@@ -198,7 +204,7 @@ export default function RoomPage({ param }: { param: string | null }) {
       )}
 
       <Section id="invite" title="Invite the room">
-        <div className="sb-actions"><ShareButton text={shareText} url={link} label="Share the room" className="btn btn-primary" /></div>
+        <div className="sb-actions"><ShareButton text={shareText} url={link} label="Share the room" className={'btn btn-primary' + (joined ? ' bar-dup' : '')} /></div>
         <SocialShare text={shareText} url={link} />
         {room.mine && <div className="sb-actions" style={{ marginTop: 12 }}><button type="button" className="btn" onClick={close} disabled={busy != null}>Close the room</button><span className="small muted">You started this room. Closing it removes it for everyone.</span></div>}
       </Section>

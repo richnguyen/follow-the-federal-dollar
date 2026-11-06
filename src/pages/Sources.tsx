@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { PageHead, Section } from '../components/ui';
 import { LevelDocs } from '../game/LevelDocs';
+import { FIELD_GUIDE } from '../game/nav';
 import { useJourney } from '../game/state';
 import { OPTIONS_DATA } from '../lib/planData';
 import { budget, cbo, geo, SOURCES, ssa } from '../data';
@@ -27,12 +28,8 @@ export default function Sources({ param }: { param?: string | null }) {
             <div className="chart-title">The field guide</div>
             <p className="small muted">Every chapter of this site, with all charts, data tables, and sources.</p>
             <ul className="link-list">
-              <li><a href="#overview">The big picture</a></li>
-              <li><a href="#spending">Where it goes</a> and <a href="#revenue">where it comes from</a></li>
-              <li><a href="#receipt">Your tax receipt</a> and <a href="#state">your state and district</a></li>
-              <li><a href="#gap">Deficits</a> and <a href="#debt">debt</a></li>
-              <li><a href="#process">How Congress budgets</a> and <a href="#laws">laws that moved the needle</a></li>
-              <li><a href="#social-security">Social Security’s future</a> and the <a href="#glossary">glossary</a></li>
+              {FIELD_GUIDE.map((g) => <li key={g.route}><a href={'#' + g.route}>{g.label}</a></li>)}
+              <li><a href="#glossary">The glossary</a></li>
             </ul>
           </div>
           <div className="card">
@@ -51,6 +48,10 @@ export default function Sources({ param }: { param?: string | null }) {
           </div>
         </div>
       </Section>
+      <div className="callout small" id="figures">
+        <div className="callout-title">About the figures</div>
+        Figures are nominal dollars for federal fiscal years (October 1 – September 30) unless noted. Every chart links to the official dataset it was drawn from. Official data from the U.S. Treasury, OMB, the Census Bureau, the IRS, and USAspending.gov; Treasury data through {budget.mtsLatestDate}.
+      </div>
       <Section id="by-level" title="By level" sub="For each level of the game: its full chapter and the original documents behind its numbers.">
         <LevelDocs />
       </Section>
