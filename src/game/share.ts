@@ -5,7 +5,10 @@
 // survive a domain or repository change; the claude.ai copy (a private page) points here.
 const PUBLIC_URL = 'https://balancethebudget.us/';
 export const PUBLIC_SITE = PUBLIC_URL;
-export const SITE_URL = !__ARTIFACT__ && typeof location !== 'undefined' && /^https?:$/.test(location.protocol) ? location.origin + location.pathname : PUBLIC_URL;
+// A visit that came in through a preview page (/p/<kind>/) still counts as the site's root.
+export const SITE_URL = !__ARTIFACT__ && typeof location !== 'undefined' && /^https?:$/.test(location.protocol)
+  ? location.origin + location.pathname.replace(/index\.html$/, '').replace(/p\/[^/]+\/?$/, '')
+  : PUBLIC_URL;
 export const GAME_NAME = 'Help Uncle Sam Balance the Budget';
 
 export type ShareResult = 'shared' | 'copied' | 'manual' | 'cancelled';

@@ -30,13 +30,36 @@ const GOAL: Record<number, { phrase: string; short: string }> = {
   10: { phrase: 'A plan to balance Uncle Sam’s budget.', short: 'Balance the budget' },
 };
 
-/** The People's Budget's own preview (public/p/peoples/). */
-export const PEOPLES_PREVIEW = {
-  id: 'peoples',
-  title: 'The People’s Budget: fix Uncle Sam’s books together',
-  description: 'One budget, built by everyone who plays. One move a day: push a policy card in or out, and watch the country close the gap together. Real CBO numbers.',
-  alt: 'The People’s Budget: one budget built by everyone, one move a day.',
-};
+/** Previews for the shared pages that aren't plans (public/p/<id>/). */
+export interface SpecialPreview { id: string; eyebrow: string; heading: [string, string]; sub: string; boxLabel: string; box: string; title: string; description: string; alt: string; color: string; mood: 'happy' | 'cheering' }
+export const SPECIAL_PREVIEWS: SpecialPreview[] = [
+  {
+    id: 'peoples', color: '#1d5a43', mood: 'happy',
+    eyebrow: 'Everyone’s budget · one move a day', heading: ['The People’s', 'Budget'], sub: 'Fix Uncle Sam’s books together',
+    boxLabel: 'How it works', box: 'Each day, every player pushes one policy card in or out. A card is in when more people push it in than out. Watch the country close the gap.',
+    title: 'The People’s Budget: fix Uncle Sam’s books together',
+    description: 'One budget, built by everyone who plays. One move a day: push a policy card in or out, and watch the country close the gap together. Real CBO numbers.',
+    alt: 'The People’s Budget: one budget built by everyone, one move a day.',
+  },
+  {
+    id: 'chain', color: '#2467c4', mood: 'cheering',
+    eyebrow: 'Pass the budget · your turn', heading: ['It’s your', 'turn'], sub: 'Make one change, then pass it on',
+    boxLabel: 'How it works', box: 'Each person adds one policy card to Uncle Sam’s budget or takes one out, then sends the link to the next person. How many hands will it take?',
+    title: 'Your turn: pass Uncle Sam’s budget along',
+    description: 'A pass-the-budget chain: each person makes one change to Uncle Sam’s budget and passes the link on. Make yours and see how close the chain is. Real CBO numbers.',
+    alt: 'Pass the budget: it’s your turn to make one change and pass it on.',
+  },
+  {
+    id: 'room', color: '#5b45cc', mood: 'happy',
+    eyebrow: 'Play as a group · join the room', heading: ['Join our', 'room'], sub: 'Build one plan for Uncle Sam together',
+    boxLabel: 'How it works', box: 'Everyone in the room plays the same budget-desk level. A card is in the room’s plan when more than half the members’ plans use it.',
+    title: 'Join our room: build one plan for Uncle Sam’s budget together',
+    description: 'You’ve been invited to a room in Help Uncle Sam Balance the Budget. Play the room’s level, and your plan joins the group’s. Real CBO numbers.',
+    alt: 'Join our room: build one plan for Uncle Sam’s budget together.',
+  },
+];
+/** The People's Budget's preview, kept for links made before the others existed. */
+export const PEOPLES_PREVIEW = SPECIAL_PREVIEWS[0];
 
 export function previewText(k: PreviewKind) {
   const a = ARCHETYPES[k.archetype];

@@ -1320,3 +1320,26 @@ html.modal-open { overflow: hidden; }
 .peoples-recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .peoples-recent li { font-size: 0.92rem; }
 @media (max-width: 520px) { .peoples-goals { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- play with others, rooms, chains ---------- */
+.together { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 10px; }
+.together a { display: flex; flex-direction: column; gap: 4px; height: 100%; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring); color: var(--ink); text-decoration: none; }
+.together a:hover, .together a:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+.rooms-forms { margin-top: 14px; }
+.rooms-form { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.rooms-form .field { width: 100%; }
+.rooms-form .section-title { margin: 0; }
+.rooms-code-input { text-transform: uppercase; letter-spacing: 0.2em; font-family: var(--font-mono); font-size: 1.2rem; max-width: 220px; }
+.rooms-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.room-join { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 14px; }
+.room-code { font-family: var(--font-mono); font-weight: 500; font-size: clamp(2rem, 7vw, 3.4rem); letter-spacing: 0.18em; color: var(--accent); background: var(--accent-wash); padding: 6px 16px; border-radius: var(--radius); }
+.room-join-side { flex: 1 1 280px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.chain-start { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.chain-start .field { max-width: 420px; }
+.chain-turns { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.chain-n { min-width: 1.6em; }
+.chain-turns li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.chain-turns li[data-mine] { font-weight: 600; }
+.chain-pass { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.chain-pass .section-title { margin: 0; }
+.chain-name { max-width: 320px; margin-bottom: 12px; }

@@ -50,8 +50,6 @@ export default function Journey() {
           </SamSays>
           <div className="sb-actions">
             {next && <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a>}
-            <a className="btn" href="#daily">Today’s Daily Dollar</a>
-            <a className="btn" href="#peoples">The People’s Budget</a>
             {j.plans && Object.keys(j.plans).length > 0 && <a className="btn" href="#story">Your Budget Story</a>}
             <a className="btn" href="#overview">Skip the game and read the guide</a>
           </div>
@@ -68,6 +66,15 @@ export default function Journey() {
           <p className="small muted">Easy levels explain one part of the budget in a few short steps, a couple of questions, and one vote. Every few levels comes a hard one at the budget desk, where you fix the budget yourself. The full chapters and original documents are always one click away.</p>
         </div>
       </section>
+
+      <Section id="together" title="Play with others" sub="Ways to play with friends, family, a class, or everyone at once.">
+        <ul className="together">
+          <li><a href="#peoples"><strong>The People’s Budget</strong><span className="small muted">One budget built by everyone. One move a day.</span></a></li>
+          <li><a href="#rooms"><strong>Rooms</strong><span className="small muted">A class, an office, or a family builds one plan together.</span></a></li>
+          <li><a href="#chain"><strong>Pass the budget</strong><span className="small muted">Make one change, then send it to the next person.</span></a></li>
+          <li><a href="#daily"><strong>The Daily Dollar</strong><span className="small muted">Five higher-or-lower calls on real numbers, new each day.</span></a></li>
+        </ul>
+      </Section>
 
       <Section id="map" title="The road map" sub="Ten levels. Easy chapters build up to three hard budget-desk levels, so a tough level is always followed by a breather.">
         <ol className="roadmap">

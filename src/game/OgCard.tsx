@@ -1,5 +1,5 @@
 import { DIFF_COLOR, DESK, STOPS } from './levels';
-import { PEOPLES_PREVIEW, PREVIEW_KINDS, previewText } from './previews';
+import { PREVIEW_KINDS, previewText, SPECIAL_PREVIEWS } from './previews';
 import { UncleSam } from './UncleSam';
 
 // One link-preview card, drawn at exactly 1200×630 for scripts/make-previews.mjs to photograph
@@ -7,21 +7,22 @@ import { UncleSam } from './UncleSam';
 
 export default function OgCard({ param }: { param: string | null }) {
   const id = new URLSearchParams(param ?? '').get('k') ?? '';
-  if (id === PEOPLES_PREVIEW.id) {
+  const sp = SPECIAL_PREVIEWS.find((x) => x.id === id);
+  if (sp) {
     return (
-      <div className="ogcard" style={{ ['--og' as string]: '#1d5a43' }} data-kind={id}>
+      <div className="ogcard" style={{ ['--og' as string]: sp.color }} data-kind={id}>
         <div className="ogcard-band" />
         <div className="ogcard-main">
-          <div className="ogcard-eyebrow">Everyone’s budget · one move a day</div>
-          <div className="ogcard-title">The People’s<br />Budget</div>
-          <div className="ogcard-goal">Fix Uncle Sam’s books together</div>
+          <div className="ogcard-eyebrow">{sp.eyebrow}</div>
+          <div className="ogcard-title">{sp.heading[0]}<br />{sp.heading[1]}</div>
+          <div className="ogcard-goal">{sp.sub}</div>
           <div className="ogcard-person">
-            <div className="ogcard-k">How it works</div>
-            <div className="ogcard-line">Each day, every player pushes one policy card in or out. A card is in when more people push it in than out. Watch the country close the gap.</div>
+            <div className="ogcard-k">{sp.boxLabel}</div>
+            <div className="ogcard-line">{sp.box}</div>
           </div>
           <div className="ogcard-foot"><strong>balancethebudget.us</strong> · Help Uncle Sam Balance the Budget · official U.S. data</div>
         </div>
-        <div className="ogcard-sam"><UncleSam mood="happy" size={330} /></div>
+        <div className="ogcard-sam"><UncleSam mood={sp.mood} size={330} /></div>
       </div>
     );
   }

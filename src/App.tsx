@@ -28,7 +28,11 @@ const Story = lazy(() => import('./game/Story'));
 const Daily = lazy(() => import('./game/Daily'));
 const OgCard = lazy(() => import('./game/OgCard'));
 const Peoples = lazy(() => import('./game/Peoples'));
+const Rooms = lazy(() => import('./game/Rooms'));
+const RoomPage = lazy(() => import('./game/RoomPage'));
+const Chain = lazy(() => import('./game/Chain'));
 import { activeChallenge } from './game/challenge';
+import { activeRoom } from './game/rooms';
 import { JourneyProvider, useJourney } from './game/state';
 import Journey from './game/Journey';
 import LevelPage from './game/LevelPage';
@@ -76,6 +80,9 @@ const TITLE: Partial<Record<Route, string>> = Object.fromEntries([
   ['story', 'Your Budget Story'],
   ['daily', 'The Daily Dollar'],
   ['peoples', 'The People’s Budget'],
+  ['rooms', 'Rooms'],
+  ['room', 'A room'],
+  ['chain', 'Pass the budget'],
   ...STOPS.map((l) => [l.id, `Level ${l.n}: ${l.title}`]),
 ]);
 
@@ -115,13 +122,17 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   daily: () => <Daily />,
   'og-card': ({ param }) => <OgCard param={param} />,
   peoples: () => <Peoples />,
+  rooms: () => <Rooms />,
+  room: ({ param }) => <RoomPage param={param} />,
+  chain: ({ param }) => <Chain param={param} />,
 };
 
 function DeskPage({ id }: { id: string }) {
   const j = useJourney();
   const d = DESK.find((x) => x.id === id)!;
   // A friend's challenge opens its level straight away.
-  if (!isUnlocked(id, j.done, j.settings.freeRoam) && activeChallenge()?.plan.level !== id) return <DeskLocked id={id} />;
+  // So does the level of the room the player is playing for.
+  if (!isUnlocked(id, j.done, j.settings.freeRoam) && activeChallenge()?.plan.level !== id && activeRoom()?.level !== d.n) return <DeskLocked id={id} />;
   return <Sandbox key={id} desk={d} />;
 }
 

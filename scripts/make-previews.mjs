@@ -55,7 +55,7 @@ await page.goto(base + '#og-card?k=10-3-balanced-gentle');
 await page.waitForSelector('.ogcard');
 const kinds = await page.evaluate(async () => {
   const P = await import('/src/game/previews.ts');
-  return [...P.PREVIEW_KINDS.map((k) => ({ k, t: P.previewText(k) })), { k: { id: P.PEOPLES_PREVIEW.id }, t: P.PEOPLES_PREVIEW }];
+  return [...P.PREVIEW_KINDS.map((k) => ({ k, t: P.previewText(k) })), ...P.SPECIAL_PREVIEWS.map((x) => ({ k: { id: x.id }, t: x }))];
 });
 mkdirSync(new URL('img/', root), { recursive: true });
 for (const { k, t } of kinds) {
@@ -69,4 +69,4 @@ for (const { k, t } of kinds) {
 }
 const fontsOk = await page.evaluate(() => document.fonts.check('800 96px "Big Shoulders Display"') && document.fonts.check('600 28px "Public Sans"'));
 await browser.close();
-console.log(`${kinds.length} previews (plans and the People's Budget) written to public/p/ (web fonts loaded: ${fontsOk})`);
+console.log(`${kinds.length} previews (plans, the People's Budget, chains, rooms) written to public/p/ (web fonts loaded: ${fontsOk})`);

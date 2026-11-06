@@ -113,3 +113,18 @@ export const PEOPLES_LINES = {
   met: 'Look at that! Together, folks have stopped my debt from outgrowing the economy.',
   offline: 'The People’s Budget lives on the public site, balancethebudget.us. Come build it with everyone.',
 };
+
+export const ROOM_LINES = {
+  start: 'Bring your class, your office, or your family. Everybody plays, and the group builds one plan together.',
+  invited: 'You’ve been invited to a room. Join, and your plan counts toward the group’s.',
+  welcome: 'Welcome to the room, partner. Play the level, and your plan joins the group’s.',
+  missing: 'I can’t find a room with that code. Check it with whoever shared it.',
+  offline: 'Rooms live on the public site, balancethebudget.us. Start one there.',
+};
+
+export const CHAIN_LINES = {
+  start: 'Here’s one for a group. Each person makes one change to my budget, then passes it along. Let’s see how many hands it takes.',
+  turn: 'It’s your turn, partner. Add one card or take one out, then pass it on.',
+  passed: 'Nicely done. Now pass it along to the next person.',
+  done: 'That did it! Together, your chain fixed my budget.',
+};

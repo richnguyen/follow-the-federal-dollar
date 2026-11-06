@@ -58,6 +58,8 @@ const banks = await page.evaluate(async () => {
   Object.values(S.CHALLENGE_LINES).forEach((t) => add('common', t));
   Object.values(S.STORY_LINES).forEach((t) => add('common', t));
   Object.values(S.PEOPLES_LINES).forEach((t) => add('common', t));
+  Object.values(S.ROOM_LINES).forEach((t) => add('common', t));
+  Object.values(S.CHAIN_LINES).forEach((t) => add('common', t));
   add('common', S.DAILY_LINES.intro);
   add('common', S.DAILY_LINES.done);
   S.DAILY_LINES.score.forEach((t) => add('common', t));

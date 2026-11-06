@@ -24,6 +24,8 @@ import { activeChallenge, type Challenge, dropChallenge } from '../game/challeng
 import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead } from '../game/ChallengeParts';
 import { ballotFrom, compare, myName } from '../game/plans';
 import { useShareLink } from '../game/shortlinks';
+import { activeRoom, type RoomRef, setActiveRoom } from '../game/rooms';
+import { sendRoomPlan } from '../lib/backend';
 
 type Desk = DeskLevel;
 
@@ -183,6 +185,17 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     if (!met || !desk) return;
     journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString() });
   }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Playing for a room: the plan that meets the goal is sent to the room (cards only).
+  const [room, setRoom] = useState<RoomRef | null>(() => { const r = activeRoom(); return r && desk && r.level === desk.n ? r : null; });
+  const [roomSent, setRoomSent] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
+  useEffect(() => {
+    if (!met || !room) return;
+    setRoomSent('sending');
+    const t = setTimeout(() => {
+      sendRoomPlan(room.code, ids, ev.stars).then(() => setRoomSent('sent')).catch(() => setRoomSent('failed'));
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [met, room?.code, ids.join(), ev.stars]); // eslint-disable-line react-hooks/exhaustive-deps
   const theirs = challenge ? assessShared(challenge.plan) : null;
   const mineNow = challenge && met ? assessShared({ goal, ids, lv, gradual, stars: ev.stars, at: '' }) : null;
   const challengeBy = challenge?.plan.by || 'Your friend';
@@ -432,6 +445,16 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
 
 
 
+      {room && (
+        <div className="challenge-banner" role="note">
+          <div>
+            <strong>Playing for the room “{room.name}”.</strong> {met
+              ? (roomSent === 'sent' ? 'Your plan is in the room’s plan.' : roomSent === 'failed' ? 'Your plan couldn’t be sent to the room yet; it will try again when you change it.' : 'Sending your plan to the room…')
+              : 'When you meet the goal, your plan joins the room’s.'} <a href={'#room?c=' + room.code}>See the room</a>
+          </div>
+          <button type="button" className="btn" onClick={() => { setActiveRoom(null); setRoom(null); }}>Play just for me</button>
+        </div>
+      )}
       {challenge && theirs && (
         <div className="challenge-banner" role="note">
           <div>

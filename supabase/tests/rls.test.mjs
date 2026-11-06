@@ -122,6 +122,44 @@ ok((await as(null, 'select public.peoples_budget(60) as t')).rows[0].t.cards['al
 const pr = (await as(null, 'select * from public.peoples_recent(3)')).rows;
 ok(pr.length === 3 && pr.every((r) => !('user_id' in r)) && Object.keys(pr[0]).join() === 'card,dir,at', 'recent moves carry no identity');
 
+// Rooms: a group plays one level together.
+const room = (await as(U[0], `insert into public.rooms (name, level) values ('Ms. Lee’s 3rd period', 10) returning code`)).rows[0].code;
+ok(/^[ABCDEFGHJKMNPQRSTUVWXYZ2-9]{6}$/.test(room), 'room code: ' + room);
+ok(await fails(() => as(U[0], `insert into public.rooms (name, level) values ($1, 10)`, ['x'.repeat(41)])), 'room names are at most 40 characters');
+ok(await fails(() => as(U[0], `insert into public.rooms (name, level) values ('Class', 7)`)), 'rooms play a budget-desk level');
+ok(await fails(() => as(U[0], `insert into public.rooms (name, level) values ($1, 10)`, ['bad\nname'])), 'no control characters in room names');
+await as(U[1], 'insert into public.room_members (room) values ($1)', [room]);
+await as(U[2], 'insert into public.room_members (room) values ($1)', [room]);
+ok(await fails(() => as(U[1], 'insert into public.room_members (room) values ($1)', [room])), 'joining twice is refused');
+ok(await fails(() => as(U[1], 'insert into public.room_members (room, user_id) values ($1, $2)', [room, U[3]])), 'cannot join for someone else');
+ok(await fails(() => as(U[1], `insert into public.room_members (room) values ('ZZZZZZ')`)), 'cannot join a room that doesn’t exist');
+const gr = (await as(null, 'select public.get_room($1) as r', [room.toLowerCase()])).rows[0].r;
+ok(gr.name === 'Ms. Lee’s 3rd period' && gr.level === 10 && gr.members === 2 && gr.plans === 0 && gr.mine === false, 'anyone with the code sees the room (any letter case)');
+ok((await as(U[0], 'select public.get_room($1) as r', [room])).rows[0].r.mine === true, 'the starter is told it’s their room');
+await as(U[1], `update public.room_members set cards = '{income-tax-rates-1pt,cut-defense-budget}', stars = 2, plan_at = now() where room = $1`, [room]);
+await as(U[2], `update public.room_members set cards = '{income-tax-rates-1pt}', stars = 1, plan_at = now() where room = $1`, [room]);
+ok((await as(U[1], `update public.room_members set cards = '{}' where user_id = $1`, [U[2]])).affectedRows === 0, 'cannot change another member’s plan');
+ok((await as(U[0], 'select * from public.room_members')).rows.length === 0, 'the starter cannot list members');
+let rt = (await as(null, 'select public.room_totals($1) as t', [room])).rows[0].t;
+console.log('  room_totals (2 members):', JSON.stringify(rt));
+ok(rt.members === 2 && rt.plans === 2 && rt.cards['income-tax-rates-1pt'] === 2 && rt.cards['cut-defense-budget'] === 1 && rt.stars['2'] === 1, 'room totals');
+ok(rt.votes === null, 'no vote breakdown with fewer than 3 members');
+await as(U[3], 'insert into public.room_members (room) values ($1)', [room]);
+rt = (await as(null, 'select public.room_totals($1) as t', [room])).rows[0].t;
+ok(rt.members === 3 && rt.votes && rt.votes.voters === 2 && rt.votes.issues.goal.balance === 1, 'vote breakdown once 3 have joined');
+ok((await as(U[1], `update public.rooms set name = 'Mine now' where code = $1`, [room])).affectedRows === 0, 'only the starter can rename a room');
+ok((await as(U[0], `update public.rooms set name = 'Ms. Lee’s class' where code = $1`, [room])).affectedRows === 1, 'the starter can rename it');
+await as(U[3], 'delete from public.room_members where room = $1', [room]);
+ok((await as(null, 'select public.get_room($1) as r', [room])).rows[0].r.members === 2, 'members can leave');
+let roomCap = false;
+for (let k = 0; k < 11; k++) { try { await as(U[4], `insert into public.rooms (name, level) values ('Room ${k}', 5)`); } catch (e) { roomCap = /Too many new rooms/.test(e.message); break; } }
+ok(roomCap, 'daily cap on new rooms');
+ok((await as(null, `select public.room_totals('ZZZZZZ') as t`)).rows[0].t === null, 'no totals for a room that doesn’t exist');
+const closing = (await as(U[5], `insert into public.rooms (name, level) values ('Family night', 8) returning code`)).rows[0].code;
+await as(U[6], 'insert into public.room_members (room) values ($1)', [closing]);
+await as(U[5], 'delete from public.rooms where code = $1', [closing]);
+ok((await as(null, 'select public.get_room($1) as r', [closing])).rows[0].r === null, 'the starter can close a room, and its memberships go with it');
+
 // Deleting a user removes their data.
 await db.query('delete from auth.users where id = $1', [U[0]]);
 ok((await as(null, 'select public.ballot_totals() as t')).rows[0].t.voters === 2, 'deleting a user removes their ballot');

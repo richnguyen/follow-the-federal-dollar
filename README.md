@@ -104,6 +104,13 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   more moves pushed it in than out over the last 30 days, and the result is scored on all three
   desk goals with the same model. Moves are anonymous; a "latest moves" feed shows only the card,
   direction, and time.
+- **Rooms** (`#rooms`, `?room=CODE`): a class, an office, or a family plays one budget-desk level
+  together. The starter gets a 6-character code; members join, the level opens for them, and each
+  member's plan that meets the goal joins the room's (a card is in when more than half the plans
+  use it). The room sees totals only, and vote breakdowns once 3 have joined.
+- **Pass the budget** (`#chain`): each person adds one card or takes one out, then passes the link
+  on; the chain lives entirely in the link (goal, turns, optional first names), so it needs no
+  server. Every link can branch.
 - **Link previews that match the plan.** Crawlers ignore the query string, so a shared link goes
   through one of 54 small static pages, `/p/<level>-<stars>-<personality>/`, each with its own
   1200×630 card ("Can you beat The Steady Hand's 3-star plan?"); people are forwarded to the plan

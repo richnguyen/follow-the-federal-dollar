@@ -114,3 +114,34 @@ export const saveMove = (m: Move) => upsertOwn('peoples_moves', { card: m.card, 
 
 /** Takes back today's move. */
 export const takeBackMove = () => call<null>(`peoples_moves?day=eq.${todayUTC()}`, { method: 'DELETE', auth: true, prefer: 'return=minimal' });
+
+// ---------- rooms: a group plays one level together ----------
+export interface Room { code: string; name: string; level: number; created_at: string; members: number; plans: number; mine: boolean }
+export interface Membership { room: string; joined_at: string; cards: string[] | null; stars: number | null }
+export const ROOM_CODE = /^[ABCDEFGHJKMNPQRSTUVWXYZ2-9]{6}$/;
+
+/** A room by its code (no sign-in needed), or null if there is none. */
+export const getRoom = (code: string) => rpc<Room | null>('get_room', { room_code: code.toUpperCase() });
+
+/** Starts a room and returns its code. */
+export async function createRoom(name: string, level: number) {
+  const rows = await call<{ code: string }[]>('rooms?select=code', { method: 'POST', body: JSON.stringify({ name, level }), auth: true, prefer: 'return=representation' });
+  return rows?.[0]?.code ?? null;
+}
+
+/** This player's membership in a room, if they joined (and have ever signed in). */
+export async function myMembership(code: string): Promise<Membership | null> {
+  if (!(await existingSession())) return null;
+  const rows = await call<Membership[]>(`room_members?select=room,joined_at,cards,stars&room=eq.${code}`);
+  return rows?.[0] ?? null;
+}
+
+export const joinRoom = (code: string) => call<null>('room_members', { method: 'POST', body: JSON.stringify({ room: code }), auth: true, prefer: 'resolution=ignore-duplicates,return=minimal' });
+export const leaveRoom = (code: string) => call<null>(`room_members?room=eq.${code}`, { method: 'DELETE', auth: true, prefer: 'return=minimal' });
+
+/** Sends this member's latest plan for the room's level. */
+export const sendRoomPlan = (code: string, cards: string[], stars: number) =>
+  call<null>(`room_members?room=eq.${code}`, { method: 'PATCH', body: JSON.stringify({ cards: [...cards].sort(), stars, plan_at: new Date().toISOString() }), auth: true, prefer: 'return=minimal' });
+
+/** Closes a room the player started (its memberships go with it). */
+export const closeRoom = (code: string) => call<null>(`rooms?code=eq.${code}`, { method: 'DELETE', auth: true, prefer: 'return=minimal' });
