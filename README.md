@@ -108,9 +108,16 @@ emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
   once), built files and fingerprinted voice recordings come from the saved copy. A return visit
   opens in about 0.2 s, and the game plays with no connection at all; the shared database,
   CAPTCHA and live Treasury data always go to the network.
-- **Install it.** A web app manifest and home-screen icons (`public/manifest.webmanifest`,
-  `public/icons/`, drawn by `scripts/make-icons.mjs`) let players add the game to their home
-  screen; opened from there, it returns to the level they were playing.
+- **Install it.** **Download the game**, at the top of the settings menu, adds it to the home
+  screen: it opens the browser's own install prompt where there is one (Chrome, Edge, Samsung
+  Internet) and shows the two taps on iPhone and iPad (Share, then Add to Home Screen). A web app
+  manifest and home-screen icons (`public/manifest.webmanifest`, `public/icons/`, drawn by
+  `scripts/make-icons.mjs`) make that possible; opened from the home screen, the game returns to
+  the level the player was in.
+- **Daily Dollar reminders.** An opt-in notification, at most once a day, at the hour the player
+  picks (in settings, or on the Daily Dollar's finished screen). Sent with Web Push by a Supabase
+  Edge Function that Cron runs hourly; no account or email. On iPhone it needs the game on the home
+  screen first. Setup: [`supabase/README.md`](supabase/README.md#daily-dollar-reminders-web-push).
 - **Something new each day.** Returning players see a "Today" card on the road map: today's
   Daily Dollar (or when the next one is ready) and, on the public site, their People's Budget
   move.

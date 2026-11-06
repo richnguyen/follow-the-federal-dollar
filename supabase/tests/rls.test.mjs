@@ -10,7 +10,7 @@ const db = new PGlite();
 const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) process.exitCode = 1; };
 
 await db.exec(`
-  create role anon nologin; create role authenticated nologin;
+  create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
   create schema auth;
   create table auth.users (id uuid primary key);
   create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
@@ -186,6 +186,42 @@ ok(await fails(() => as(null, `insert into public.challenge_steps (day, step, n)
 const fu = (await as(null, 'select public.share_stats(30) as s')).rows[0].s.funnel;
 ok(fu.taken === 2 && fu.met === 1 && fu.returned === 1, 'funnel steps counted; unknown steps ignored');
 
+// Daily Dollar reminders: devices opt in; only the sender (service role) sees who is due.
+const sub = (n) => ({ endpoint: `https://push.example.com/send/device-${n}`, p256dh: 'B'.repeat(87), auth: 'A'.repeat(22) });
+const save = (u, d, hour, tz) => as(u, 'select public.save_push_subscription($1, $2, $3, $4, $5)', [d.endpoint, d.p256dh, d.auth, hour, tz]);
+const asService = async (q, params = []) => { await db.exec('reset role; set role service_role;'); try { return await db.query(q, params); } finally { await db.exec('reset role;'); } };
+ok(await fails(() => save(null, sub(1), 8, 'America/Chicago')), 'signed-out visitors cannot turn reminders on');
+await save(U[1], sub(1), 8, 'America/Chicago');
+await save(U[1], sub(1), 9, 'America/Chicago'); // a new hour for the same device: still one row
+await save(U[2], sub(2), 7, 'Not/AZone');
+ok((await as(U[1], 'select hour from public.push_subscriptions')).rows.map((r) => r.hour).join() === '9', 'a player sees only their own devices, one row per device');
+ok((await as(U[3], 'select * from public.push_subscriptions')).rows.length === 0 && (await as(null, 'select * from public.push_subscriptions')).rows.length === 0, 'nobody else sees them');
+ok((await db.query(`select tz from public.push_subscriptions where endpoint = $1`, [sub(2).endpoint])).rows[0].tz === 'America/New_York', 'an unknown time zone falls back to Eastern time');
+ok(await fails(() => as(U[3], `insert into public.push_subscriptions (endpoint, p256dh, auth, hour, tz) values ('https://x.example/1', $1, $2, 8, 'UTC')`, [sub(3).p256dh, sub(3).auth])), 'no direct inserts');
+ok((await as(U[3], `update public.push_subscriptions set hour = 3`)).affectedRows === 0, 'no changing other players’ devices');
+ok(await fails(() => as(U[1], `select public.save_push_subscription('http://insecure.example/1', $1, $2, 8, 'UTC')`, [sub(3).p256dh, sub(3).auth])), 'push addresses must be https');
+ok(await fails(() => as(U[1], 'select * from public.due_reminders()')) && await fails(() => as(null, 'select public.mark_reminders_sent($1)', [[sub(1).endpoint]])), 'players cannot list or mark reminders');
+await save(U[3], sub(3), 0, 'UTC'); await save(U[4], sub(4), 0, 'UTC');
+await db.query(`update public.push_subscriptions set hour = extract(hour from now() at time zone 'UTC')::int where endpoint = any($1)`, [[sub(3).endpoint, sub(4).endpoint]]);
+await db.query(`update public.push_subscriptions set hour = (extract(hour from now() at time zone 'UTC')::int + 12) % 24 where endpoint = $1`, [sub(4).endpoint]);
+const due1 = (await asService('select endpoint from public.due_reminders()')).rows.map((r) => r.endpoint);
+ok(due1.includes(sub(3).endpoint) && !due1.includes(sub(4).endpoint), 'due: devices whose hour has come, in their own time zone');
+await asService('select public.mark_reminders_sent($1)', [[sub(3).endpoint]]);
+ok(!(await asService('select endpoint from public.due_reminders()')).rows.some((r) => r.endpoint === sub(3).endpoint), 'one reminder a day at most');
+await asService('select public.drop_push_subscriptions($1)', [[sub(4).endpoint]]);
+const w1 = (await asService('select * from public.claim_welcome($1)', [sub(1).endpoint])).rows.length;
+const w2 = (await asService('select * from public.claim_welcome($1)', [sub(1).endpoint])).rows.length;
+ok(w1 === 1 && w2 === 0, 'the "reminders are on" message goes once');
+await as(null, 'select public.remove_push_subscription($1)', [sub(2).endpoint]);
+const rs = (await as(null, 'select public.reminder_stats(30) as s')).rows[0].s;
+console.log('  reminder_stats:', JSON.stringify(rs));
+ok(rs.devices === 2 && rs.sent === 1, 'reminder stats: devices with reminders on, and reminders sent');
+ok((await as(null, 'select * from public.reminder_counts')).rows.length === 0, 'nobody reads the reminder counts directly');
+await as(null, `select public.count_arrival('daily', 'pu')`);
+ok((await as(null, 'select public.share_stats(30) as s')).rows[0].s.arrivals.daily.pu === 1, 'opening the game from a reminder counts as its own channel');
+
 // Deleting a user removes their data.
 await db.query('delete from auth.users where id = $1', [U[0]]);
 ok((await as(null, 'select public.ballot_totals() as t')).rows[0].t.voters === 2, 'deleting a user removes their ballot');
+await db.query('delete from auth.users where id = $1', [U[1]]);
+ok(!(await db.query('select 1 from public.push_subscriptions where endpoint = $1', [sub(1).endpoint])).rows.length, 'deleting a user removes their devices');

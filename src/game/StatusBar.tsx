@@ -6,6 +6,7 @@ import { isUnlocked, MAX_STARS, rankFor, STOP_BY_ID, STOPS } from './levels';
 import { MEDALS } from './medals';
 import { FIELD_GUIDE } from './nav';
 import { ReadingSettings } from './Settings';
+import { InstallButton } from './install';
 import { useJourney } from './state';
 import { useNarrator } from './voice';
 
@@ -154,6 +155,7 @@ export function StatusBar({ route }: { route: string }) {
           <Pop id="settings" open={open} setOpen={setOpen} className="ab-settings" button={(p) => (
             <button type="button" className="ab-btn" {...p} title="Settings"><GearIcon /><span className="ab-label">Settings</span></button>
           )}>
+            <InstallButton />
             <div className="ab-more-links">
               <a className="btn" href="#glossary"><BookIcon /> Glossary</a>
               <a className="btn" href="#sources"><DocIcon /> Methods</a>

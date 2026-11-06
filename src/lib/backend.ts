@@ -78,6 +78,8 @@ async function call<T>(path: string, init: RequestInit & { auth?: boolean; prefe
 
 /** Calls one of the public totals functions (no sign-in needed). */
 export const rpc = <T>(fn: string, args: object = {}) => call<T>(`rpc/${fn}`, { method: 'POST', body: JSON.stringify(args) });
+/** Calls a function that acts for this player (signing in first if needed). */
+export const authRpc = <T>(fn: string, args: object = {}) => call<T>(`rpc/${fn}`, { method: 'POST', body: JSON.stringify(args), auth: true });
 
 /** Saves this player's single row in a table (insert or replace). */
 export const upsertOwn = (table: 'ballots' | 'players' | 'peoples_moves', row: object) =>
@@ -149,7 +151,8 @@ export const closeRoom = (code: string) => call<null>(`rooms?code=eq.${code}`, {
 // ---------- share stats: anonymous counts of shares and opened links ----------
 export type LinkKind = 'plan' | 'story' | 'clip' | 'daily' | 'peoples' | 'room' | 'chain' | 'level' | 'site';
 export const LINK_KINDS: LinkKind[] = ['plan', 'story', 'clip', 'daily', 'peoples', 'room', 'chain', 'level', 'site'];
-export const CHANNELS = ['x', 'fa', 'li', 're', 'bl', 'th', 'wh', 'em', 'sh', 'cp'] as const;
+// 'pu': opened from a Daily Dollar reminder (a push notification).
+export const CHANNELS = ['x', 'fa', 'li', 're', 'bl', 'th', 'wh', 'em', 'sh', 'cp', 'pu'] as const;
 
 /** Counts one share (fire and forget; nothing identifies who shared). */
 export function countShare(kind: LinkKind, channel: string) {

@@ -14,6 +14,7 @@ import { GAME_NAME, SITE_URL } from './share';
 import { ShareButton } from './ShareButton';
 import { JOURNEY_LINES } from './script';
 import { ReadingSettings } from './Settings';
+import { InstallButton } from './install';
 import { useJourney } from './state';
 import { SamSays, UncleSam } from './UncleSam';
 
@@ -179,7 +180,7 @@ export default function Journey() {
       </Section>
 
       <Section id="settings" title="Reading settings" sub="Make the game comfortable to read. These are saved in this browser.">
-        <div className="card"><ReadingSettings /></div>
+        <div className="card"><InstallButton /><ReadingSettings /></div>
       </Section>
 
       <p className="fineprint-link small">Every level’s full chapter and the original government documents behind its numbers are listed in <a href="#sources">Sources &amp; methods</a>.</p>

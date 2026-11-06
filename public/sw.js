@@ -71,3 +71,30 @@ async function trim(cache) {
   const keys = await cache.keys();
   for (const k of keys.slice(0, Math.max(0, keys.length - MAX_FILES))) await cache.delete(k);
 }
+
+// ---------- Daily Dollar reminders (opt-in; see src/game/reminders.tsx) ----------
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'The Daily Dollar is ready', {
+    body: d.body || 'Today’s puzzle: five quick higher-or-lower calls on real federal numbers.',
+    icon: 'icons/icon-192.png',
+    badge: 'icons/badge-96.png',
+    tag: d.tag || 'daily-dollar',
+    data: { url: d.url || './?daily&s=pu' },
+  }));
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './?daily&s=pu', self.registration.scope).href;
+  e.waitUntil((async () => {
+    const open = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const c of open) {
+      if (new URL(c.url).origin !== self.location.origin) continue;
+      try { await c.navigate(url); } catch { /* not controlled yet: just bring it forward */ }
+      return c.focus();
+    }
+    return self.clients.openWindow(url);
+  })());
+});

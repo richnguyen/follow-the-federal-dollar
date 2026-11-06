@@ -13,7 +13,7 @@ interface Stats { window_days: number; since: string; shares: ByKind; arrivals: 
 
 const CHANNEL_NAME: Record<string, string> = {
   x: 'X', fa: 'Facebook', li: 'LinkedIn', re: 'Reddit', bl: 'Bluesky', th: 'Threads', wh: 'WhatsApp', em: 'Email',
-  sh: 'Phone share sheet', cp: 'Copied link', direct: 'No shared link',
+  sh: 'Phone share sheet', cp: 'Copied link', pu: 'Daily Dollar reminder', direct: 'No shared link',
 };
 const KIND_NAME: Record<LinkKind, string> = {
   plan: 'Plan challenges', story: 'Budget Story', clip: '10-second clip', daily: 'The Daily Dollar', peoples: 'The People’s Budget',
@@ -33,6 +33,7 @@ export default function StatsPage() {
   const [win, setWin] = useState('30');
   const [s, setS] = useState<Stats | null>(null);
   const [error, setError] = useState('');
+  const [rem, setRem] = useState<{ devices: number; sent: number } | 'missing' | null>(null);
   useEffect(() => {
     if (!on) return;
     let alive = true;
@@ -40,6 +41,9 @@ export default function StatsPage() {
     rpc<Stats>('share_stats', { window_days: Number(win) })
       .then((r) => { if (alive) setS(r); })
       .catch(() => { if (alive) setError('Share stats can’t be loaded right now. If the share-stats SQL hasn’t been run yet, run it in Supabase first.'); });
+    rpc<{ devices: number; sent: number }>('reminder_stats', { window_days: Number(win) })
+      .then((r) => { if (alive) setRem(r); })
+      .catch(() => { if (alive) setRem('missing'); });
     return () => { alive = false; };
   }, [on, win]);
 
@@ -107,6 +111,19 @@ export default function StatsPage() {
                 </>
               );
             })() : <p className="small muted">Run the challenge-funnel SQL in Supabase to see these steps.</p>}
+          </Section>
+
+          <Section id="reminders" title="Daily Dollar reminders" sub="Devices that asked for a daily reminder, reminders sent in this period, and how many were tapped to open the game.">
+            {rem === 'missing' ? <p className="small muted">Run the Daily Dollar reminders SQL in Supabase to see these.</p> : rem ? (() => {
+              const opened = byChannel(s.arrivals, 'pu');
+              return (
+                <div className="grid-3">
+                  <Stat label="Devices with reminders on" value={`${rem.devices}`} note="right now" />
+                  <Stat label="Reminders sent" value={`${rem.sent}`} note="at most one a day per device" />
+                  <Stat label="Opened from a reminder" value={`${opened}`} note={rem.sent ? `${pct(Math.min(1, opened / rem.sent), 0)} of those sent` : '—'} />
+                </div>
+              );
+            })() : <p className="small muted" role="status">Loading…</p>}
           </Section>
 
           <Section id="channels" title="By channel" sub="Where links were shared, how often they were opened, and how many new players they brought.">

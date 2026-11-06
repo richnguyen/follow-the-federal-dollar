@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PageHead, Section } from '../components/ui';
 import { SOURCE_BY_ID } from '../data';
+import { ReminderControl } from './reminders';
 import { grid, loadResults, puzzleFor, ROUNDS, saveResult, streak, todayKey, untilNext } from './daily';
 import { useHaptics } from './haptics';
 import { DAILY_LINES } from './script';
@@ -94,6 +95,7 @@ export default function Daily() {
             <a className="btn" href="#journey">Play the full game</a>
           </div>
           <SocialShare text={shareTextStr} url={`${SITE_URL}?daily`} />
+          <ReminderControl where="daily" />
         </section>
       )}
 
