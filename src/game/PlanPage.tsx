@@ -1,13 +1,16 @@
+import { useEffect, useState } from 'react';
 import { EconMeter, SplitBar, Stars } from '../components/game';
 import { Section } from '../components/ui';
 import { LAST_FY } from '../lib/assess';
+import { rpc } from '../lib/backend';
 import { pct } from '../lib/format';
 import { acceptChallenge } from './challenge';
 import { AgreementCard, assessShared, cardName, GOAL_PLAN, HeadToHead, whoPays } from './ChallengeParts';
 import { PlanProposal } from './DeskExtras';
 import { LevelIcon } from './icons';
 import { STOP_BY_ID, STOPS } from './levels';
-import { BALLOT, ballotFrom, closestPreset, compare, decodePlan, myName, planLink } from './plans';
+import { BALLOT, ballotFrom, closestPreset, compare, decodePlan, myName } from './plans';
+import { useShareLink } from './shortlinks';
 import { PLAN_LINES } from './script';
 import { useJourney } from './state';
 import { SamSays } from './UncleSam';
@@ -16,7 +19,23 @@ import { SamSays } from './UncleSam';
 
 export default function PlanPage({ param }: { param: string | null }) {
   const j = useJourney();
-  const plan = param ? decodePlan(new URLSearchParams(param)) : null;
+  // A short link (id=…) is looked up on the site's server; a long link carries the plan itself.
+  const q = new URLSearchParams(param ?? '');
+  const id = q.get('id');
+  const [stored, setStored] = useState<{ id: string; code: string } | 'missing' | null>(null);
+  useEffect(() => {
+    if (!id) return;
+    let alive = true;
+    rpc<{ code: string } | null>('get_plan', { plan_id: id })
+      .then((r) => { if (alive) setStored(r?.code ? { id, code: r.code } : 'missing'); })
+      .catch(() => { if (alive) setStored('missing'); });
+    return () => { alive = false; };
+  }, [id]);
+  const full = id && stored && stored !== 'missing' && stored.id === id ? new URLSearchParams(`${stored.code}&${q.toString()}`) : q;
+  const plan = id && (!stored || stored === 'missing') ? null : decodePlan(full);
+  const mineSaved = plan ? j.plans?.[plan.level] : undefined;
+  const myLink = useShareLink(plan?.level, mineSaved ?? null, { by: myName() || undefined, ballot: ballotFrom(j.choices) });
+  if (id && !stored) return <div className="level"><p className="small muted" role="status">Opening the plan…</p></div>;
   if (!plan) {
     return (
       <div className="level">
@@ -29,7 +48,6 @@ export default function PlanPage({ param }: { param: string | null }) {
   const stop = STOP_BY_ID[plan.level];
   const by = plan.by || 'Your friend';
   const a = assessShared(plan);
-  const mineSaved = j.plans?.[plan.level];
   const mine = mineSaved ? assessShared({ ...mineSaved, goal: plan.goal }) : null;
   // Cards count only once the player has a plan of their own on this level; until then, only the
   // big questions both of you answered.
@@ -39,7 +57,6 @@ export default function PlanPage({ param }: { param: string | null }) {
   const taxes = a.shares.filter((s) => s.side === 'revenue');
   const cuts = a.shares.filter((s) => s.side === 'spending');
   const answered = BALLOT.filter((q) => plan.ballot?.[q.key]);
-  const myLink = mineSaved ? planLink({ level: plan.level, goal: plan.goal, ids: mineSaved.ids, lv: mineSaved.lv, gradual: mineSaved.gradual, by: myName() || undefined, ballot: ballotFrom(j.choices) }) : undefined;
   const take = () => { acceptChallenge(plan); location.hash = plan.level; };
   const share = (x: number) => (x >= 1 ? 'the whole gap' : x < 0.01 ? 'under 1%' : `${Math.round(x * 100)}%`);
 

@@ -9,7 +9,8 @@ import { personalEffect, savedWages } from '../lib/personal';
 import { GOAL_DONE, whoPays } from './ChallengeParts';
 import { ClipMaker } from './Clip';
 import { DESK, MAX_STARS, rankFor, STOPS } from './levels';
-import { archetype, ballotFrom, closestPreset, myName, planLink, type SavedPlan } from './plans';
+import { archetype, ballotFrom, closestPreset, myName, type SavedPlan } from './plans';
+import { useShareLink } from './shortlinks';
 import { STORY_LINES } from './script';
 import { shareText, svgSrc, svgToPng } from './share';
 import { SocialShare } from './ShareButton';
@@ -126,6 +127,7 @@ export default function Story() {
   const name = myName();
   const cards = useMemo(() => (sp ? buildCards(sp.level, sp.plan, { name, stars, done, rank: rankFor(done).name }) : []), [sp?.level, sp?.plan.at, name, stars, done]); // eslint-disable-line react-hooks/exhaustive-deps
   const svgs = useMemo(() => cards.map((c) => storySvg(c, samSvg)), [cards, samSvg]);
+  const link = useShareLink(sp?.level, sp?.plan ?? null, { by: name || undefined, ballot: ballotFrom(j.choices) }) ?? '';
 
   if (!sp) {
     const first = DESK[0];
@@ -138,7 +140,6 @@ export default function Story() {
     );
   }
   const d = DESK.find((x) => x.id === sp.level)!;
-  const link = planLink({ level: sp.level, goal: d.goal, ids: sp.plan.ids, lv: sp.plan.lv, gradual: sp.plan.gradual, by: name || undefined, ballot: ballotFrom(j.choices) });
   const arche = cards.find((c) => c.id === 'personality')!.title;
   const text = `My Budget Story: I’m ${arche}. I ${GOAL_DONE[d.goal]} with ${sp.plan.ids.length} policy cards and ${sp.plan.stars} of 3 stars. Can you beat my plan?`;
   const png = async (i: number) => svgToPng(svgs[i], STORY_W, STORY_H);

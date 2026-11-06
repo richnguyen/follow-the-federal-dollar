@@ -1,3 +1,4 @@
+import { load, save } from '../lib/storage';
 import { type ReactNode, useMemo, useState } from 'react';
 import { BarList, SegBar, TimeChart, Waffle } from '../components/charts';
 import { ChartFrame, Legend, Stat, Term } from '../components/ui';
@@ -120,7 +121,9 @@ function AgeTry() {
 
 function StateTry() {
   const states = [...geo.states].sort((a, b) => a.name.localeCompare(b.name));
-  const [abbr, setAbbr] = useState('TX');
+  // The pick is remembered (and, on the public site, counts toward the state rankings).
+  const [abbr, setAbbrState] = useState(() => load<string>('state', 'TX'));
+  const setAbbr = (a: string) => { setAbbrState(a); save('state', a); save('state-picked', true); };
   const s = states.find((x) => x.abbr === abbr) ?? states[0];
   const nat = geo.national;
   return (

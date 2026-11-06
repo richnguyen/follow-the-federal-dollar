@@ -1,9 +1,12 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useJourney } from '../game/state';
+import { backendOn, BackendError, readOwn, rpc, upsertOwn } from './backend';
 
-// Citizen voting, backed by the claude.ai artifact's shared database (`db` capability).
-// Each voter keeps one ballot document at votes/<their id>; everyone who can open the page
-// reads all ballots to count them. On the standalone site (no window.claude) voting with others
-// is unavailable; choices are still kept locally so the game can continue.
+// Citizen voting. On the claude.ai artifact it uses the artifact's shared database (`db`
+// capability): each voter keeps one ballot document at votes/<their id>, and the page reads all
+// ballots to count them. On balancethebudget.us it uses the site's Supabase database: one ballot
+// row per anonymous player, and totals from a function that returns counts only. Anywhere else
+// choices are kept locally so the game can continue.
 
 export type Choice = 1 | -1;
 export interface Ballot {
@@ -29,10 +32,26 @@ export interface VoteState {
 
 const EMPTY: Ballot = { options: {}, plan: null, issues: {}, updated: '' };
 
+/** A ballot from the votes a player cast before the shared database was available (kept locally). */
+function fromChoices(choices: Record<string, string>): Ballot {
+  const b: Ballot = { options: {}, plan: null, issues: {}, updated: '' };
+  for (const [k, v] of Object.entries(choices)) {
+    if (!v) continue;
+    if (k.startsWith('option:')) { if (v === 'support') b.options[k.slice(7)] = 1; else if (v === 'oppose') b.options[k.slice(7)] = -1; }
+    else b.issues[k] = v;
+  }
+  return b;
+}
+const isEmpty = (b: Ballot) => !Object.keys(b.options).length && !Object.keys(b.issues).length && !b.plan;
+const clean = (b: Partial<Ballot> | null | undefined): Ballot => ({ options: { ...(b?.options ?? {}) }, plan: typeof b?.plan === 'string' ? b.plan : null, issues: { ...(b?.issues ?? {}) }, updated: b?.updated ?? '' });
+interface Totals { voters: number; options: Record<string, Tally>; plans: Record<string, number>; issues: Record<string, Record<string, number>> }
+
 type Votes = VoteState & {
   voteOption: (id: string, choice: Choice) => void;
   votePlan: (plan: string) => void;
   voteIssue: (id: string, value: string) => void;
+  /** Fetch the latest totals now (the results page does this when it opens). */
+  refresh: () => void;
 };
 
 const Ctx = createContext<Votes | null>(null);
@@ -45,10 +64,46 @@ export function VotesProvider({ children }: { children: ReactNode }) {
   const writing = useRef(false);
   const pending = useRef<Ballot | null>(null);
   const mineRef = useRef<Ballot>(EMPTY);
+  const j = useJourney();
+  const mode = useRef<'artifact' | 'site' | null>(null);
+  const refresh = useRef<() => Promise<void>>(async () => {});
 
   useEffect(() => {
     const c = (window as any).claude;
-    if (!c?.use) { setS((p) => ({ ...p, loading: false })); return; }
+    if (!c?.use) {
+      if (!backendOn()) { setS((p) => ({ ...p, loading: false })); return; }
+      // balancethebudget.us: totals for everyone, this player's own ballot if they have one.
+      mode.current = 'site';
+      let alive = true;
+      setS((p) => ({ ...p, available: true, canVote: true }));
+      refresh.current = async () => {
+        try {
+          const t = await rpc<Totals>('ballot_totals');
+          if (alive && t) setS((p) => ({ ...p, loading: false, stale: false, error: null, voters: t.voters, options: t.options ?? {}, plans: t.plans ?? {}, issues: t.issues ?? {} }));
+        } catch {
+          if (alive) setS((p) => ({ ...p, loading: false, stale: true }));
+        }
+      };
+      (async () => {
+        const own = await readOwn<{ ballot: Ballot }>('ballots', 'ballot').catch(() => null);
+        if (!alive) return;
+        if (own?.ballot) {
+          const b = clean(own.ballot);
+          mineRef.current = b;
+          setS((p) => ({ ...p, mine: b }));
+        } else {
+          // Votes cast before the shared count existed join it now.
+          const b = fromChoices(j.choices);
+          if (!isEmpty(b)) write({ ...b, updated: new Date().toISOString() });
+        }
+        await refresh.current();
+      })();
+      const iv = setInterval(() => { if (document.visibilityState === 'visible') void refresh.current(); }, 60000);
+      const vis = () => { if (document.visibilityState === 'visible') void refresh.current(); };
+      document.addEventListener('visibilitychange', vis);
+      return () => { alive = false; clearInterval(iv); document.removeEventListener('visibilitychange', vis); };
+    }
+    mode.current = 'artifact';
     let unsub: (() => void) | null = null;
     let timer: ReturnType<typeof setTimeout> | null = null;
     let cancelled = false;
@@ -105,6 +160,24 @@ export function VotesProvider({ children }: { children: ReactNode }) {
 
   // One write at a time to the ballot; a burst of clicks collapses into the latest ballot.
   const flush = useCallback(async () => {
+    if (mode.current === 'site') {
+      if (writing.current || !pending.current) return;
+      writing.current = true;
+      while (pending.current) {
+        const b = pending.current;
+        pending.current = null;
+        try {
+          await upsertOwn('ballots', { ballot: b });
+          setS((p) => (p.error ? { ...p, error: null } : p));
+        } catch (e) {
+          setS((p) => ({ ...p, error: e instanceof BackendError && e.status === 401 ? 'Votes can’t be saved right now; yours is kept in this browser.' : 'Your vote could not be saved. Try again in a moment.' }));
+          break;
+        }
+      }
+      writing.current = false;
+      void refresh.current();
+      return;
+    }
     const db = dbRef.current;
     const uid = uidRef.current;
     if (!db || !uid || writing.current || !pending.current) return;
@@ -152,7 +225,8 @@ export function VotesProvider({ children }: { children: ReactNode }) {
     write({ ...cur, issues, updated: new Date().toISOString() });
   }, [write]);
 
-  return <Ctx.Provider value={{ ...s, voteOption, votePlan, voteIssue }}>{children}</Ctx.Provider>;
+  const refreshNow = useCallback(() => { void refresh.current(); }, []);
+  return <Ctx.Provider value={{ ...s, voteOption, votePlan, voteIssue, refresh: refreshNow }}>{children}</Ctx.Provider>;
 }
 
 export function useVotes(): Votes {

@@ -5,13 +5,19 @@ across everyone, "how everyone played", short links for shared plans, and rankin
 policy cards, and states (never of people). Supabase provides the database and anonymous sign-in.
 The claude.ai copy of the game keeps using the artifact's own database.
 
+**Status:** connected. Project `ygphfbeqgguypvmiundz`; the site's URL and publishable key are in
+[`src/lib/backend.ts`](../src/lib/backend.ts). Only balancethebudget.us talks to the database: local
+builds, previews, and forks stay offline unless `localStorage["ftd:backend"] = "on"` is set for
+testing. Players sign in anonymously only when there is something to save (a vote or a finished
+level), never just for visiting.
+
 ## What is stored
 
 | Table | One row per | Holds | Who can read it |
 | --- | --- | --- | --- |
 | `ballots` | player | support/oppose on cards, favorite ready-made plan, answers to the big questions | only that player |
 | `players` | player | levels done, stars, first-try quiz results, medals, state (if picked), first-visit channel | only that player |
-| `plans` | shared plan | the plan part of the link, cards, stars, optional first name | only its creator; others open one by its link id |
+| `plans` | finished budget-desk plan | the plan part of the link, cards, stars | only its creator; others open one by its short-link id |
 
 Everyone can read totals through functions that return counts only: `ballot_totals()`,
 `player_totals()`, `card_rankings(level)`, `state_rankings()` (states with 5+ players), and
@@ -24,9 +30,11 @@ Everyone can read totals through functions that return counts only: `ballot_tota
    needs it), pick the region **East US (North Virginia)**, and start on the **Free** plan.
 2. **Allow anonymous sign-ins.** In the project: **Authentication → Sign In / Providers →
    Allow anonymous sign-ins**, then save.
-3. **Create the tables.** Open **SQL Editor → New query**, paste all of
-   [`migrations/20261106000000_init.sql`](migrations/20261106000000_init.sql), and **Run**. It is
-   safe to run again.
+3. **Create the tables.** Open **SQL Editor → New query**, paste each file in
+   [`migrations/`](migrations/) in order, and **Run** each one:
+   [`20261106000000_init.sql`](migrations/20261106000000_init.sql), then
+   [`20261106010000_rankings.sql`](migrations/20261106010000_rankings.sql). Each is safe to run
+   again.
 4. **Copy two public values** from **Connect** (top of the dashboard) or **Settings → API Keys**:
    - the **Project URL**, like `https://abcdefghijklmnop.supabase.co`
    - the **publishable key**, starting `sb_publishable_`
@@ -58,3 +66,12 @@ the game outgrows that. Check [supabase.com/pricing](https://supabase.com/pricin
 numbers. Each player's rows are small (well under 10 KB), so 500 MB holds tens of thousands of
 players. At larger scale, the totals functions should read from a summary table refreshed every
 few minutes instead of counting every row on each call.
+
+## Short links
+
+A finished budget-desk plan is stored once (cards, across-the-board changes, phase-in, stars) and
+gets a 12-character id, so shared links read `balancethebudget.us/?plan=58c5dc193efb&by=Sam`. The
+sharer's first name and their answers to the big questions stay in the link (`by=`, `b=`) and are
+never stored. Each player's latest plan on a level feeds "the cards players reach for". If the
+database can't be reached, links fall back to the long form, which carries the whole plan and
+works with no server.

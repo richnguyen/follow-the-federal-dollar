@@ -1,9 +1,11 @@
 // Runs the Supabase migration in PGlite (Postgres in WebAssembly) with stand-ins for Supabase's
 // auth schema and roles, then checks row-level security and the public totals. npm run test:db
 import { PGlite } from '@electric-sql/pglite';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 
-const sql = readFileSync(new URL('../migrations/20261106000000_init.sql', import.meta.url), 'utf8');
+// Every migration, in order, as the SQL Editor or `supabase db push` would run them.
+const dir = new URL('../migrations/', import.meta.url);
+const sql = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort().map((f) => readFileSync(new URL(f, dir), 'utf8')).join('\n');
 const db = new PGlite();
 const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) process.exitCode = 1; };
 
@@ -60,6 +62,10 @@ ok(await fails(() => as(U[6], `insert into public.players (record, state) values
 const pt = (await as(null, 'select public.player_totals() as t')).rows[0].t;
 console.log('  player_totals:', JSON.stringify(pt));
 ok(pt.players === 6 && pt.done['level-1'] === 6 && pt.done['level-2'] === 5 && pt.stars['level-1'].sum === 18, 'player totals');
+ok(pt.stars_total === 30 && pt.finished_all === 0, 'stars in all, and nobody has finished every level yet');
+const all = Array.from({ length: 10 }, (_, i) => `level-${i + 1}`);
+await as(U[6], 'insert into public.players (record) values ($1)', [rec(all, { 'level-10': 3 })]);
+ok((await as(null, 'select public.player_totals() as t')).rows[0].t.finished_all === 1, 'finished all ten levels');
 const sr = (await as(null, 'select * from public.state_rankings()')).rows;
 console.log('  state_rankings:', JSON.stringify(sr));
 ok(sr.length === 1 && sr[0].state === 'OH', 'state ranking leaves out states with fewer than 5 players');
@@ -78,6 +84,11 @@ ok(await fails(() => as(U[2], `insert into public.plans (level, code, stars) val
 const cr = (await as(null, 'select * from public.card_rankings(10::smallint)')).rows;
 console.log('  card_rankings:', JSON.stringify(cr));
 ok(cr[0].card === 'income-tax-rates-1pt' && Number(cr[0].share) === 1, 'card ranking');
+// A player who changes their plan counts once, with their latest plan.
+await as(U[1], `insert into public.plans (level, code, cards, stars) values (10, 'p=10.e', '{vat-5pct}', 1)`);
+const cr2 = (await as(null, 'select * from public.card_rankings(10::smallint)')).rows;
+const share = (c) => Number(cr2.find((r) => r.card === c)?.share ?? 0);
+ok(share('vat-5pct') === 0.5 && share('cut-defense-budget') === 0 && share('income-tax-rates-1pt') === 0.5, 'each player’s latest plan counts once');
 let capped = false;
 for (let k = 0; k < 31; k++) { try { await as(U[3], `insert into public.plans (level, code, stars) values (5, 'p=5.a', 1)`); } catch (e) { capped = /Too many/.test(e.message); break; } }
 ok(capped, 'daily cap on shared plans');

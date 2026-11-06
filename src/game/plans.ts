@@ -80,6 +80,17 @@ export function planLink(p: SharedPlan, channel?: string) {
   return `${SITE_URL}?${q}${channel ? `&s=${channel}` : ''}`;
 }
 
+/** Just the plan (cards, across-the-board changes, phase-in): what the server stores for a short link. */
+export const planCode = (p: Omit<SharedPlan, 'by' | 'ballot'>) => encodePlan({ ...p, by: undefined, ballot: undefined });
+
+/** A short link (?plan=<id>). The name and the answers to the big questions stay in the link, never on the server. */
+export function shortLink(id: string, p: Pick<SharedPlan, 'by' | 'ballot'>) {
+  const extra = new URLSearchParams(encodePlan({ level: DESK[0].id, goal: DESK[0].goal, ids: [], lv: { ...ZERO }, gradual: true, by: p.by, ballot: p.ballot }));
+  extra.delete('p');
+  const rest = extra.toString();
+  return `${SITE_URL}?plan=${id}${rest ? '&' + rest : ''}`;
+}
+
 export const myName = () => load<string>('name', '');
 export const setMyName = (n: string) => save('name', cleanName(n));
 

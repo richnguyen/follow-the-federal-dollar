@@ -1,12 +1,18 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { LEVELS } from '../game/levels';
+import { LEVELS, STOPS } from '../game/levels';
 import { useJourney } from '../game/state';
+import { backendOn, rpc, upsertOwn } from './backend';
+import { load, save } from './storage';
 
-// How everyone played, from the claude.ai artifact's shared database (`db` capability). Each
-// player keeps one anonymous record at players/<their id>: which levels they finished, their
+// How everyone played. Each player keeps one anonymous record: which levels they finished, their
 // stars, whether each quick check was right on the first try, and their medals. No names or
-// answers to the votes (those are in votes/<id>). Every page reads all records to show totals.
-// On the standalone site there is no shared database, so only the player's own record exists.
+// answers to the votes (those are in the ballot).
+//  - On the claude.ai artifact the record is players/<id> in the artifact's database, and the page
+//    reads every record to add them up.
+//  - On balancethebudget.us it is one row in the site's Supabase database, and the page reads
+//    totals from a function that returns counts only (plus the player's state, if they picked
+//    one, and the channel their first visit came from).
+//  - Anywhere else only the player's own record exists.
 
 export interface PlayerRecord {
   v: 1;
@@ -17,14 +23,58 @@ export interface PlayerRecord {
   updated: string;
 }
 
+/** Everyone's results, added up. */
+export interface CommunityTotals {
+  players: number;
+  /** Players who finished every level (null where the server does not report it). */
+  finishedAll: number | null;
+  starsTotal: number;
+  done: Record<string, number>;
+  stars: Record<string, { sum: number; n: number }>;
+  firstTry: Record<string, { right: number; n: number }>;
+  medals: Record<string, number>;
+}
+
 export interface CommunityState {
   available: boolean;
+  /** Where shared results come from. */
+  source: 'artifact' | 'site' | null;
   canWrite: boolean | null;
   loading: boolean;
   stale: boolean;
   error: string | null;
-  players: PlayerRecord[]; // everyone's records, including this player's latest
+  totals: CommunityTotals;
+  /** Fetch the latest totals now (the results page does this when it opens). */
+  refresh: () => void;
 }
+
+const EMPTY: CommunityTotals = { players: 0, finishedAll: 0, starsTotal: 0, done: {}, stars: {}, firstTry: {}, medals: {} };
+
+/** Adds player records into totals. */
+export function addUp(list: PlayerRecord[], base: CommunityTotals = EMPTY): CommunityTotals {
+  const t: CommunityTotals = { ...base, done: { ...base.done }, stars: { ...base.stars }, firstTry: { ...base.firstTry }, medals: { ...base.medals } };
+  for (const r of list) {
+    t.players++;
+    if (t.finishedAll != null && STOPS.every((s) => r.done.includes(s.id))) t.finishedAll++;
+    for (const d of r.done) t.done[d] = (t.done[d] ?? 0) + 1;
+    for (const [k, n] of Object.entries(r.stars)) { if (!(n >= 0 && n <= 3)) continue; const x = t.stars[k] ?? { sum: 0, n: 0 }; t.stars[k] = { sum: x.sum + n, n: x.n + 1 }; t.starsTotal += n; }
+    for (const [k, ok] of Object.entries(r.firstTry)) { const x = t.firstTry[k] ?? { right: 0, n: 0 }; t.firstTry[k] = { right: x.right + (ok ? 1 : 0), n: x.n + 1 }; }
+    for (const m of r.medals) t.medals[m] = (t.medals[m] ?? 0) + 1;
+  }
+  return t;
+}
+
+interface ServerTotals {
+  players: number; finished_all?: number; stars_total?: number;
+  done: Record<string, number>; stars: Record<string, { sum: number; n: number }>;
+  firstTry: Record<string, { right: number; n: number }>; medals: Record<string, number>;
+}
+const fromServer = (s: ServerTotals): CommunityTotals => ({
+  players: s.players ?? 0,
+  finishedAll: s.finished_all ?? null,
+  starsTotal: s.stars_total ?? Object.values(s.stars ?? {}).reduce((a, x) => a + x.sum, 0),
+  done: s.done ?? {}, stars: s.stars ?? {}, firstTry: s.firstTry ?? {}, medals: s.medals ?? {},
+});
 
 const Ctx = createContext<CommunityState | null>(null);
 const QUIZ_IDS = LEVELS.flatMap((l) => l.steps.filter((s) => s.quiz).map((s) => s.quiz!.id));
@@ -32,11 +82,13 @@ const QUIZ_IDS = LEVELS.flatMap((l) => l.steps.filter((s) => s.quiz).map((s) => 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function CommunityProvider({ children }: { children: ReactNode }) {
   const j = useJourney();
-  const [s, setS] = useState<CommunityState>({ available: false, canWrite: null, loading: true, stale: false, error: null, players: [] });
+  const [s, setS] = useState<Omit<CommunityState, 'totals' | 'refresh'>>({ available: false, source: null, canWrite: null, loading: true, stale: false, error: null });
+  const [others, setOthers] = useState<PlayerRecord[]>([]); // artifact: everyone else's records
+  const [server, setServer] = useState<CommunityTotals | null>(null); // site: totals from the server
   const dbRef = useRef<any>(null);
   const uidRef = useRef<string | null>(null);
-  const sent = useRef('');
-  const others = useRef<PlayerRecord[]>([]);
+  const sent = useRef(load<string>('sent-record', ''));
+  const refresh = useRef<() => Promise<void>>(async () => {});
 
   // This player's record, from their journey.
   const mine = useMemo<PlayerRecord>(() => ({
@@ -48,10 +100,28 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
     updated: '',
   }), [j.done, j.stars, j.quiz, j.medals]);
   const played = mine.done.length > 0 || Object.keys(mine.firstTry).length > 0;
+  const [savedOnce, setSavedOnce] = useState(() => !!sent.current);
 
   useEffect(() => {
     const c = (window as any).claude;
-    if (!c?.use) { setS((p) => ({ ...p, loading: false })); return; }
+    if (!c?.use) {
+      if (!backendOn()) { setS((p) => ({ ...p, loading: false })); return; }
+      let alive = true;
+      setS((p) => ({ ...p, available: true, source: 'site', canWrite: true }));
+      refresh.current = async () => {
+        try {
+          const t = await rpc<ServerTotals>('player_totals');
+          if (alive && t) { setServer(fromServer(t)); setS((p) => ({ ...p, loading: false, stale: false, error: null })); }
+        } catch {
+          if (alive) setS((p) => ({ ...p, loading: false, stale: true, error: 'Results from other players can’t be loaded right now.' }));
+        }
+      };
+      void refresh.current();
+      const vis = () => { if (document.visibilityState === 'visible') void refresh.current(); };
+      document.addEventListener('visibilitychange', vis);
+      const iv = setInterval(() => { if (document.visibilityState === 'visible') void refresh.current(); }, 120000);
+      return () => { alive = false; clearInterval(iv); document.removeEventListener('visibilitychange', vis); };
+    }
     let unsub: (() => void) | null = null;
     let timer: ReturnType<typeof setTimeout> | null = null;
     let cancelled = false;
@@ -63,7 +133,7 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       if (cancelled) return;
       dbRef.current = db;
       uidRef.current = uid;
-      setS((p) => ({ ...p, available: true, canWrite: uid ? can : false }));
+      setS((p) => ({ ...p, available: true, source: 'artifact', canWrite: uid ? can : false }));
       timer = setTimeout(() => setS((p) => ({ ...p, stale: true })), 10000);
       unsub = db.collection('players').onSnapshot(
         (snap: any) => {
@@ -74,9 +144,9 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
             if (!r || !Array.isArray(r.done)) continue;
             list.push({ v: 1, done: r.done.filter((x) => typeof x === 'string'), stars: r.stars ?? {}, firstTry: r.firstTry ?? {}, medals: Array.isArray(r.medals) ? r.medals : [], updated: r.updated ?? '' });
           }
-          others.current = list;
           if (!snap.metadata?.fromCache && timer) { clearTimeout(timer); timer = null; }
-          setS((p) => ({ ...p, loading: false, stale: snap.metadata?.fromCache ? p.stale : false, players: list }));
+          setOthers(list);
+          setS((p) => ({ ...p, loading: false, stale: snap.metadata?.fromCache ? p.stale : false }));
         },
         (e: any) => {
           if (timer) { clearTimeout(timer); timer = null; }
@@ -90,9 +160,23 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
   // Save this player's record when it changes (a few seconds after, one write at a time).
   useEffect(() => {
     if (!s.available || s.canWrite === false || !played) return;
-    const body = JSON.stringify({ ...mine, updated: '' });
+    const state = load<boolean>('state-picked', false) ? load<string>('state', '') : '';
+    const channel = load<string>('src', '');
+    const body = JSON.stringify({ ...mine, updated: '', state, channel });
     if (body === sent.current) return;
     const t = setTimeout(async () => {
+      if (s.source === 'site') {
+        try {
+          await upsertOwn('players', { record: { ...mine, updated: new Date().toISOString() }, state: /^[A-Z]{2}$/.test(state) ? state : null, channel: /^[a-z0-9-]{1,16}$/.test(channel) ? channel : null });
+          sent.current = body;
+          save('sent-record', body);
+          setSavedOnce(true);
+          void refresh.current();
+        } catch {
+          setS((p) => ({ ...p, error: 'Your results could not be added to the shared count yet; they are kept in this browser.' }));
+        }
+        return;
+      }
       const db = dbRef.current, uid = uidRef.current;
       if (!db || !uid) return;
       try {
@@ -104,9 +188,17 @@ export function CommunityProvider({ children }: { children: ReactNode }) {
       }
     }, 2500);
     return () => clearTimeout(t);
-  }, [s.available, s.canWrite, played, mine]);
+  }, [s.available, s.canWrite, s.source, played, mine]);
 
-  const value = useMemo(() => ({ ...s, players: played ? [...s.players, mine] : s.players }), [s, played, mine]);
+  const totals = useMemo(() => {
+    if (s.source === 'site') {
+      // The server's totals include this player once their record has been saved.
+      const base = server ?? EMPTY;
+      return played && !savedOnce ? addUp([mine], base) : base;
+    }
+    return addUp(played ? [...others, mine] : others);
+  }, [s.source, server, others, played, mine, savedOnce]);
+  const value = useMemo(() => ({ ...s, totals, refresh: () => { void refresh.current(); } }), [s, totals]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

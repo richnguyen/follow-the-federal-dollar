@@ -95,14 +95,17 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   numbers, the same puzzle for everyone on a date, with a spoiler-free result grid to post.
 - **Uncle Sam reacts** the first time each policy card is played, with one true fact from CBO's
   data, and the desk shows what the plan means for the player's own tax receipt.
-- Shared links carry a channel tag (`?s=x`, `wh`, `sh`…) so first visits can be counted by
-  channel once the shared backend is running ([`supabase/`](supabase/README.md)).
+- Shared links carry a channel tag (`?s=x`, `wh`, `sh`…), saved with the player's anonymous
+  record so first visits can be counted by channel.
+- Short links (`?plan=<id>`) for finished plans, and rankings of policy cards and states (never of
+  people) on "How everyone played".
 
-Progress is saved in the browser. On the claude.ai artifact, which has a shared database, the
-game also keeps one anonymous record per player (levels finished, stars, first-try answers,
-medals) and one ballot per person, and "How everyone played" (`#results`, offered at the end of
-level 10) totals them. A static copy such as the GitHub Pages site cannot see other visitors, so
-there that page shows only the player's own results.
+Progress is saved in the browser. The game also keeps one anonymous record per player (levels
+finished, stars, first-try answers, medals) and one ballot per person, and "How everyone played"
+(`#results`, offered at the end of level 10) totals them: on balancethebudget.us in the site's
+Supabase database ([`supabase/`](supabase/README.md): row-level security, count-only totals),
+and on the claude.ai artifact in the artifact's shared database. Any other copy (a local build, a
+fork) stays offline and shows only the player's own results.
 
 ## Run it
 

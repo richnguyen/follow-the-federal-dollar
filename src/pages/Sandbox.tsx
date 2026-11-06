@@ -22,7 +22,8 @@ import { COACH, DESK_PARTY, REACT } from '../game/script';
 import { PlanForYou } from '../game/PlanForYou';
 import { activeChallenge, type Challenge, dropChallenge } from '../game/challenge';
 import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead } from '../game/ChallengeParts';
-import { ballotFrom, compare, myName, planLink } from '../game/plans';
+import { ballotFrom, compare, myName } from '../game/plans';
+import { useShareLink } from '../game/shortlinks';
 
 type Desk = DeskLevel;
 
@@ -185,7 +186,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const theirs = challenge ? assessShared(challenge.plan) : null;
   const mineNow = challenge && met ? assessShared({ goal, ids, lv, gradual, stars: ev.stars, at: '' }) : null;
   const challengeBy = challenge?.plan.by || 'Your friend';
-  const myLink = desk ? planLink({ level: desk.id, goal, ids, lv, gradual, by: myName() || undefined, ballot: ballotFrom(journey.choices) }) : undefined;
+  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars } : null, { by: myName() || undefined, ballot: ballotFrom(journey.choices) });
   const shareText = desk ? `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars. Can you beat my plan?` : undefined;
   const challengeResult = (inCard: boolean) => challenge && theirs && mineNow ? (
     <div className="challenge-result">

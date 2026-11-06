@@ -41,6 +41,7 @@ export default function StatePage({ param }: { param: string | null }) {
     setAbbr(a);
     setDist(null);
     save('state', a);
+    save('state-picked', true);
     go('state-' + a.toLowerCase());
   };
   const s = states.find((x) => x.abbr === abbr) ?? states[0];

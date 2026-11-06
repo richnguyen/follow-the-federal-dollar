@@ -6,7 +6,8 @@ import type { Goal } from '../lib/plan';
 import { OPTIONS_DATA } from '../lib/planData';
 import { CHALLENGE_LINES } from './script';
 import { DESK } from './levels';
-import { type Agreement, ballotFrom, compare, myName, planLink, type SavedPlan, setMyName, type SharedPlan } from './plans';
+import { type Agreement, ballotFrom, compare, myName, type SavedPlan, setMyName, type SharedPlan } from './plans';
+import { useShareLink } from './shortlinks';
 import { ShareButton, SocialShare } from './ShareButton';
 import { useJourney } from './state';
 import { SamSays } from './UncleSam';
@@ -38,8 +39,7 @@ export function ChallengeShare({ level, plan }: { level: string; plan: SavedPlan
   const ballot = ballotFrom(j.choices);
   const answered = Object.keys(ballot).length;
   const [withBallot, setWithBallot] = useState(answered > 0);
-  const shared: SharedPlan = { level, goal: d.goal, ids: plan.ids, lv: plan.lv, gradual: plan.gradual, by: name || undefined, ballot: withBallot ? ballot : undefined };
-  const url = planLink(shared);
+  const url = useShareLink(level, plan, { by: name || undefined, ballot: withBallot ? ballot : undefined })!;
   const text = `I ${GOAL_DONE[d.goal]} with ${plan.ids.length} policy card${plan.ids.length === 1 ? '' : 's'} and ${plan.stars} of 3 stars. Can you beat my plan?`;
   return (
     <section className="card challenge-share" id="challenge" aria-labelledby="challenge-t">
