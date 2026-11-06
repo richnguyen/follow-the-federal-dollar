@@ -9,7 +9,9 @@ The claude.ai copy of the game keeps using the artifact's own database.
 [`src/lib/backend.ts`](../src/lib/backend.ts). Only balancethebudget.us talks to the database: local
 builds, previews, and forks stay offline unless `localStorage["ftd:backend"] = "on"` is set for
 testing. Players sign in anonymously only when there is something to save (a vote or a finished
-level), never just for visiting.
+level), never just for visiting. CAPTCHA protection (Cloudflare Turnstile) is on: sign-ins without
+a valid, unused token are refused (checked: no token, Cloudflare's test token, and a made-up token
+are all refused, and a real browser sign-in succeeds).
 
 ## What is stored
 
