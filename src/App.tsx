@@ -171,7 +171,7 @@ function Shell() {
     if (FIELD_GUIDE_ROUTES.includes(route)) journey.mark('page:' + route);
     if (journey.settings.narration) prefetchVoice(route);
     window.scrollTo({ top: 0 });
-    document.title = route === 'journey' ? 'Follow the Federal Dollar' : `${TITLE[route] ?? ''} · Follow the Federal Dollar`;
+    document.title = route === 'journey' ? 'Help Uncle Sam Balance the Budget' : `${TITLE[route] ?? ''} · Help Uncle Sam Balance the Budget`;
   }, [route]);
   const Page = PAGES[route];
   return (

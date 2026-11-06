@@ -21,7 +21,7 @@ await ctx.addInitScript(() => {
   window.SpeechSynthesisUtterance = class { constructor(t) { this.text = t; } };
   Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: { getVoices: () => [], speak: (u) => window.__spoken.push(u.text), cancel() {}, addEventListener() {}, removeEventListener() {} } });
   Object.defineProperty(navigator, 'userActivation', { configurable: true, value: { hasBeenActive: true, isActive: true } });
-  if (!localStorage.getItem('ftd:journey')) localStorage.setItem('ftd:journey', JSON.stringify({ v: 2, settings: { voice: 'device', narration: true, freeRoam: true } }));
+  if (!localStorage.getItem('ftd:journey')) localStorage.setItem('ftd:journey', JSON.stringify({ v: 2, settings: { voice: 'device', voiceV: 2, narration: true, freeRoam: true } }));
 });
 const page = await ctx.newPage();
 page.on('pageerror', (e) => console.error('page error:', e.message));
@@ -68,7 +68,7 @@ const capture = async (route, bank) => {
   await page.waitForTimeout(1400);
   for (const s of await page.evaluate(() => window.__spoken.splice(0))) (banks[bank] ??= []).push(s);
 };
-await page.evaluate(() => localStorage.setItem('ftd:journey', JSON.stringify({ v: 2, settings: { voice: 'device', narration: true, freeRoam: true } })));
+await page.evaluate(() => localStorage.setItem('ftd:journey', JSON.stringify({ v: 2, settings: { voice: 'device', voiceV: 2, narration: true, freeRoam: true } })));
 await capture('journey', 'common');
 for (const r of ['level-5', 'level-8', 'level-10']) await capture(r, 'desk');
 await browser.close();

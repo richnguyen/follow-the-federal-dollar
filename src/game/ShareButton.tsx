@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useHaptics } from './haptics';
-import { shareText, SITE_URL } from './share';
+import { shareText, SITE_URL, socialLinks } from './share';
 import { useJourney } from './state';
 
 /** A Share button (share sheet → clipboard → text to copy) and, on the public site, "Save image". */
@@ -35,5 +35,20 @@ export function ShareButton({ text, title, url, card, label = 'Share', className
       {card && !__ARTIFACT__ && <button type="button" className="btn" onClick={save}>Save image</button>}
       {state === 'manual' && <textarea className="input share-manual" readOnly rows={3} value={`${text} ${url ?? SITE_URL}`} onFocus={(e) => e.currentTarget.select()} aria-label="Text to share, ready to copy" />}
     </>
+  );
+}
+
+/** A row of social networks to post to; each opens that network's own share page in a new tab. */
+export function SocialShare({ text, url = SITE_URL }: { text: string; url?: string }) {
+  const j = useJourney();
+  return (
+    <div className="social" role="group" aria-label="Share on social media">
+      <span className="stat-label">Post it</span>
+      <div className="social-links">
+        {socialLinks(text, url).map((s) => (
+          <a key={s.id} className="social-link" data-net={s.id} href={s.href} target="_blank" rel="noopener noreferrer" onClick={() => j.mark('share')}>{s.label}</a>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -5,7 +5,7 @@
 // survive a domain or repository change; the claude.ai copy (a private page) points here.
 const PUBLIC_URL = 'https://balancethebudget.us/';
 export const SITE_URL = !__ARTIFACT__ && typeof location !== 'undefined' && /^https?:$/.test(location.protocol) ? location.origin + location.pathname : PUBLIC_URL;
-export const GAME_NAME = 'Help Uncle Sam balance the budget';
+export const GAME_NAME = 'Help Uncle Sam Balance the Budget';
 
 export type ShareResult = 'shared' | 'copied' | 'manual' | 'cancelled';
 
@@ -47,22 +47,26 @@ function wrap(text: string, max: number) {
  * A 1200×630 share card (the size social sites preview) drawn as SVG and turned into a PNG:
  * the level, its stars, one fact, and Uncle Sam. `samSvg` is his drawing taken from the page.
  */
-export async function shareCard(o: { eyebrow: string; title: string; stars: number; fact: string; samSvg?: string; color: string }): Promise<Blob | null> {
+export async function shareCard(o: { eyebrow: string; title: string; stars?: number; fact: string; samSvg?: string; color: string; site?: string }): Promise<Blob | null> {
   const W = 1200, H = 630;
-  const factLines = wrap(o.fact, 52).slice(0, 5);
-  const titleLines = wrap(o.title, 28).slice(0, 2);
+  // Text stays left of Uncle Sam (who starts at x=840): about 19 title and 44 fact characters a line.
+  const titleLines = wrap(o.title.toUpperCase(), 19).slice(0, 3);
+  const tSize = titleLines.length > 2 ? 52 : 62;
+  const tLead = tSize + 6;
+  const titleEnd = 172 + (titleLines.length - 1) * tLead;
+  const factLines = wrap(o.fact, 44).slice(0, 5);
   const sam = o.samSvg ? o.samSvg.replace(/<svg[^>]*>/, '<svg x="840" y="150" width="300" height="375" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">').replace(/var\(--[^)]+\)/g, '#9aa19c') : '';
-  const starRow = [0, 1, 2].map((k) => `<text x="${80 + k * 64}" y="${titleLines.length > 1 ? 320 : 262}" font-size="56" fill="${k < o.stars ? '#c9a645' : '#d6dbd5'}">★</text>`).join('');
-  const factY = titleLines.length > 1 ? 380 : 322;
+  const starRow = o.stars == null ? '' : [0, 1, 2].map((k) => `<text x="${80 + k * 64}" y="${titleEnd + 78}" font-size="56" fill="${k < (o.stars ?? 0) ? '#c9a645' : '#d6dbd5'}">★</text>`).join('');
+  const factY = titleEnd + (o.stars == null ? 76 : 136);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <rect width="${W}" height="${H}" fill="#f2f4ef"/>
   <rect width="${W}" height="16" fill="${o.color}"/>
   <text x="80" y="104" font-family="Menlo, Consolas, monospace" font-size="24" letter-spacing="3" fill="#1d5a43">${esc(o.eyebrow.toUpperCase())}</text>
-  ${titleLines.map((l, k) => `<text x="80" y="${178 + k * 64}" font-family="Arial Narrow, Arial, Helvetica, sans-serif" font-weight="800" font-size="62" fill="#111b16">${esc(l.toUpperCase())}</text>`).join('')}
+  ${titleLines.map((l, k) => `<text x="80" y="${172 + k * tLead}" font-family="Arial Narrow, Arial, Helvetica, sans-serif" font-weight="800" font-size="${tSize}" fill="#111b16">${esc(l)}</text>`).join('')}
   ${starRow}
   ${factLines.map((l, k) => `<text x="80" y="${factY + k * 40}" font-family="Georgia, serif" font-size="30" fill="#2b3530">${esc(l)}</text>`).join('')}
   <text x="80" y="580" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#47524c">${esc(GAME_NAME)} · official U.S. government data</text>
-  <text x="80" y="610" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#1d5a43">${esc(SITE_URL.replace(/^https:\/\//, ''))}</text>
+  <text x="80" y="610" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#1d5a43">${esc((o.site ?? SITE_URL).replace(/^https?:\/\//, '').replace(/\/$/, ''))}</text>
   ${sam}
 </svg>`;
   const img = new Image();
@@ -74,4 +78,19 @@ export async function shareCard(o: { eyebrow: string; title: string; stars: numb
   if (!ctx) return null;
   ctx.drawImage(img, 0, 0);
   return new Promise((res) => c.toBlob((b) => res(b), 'image/png'));
+}
+
+/** Share pages of the big social networks: each opens with the post filled in, for the person to send. */
+export function socialLinks(text: string, url: string) {
+  const t = encodeURIComponent(text), u = encodeURIComponent(url), both = encodeURIComponent(`${text} ${url}`);
+  return [
+    { id: 'x', label: 'X', href: `https://x.com/intent/tweet?text=${t}&url=${u}` },
+    { id: 'facebook', label: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
+    { id: 'linkedin', label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
+    { id: 'reddit', label: 'Reddit', href: `https://www.reddit.com/submit?url=${u}&title=${encodeURIComponent(GAME_NAME)}` },
+    { id: 'bluesky', label: 'Bluesky', href: `https://bsky.app/intent/compose?text=${both}` },
+    { id: 'threads', label: 'Threads', href: `https://www.threads.net/intent/post?text=${both}` },
+    { id: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/?text=${both}` },
+    { id: 'email', label: 'Email', href: `mailto:?subject=${encodeURIComponent(GAME_NAME)}&body=${encodeURIComponent(`${text}\n\n${url}`)}` },
+  ];
 }

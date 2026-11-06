@@ -3,7 +3,7 @@ import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
 import { DIFF_COLOR, diffKey, LEVELS, STOPS, type Stop } from './levels';
 import { GAME_NAME, shareCard, SITE_URL } from './share';
-import { ShareButton } from './ShareButton';
+import { ShareButton, SocialShare } from './ShareButton';
 import { SamSays } from './UncleSam';
 import { CHEER } from './script';
 
@@ -54,7 +54,8 @@ export function Celebration({ stop, stars, onClose, line }: { stop: Stop; stars:
           </figure>
           <div className="celebrate-share">
             <div className="small"><span className="stat-label">Your fact card</span><div>{fact}</div></div>
-            <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={SITE_URL + '#' + stop.id} /></div>
+            <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={SITE_URL} /></div>
+            <SocialShare text={text} url={SITE_URL} />
           </div>
           {next ? (
             <div className="celebrate-next" data-diff={diffKey(next.difficulty)}>

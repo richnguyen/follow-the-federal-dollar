@@ -189,7 +189,7 @@ function Ballot() {
     return { level: l, q: v.question, a: v.choices.find((x) => x.value === c)?.label ?? '' };
   }));
   const cast = rows.filter((r) => r.a);
-  const text = ['My budget ballot (Follow the Federal Dollar)', ...cast.map((r) => `• ${r.q}: ${r.a}`)].join('\n');
+  const text = [`My budget ballot from “${GAME_NAME}”:`, ...cast.map((r) => `• ${r.q}: ${r.a}`)].join('\n');
   const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied('done'); } catch { setCopied('manual'); } };
   return (
     <div className="card">
@@ -205,7 +205,7 @@ function Ballot() {
       <div className="sb-actions" style={{ marginTop: 12 }}>
         <span className="small muted">{cast.length} of {rows.length} questions answered.</span>
         {cast.length > 0 && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my ballot'}</button>}
-        {cast.length > 0 && <ShareButton text={text.replace('My budget ballot (Follow the Federal Dollar)', `My budget ballot from “${GAME_NAME}”:`)} />}
+        {cast.length > 0 && <ShareButton text={text} />}
       </div>
       {copied === 'manual' && <textarea className="input" readOnly rows={6} value={text} onFocus={(e) => e.currentTarget.select()} aria-label="Your ballot, ready to copy" />}
     </div>

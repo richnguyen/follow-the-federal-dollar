@@ -1,4 +1,4 @@
-# Follow the Federal Dollar
+# Help Uncle Sam Balance the Budget
 
 A plain-language web app that shows average voters where U.S. federal tax money goes: spending by
 purpose and by every agency account, revenue by source, the structural gap between autopilot

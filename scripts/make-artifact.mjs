@@ -8,7 +8,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const html = await readFile(path.join(root, 'dist-artifact', 'index.html'), 'utf8');
 
 const pick = (re) => [...html.matchAll(re)].map((m) => m[0]);
-const title = pick(/<title>[\s\S]*?<\/title>/gi)[0] ?? '<title>Follow the Federal Dollar</title>';
+const title = pick(/<title>[\s\S]*?<\/title>/gi)[0] ?? '<title>Help Uncle Sam Balance the Budget</title>';
 const fontLinks = pick(/<link[^>]+fonts\.(googleapis|gstatic)\.com[^>]*>/gi);
 const styles = pick(/<style[^>]*>[\s\S]*?<\/style>/gi);
 const scripts = pick(/<script[^>]*>[\s\S]*?<\/script>/gi);

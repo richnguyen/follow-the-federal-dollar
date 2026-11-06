@@ -72,7 +72,7 @@ export function StatusBar({ route }: { route: string }) {
   return (
     <header className="appbar" ref={bar} aria-label="Game bar">
       <div className="ab-inner">
-        <a className="ab-brand" href="#journey" aria-label="Follow the Federal Dollar: your journey"><BrandMark /></a>
+        <a className="ab-brand" href="#journey" aria-label="Help Uncle Sam Balance the Budget: your journey"><BrandMark /></a>
         <a className="ab-btn ab-journey" href="#journey" aria-current={route === 'journey' ? 'page' : undefined}><MapIcon /><span className="ab-label">Your journey</span></a>
 
         <Pop id="levels" open={open} setOpen={setOpen} hover className="ab-levels" button={(p) => (

@@ -6,8 +6,7 @@ import { BUCKETS, REVENUE_BY_ID } from '../lib/categories';
 import { bucketYear, categoryTotals, cboSeries } from '../lib/derive';
 import { dateLabel, dollars, money, moneyWords, pct, people } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
-import { estimateTaxes } from '../lib/tax';
-import type { FilingStatus } from '../data/types';
+import { TaxReceipt, useWages, WageControls } from '../components/TaxReceipt';
 import type { Mood } from './voice';
 import { LawExplorer } from './LawExplorer';
 import { QUOTES, type Quote } from './quotes';
@@ -92,28 +91,14 @@ function WaffleBlock() {
 }
 
 function TaxTry() {
-  const [wages, setWages] = useState(65000);
-  const [status, setStatus] = useState<FilingStatus>('single');
-  const r = estimateTaxes(wages, status, tax);
-  const tot = CATS.reduce((s, c) => s + c.amount, 0);
-  const top = [...CATS].sort((a, b) => b.amount - a.amount).slice(0, 4);
+  const w = useWages();
   return (
-    <div className="try">
-      <div className="grid-2" style={{ gap: 12 }}>
-        <div className="field"><label htmlFor="try-w">Your yearly wages</label><input id="try-w" className="input" type="number" min={0} step={1000} value={wages} onChange={(e) => setWages(Math.max(0, Number(e.target.value) || 0))} /></div>
-        <div className="field"><label htmlFor="try-s">Filing status</label>
-          <select id="try-s" className="select" value={status} onChange={(e) => setStatus(e.target.value as FilingStatus)}>
-            <option value="single">Single</option><option value="married">Married filing jointly</option><option value="head">Head of household</option>
-          </select>
-        </div>
+    <div className="try try-receipt">
+      <div className="try-controls">
+        <WageControls id="try-w" {...w} />
+        <p className="small muted">Your Social Security and Medicare taxes go to those programs’ trust funds; your income tax is split across the rest of Uncle Sam’s spending. Estimates use {tax.year} IRS rates and the standard deduction, with wages as your only income. <a href="#receipt">More options and assumptions</a></p>
       </div>
-      <div className="try-result">
-        <Stat label="Your federal income and payroll taxes" value={dollars(r.total)} note={`${pct(r.effective)} of your wages, using ${tax.year} IRS rates and the standard deduction`} />
-        <div className="small" style={{ color: 'var(--ink-2)' }}>
-          Split like Uncle Sam’s spending, the biggest pieces are {top.map((c, i) => <span key={c.id}>{i ? (i === top.length - 1 ? ', and ' : ', ') : ''}<strong>{dollars((r.total * c.amount) / tot)}</strong> for {c.id === 'ss' || c.id === 'medicare' ? c.short : c.short.toLowerCase()}</span>)}. He also borrowed about <strong>{dollars(r.total * (T.deficit / T.receipts))}</strong> more on your behalf.
-        </div>
-        <a className="small" href="#receipt">See your full tax receipt</a>
-      </div>
+      <TaxReceipt wages={w.wages} status={w.status} />
     </div>
   );
 }
@@ -200,7 +185,7 @@ export const LEVELS: Level[] = [
         id: 'l1q1', question: 'Which source brings Uncle Sam the most money?',
         choices: [REVENUE_BY_ID[REC[2].id].label, REVENUE_BY_ID[REC[0].id].label, REVENUE_BY_ID[REC[1].id].label], correct: 1,
         explain: <>{REVENUE_BY_ID[REC[0].id].label} brought in {money(REC[0].amount)}, {pct(REC[0].amount / REC_TOTAL, 0)} of all revenue in FY{FY}. Add payroll taxes and {pct(EARN / REC_TOTAL, 0)} of the money comes from taxes on what people earn.</> } },
-      { id: 'you', label: 'Your share', kind: 'try', mood: 'happy', sam: <>Want to see your part? Type in a salary and I’ll show you roughly where your taxes went.</>, body: () => <TaxTry /> },
+      { id: 'you', label: 'Your share', kind: 'try', mood: 'happy', sam: <>Want to see your part? Slide to your salary and I’ll print your own federal tax receipt: what you paid and where every dollar went.</>, body: () => <TaxTry /> },
       { id: 'q2', label: 'Quick check', kind: 'quiz', quiz: {
         id: 'l1q2', question: 'Where does the Social Security tax on your paycheck go?',
         choices: ['Into the general pot, like income taxes', 'Into Social Security’s trust funds, which can only pay its benefits', 'To your state government'], correct: 1,

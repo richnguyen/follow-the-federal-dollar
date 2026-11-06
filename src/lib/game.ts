@@ -103,6 +103,6 @@ export function planText(o: { mission: Mission; names: string[]; deficit: string
     `My plan to ${o.mission.title.toLowerCase()} by FY${o.fy} (${'★'.repeat(o.stars)}${'☆'.repeat(3 - o.stars)}):`,
     ...o.names.map((n) => `• ${n}`),
     `Result in FY${o.fy}: deficit ${o.deficit} of GDP, debt ${o.debt} of GDP.`,
-    'Built with Follow the Federal Dollar, using CBO estimates.',
+    'Built with Help Uncle Sam Balance the Budget, using CBO estimates.',
   ].join('\n');
 }
