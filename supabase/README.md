@@ -11,7 +11,9 @@ builds, previews, and forks stay offline unless `localStorage["ftd:backend"] = "
 testing. Players sign in anonymously only when there is something to save (a vote or a finished
 level), never just for visiting. CAPTCHA protection (Cloudflare Turnstile) is on: sign-ins without
 a valid, unused token are refused (checked: no token, Cloudflare's test token, and a made-up token
-are all refused, and a real browser sign-in succeeds).
+are all refused, and a real browser sign-in succeeds). Daily Dollar reminders are set up (the
+daily-reminders function, its secrets, and the hourly Cron job): the first device opted in and
+received the "reminders are on" message on November 6, 2026.
 
 ## What is stored
 
