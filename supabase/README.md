@@ -23,6 +23,7 @@ are all refused, and a real browser sign-in succeeds).
 | `rooms` | room | 6-character code, name, the budget-desk level it plays | only its starter; others open it by its code |
 | `room_members` | member per room | joined time and the member's latest plan for the room's level (cards, stars) | only that member |
 | `share_counts` | day × kind of link × channel | how many shares were made and shared links opened (no identities) | nobody directly; written and read only through functions |
+| `challenge_steps` | day × step | how many friends took a challenge, met the goal, and sent a plan back (no identities) | nobody directly; written and read only through functions |
 | `peoples_moves` | player per day | today's People's Budget move: one card, pushed in (+1) or out (-1) | only that player; only today's move can be changed or taken back |
 
 Everyone can read totals through functions that return counts only: `ballot_totals()`,
@@ -30,8 +31,9 @@ Everyone can read totals through functions that return counts only: `ballot_tota
 `get_plan(id)`, `peoples_budget(window_days)` (each card's net pushes over the last 30 days) and
 `peoples_recent(n)` (the latest moves, with no identity), `get_room(code)` and `room_totals(code)`
 (cards in members' plans, levels finished, and, once 3 have joined, how members voted), and
-`share_stats(window_days)` (shares, opened links, and new players by channel and kind of link;
-`count_share()` and `count_arrival()` add to it). Players sign in anonymously: no email,
+`share_stats(window_days)` (shares, opened links, and new players by channel and kind of link,
+and the friend-challenge funnel; `count_share()`, `count_arrival()` and `count_challenge_step()`
+add to it). Players sign in anonymously: no email,
 no name, no password.
 
 ## Setup (about 10 minutes)
@@ -47,8 +49,9 @@ no name, no password.
    [`20261106010000_rankings.sql`](migrations/20261106010000_rankings.sql), then
    [`20261107000000_peoples_budget.sql`](migrations/20261107000000_peoples_budget.sql), then
    [`20261108000000_rooms.sql`](migrations/20261108000000_rooms.sql), then
-   [`20261109000000_share_stats.sql`](migrations/20261109000000_share_stats.sql). Each is safe to
-   run again.
+   [`20261109000000_share_stats.sql`](migrations/20261109000000_share_stats.sql), then
+   [`20261110000000_challenge_funnel.sql`](migrations/20261110000000_challenge_funnel.sql). Each
+   is safe to run again.
 4. **Copy two public values** from **Connect** (top of the dashboard) or **Settings → API Keys**:
    - the **Project URL**, like `https://abcdefghijklmnop.supabase.co`
    - the **publishable key**, starting `sb_publishable_`

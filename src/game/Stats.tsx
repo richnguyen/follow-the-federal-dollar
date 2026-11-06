@@ -9,7 +9,7 @@ import { PUBLIC_SITE } from './share';
 // by channel and by kind of link. Not linked from the game's main menus.
 
 type ByKind = Record<string, Record<string, number>>;
-interface Stats { window_days: number; since: string; shares: ByKind; arrivals: ByKind; players: ByKind; players_all: number; daily: { day: string; shares: number; arrivals: number }[] }
+interface Stats { window_days: number; since: string; shares: ByKind; arrivals: ByKind; players: ByKind; players_all: number; daily: { day: string; shares: number; arrivals: number }[]; funnel?: { taken: number; met: number; returned: number } }
 
 const CHANNEL_NAME: Record<string, string> = {
   x: 'X', fa: 'Facebook', li: 'LinkedIn', re: 'Reddit', bl: 'Bluesky', th: 'Threads', wh: 'WhatsApp', em: 'Email',
@@ -79,6 +79,35 @@ export default function StatsPage() {
             <strong>K = shares per player × new players per share = {fmt(sharesPerPlayer)} × {fmt(playersPerShare)}{k != null ? ` = ${fmt(k)}` : ''}.</strong>{' '}
             Above 1, each player brings in more than one new player and the game grows by itself; below 1, it needs other ways in. {k != null && k < 1 ? `Raising either factor helps: more players sharing, or more of the people who open a link going on to play (${pct(ratio(Nc, A) ?? 0, 0)} now).` : ''}
           </div>
+
+          <Section id="funnel" title="Friend challenges, step by step" sub="Of the people who open a friend’s plan link: how many take the challenge, meet the goal, and send a plan back. Each step is counted once per challenge per browser.">
+            {s.funnel ? (() => {
+              const opened = byKind(s.arrivals, 'plan');
+              const steps = [
+                { label: 'Opened a friend’s plan link', n: opened },
+                { label: 'Took the challenge', n: s.funnel.taken },
+                { label: 'Met the goal', n: s.funnel.met },
+                { label: 'Sent a plan back', n: s.funnel.returned },
+              ];
+              return (
+                <>
+                  <ol className="rlist">
+                    {steps.map((st, i) => {
+                      const prev = i ? steps[i - 1].n : 0;
+                      return (
+                        <li className="rrow" key={st.label}>
+                          <span className="rrow-label">{st.label}</span>
+                          <span className="rrow-track" aria-hidden="true"><span style={{ width: `${opened ? Math.min(1, st.n / opened) * 100 : 0}%` }} /></span>
+                          <span className="rrow-val num">{st.n}{i > 0 ? ` · ${prev ? pct(Math.min(1, st.n / prev), 0) : '—'} of the step before` : ''}</span>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                  <p className="small muted">{byKind(s.players, 'plan', shared)} new player{byKind(s.players, 'plan', shared) === 1 ? '' : 's'} came in through a plan link. Players who already had the game count in these steps too.</p>
+                </>
+              );
+            })() : <p className="small muted">Run the challenge-funnel SQL in Supabase to see these steps.</p>}
+          </Section>
 
           <Section id="channels" title="By channel" sub="Where links were shared, how often they were opened, and how many new players they brought.">
             <div className="table-wrap">

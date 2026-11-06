@@ -1347,3 +1347,20 @@ html.modal-open { overflow: hidden; }
 /* ---------- share stats ---------- */
 .stats-k { margin-top: 12px; }
 .stats-table th[scope="row"] { font-weight: 600; }
+
+/* ---------- challenge mode ---------- */
+.friendplan-quick { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.friendplan-quick-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.challenge-live { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; box-shadow: 0 0 0 2px var(--accent); }
+.challenge-live-head { display: flex; flex-direction: column; gap: 2px; }
+.challenge-live-title { font-size: 1.2rem; }
+.challenge-banner .stars { vertical-align: -2px; }
+.tb-cm-line { display: none; }
+@media (max-width: 900px) {
+  /* Challenge mode on a phone: the gauges give way to one line, so the cards come sooner. */
+  .topboard[data-cm] .tb-side { display: none; }
+  .topboard[data-cm] .tb-cm-line { display: block; }
+  .topboard[data-cm] .tb-main { order: -1; }
+  .challenge-banner .challenge-banner-more { display: none; }
+  .challenge-banner { padding: 10px 12px; font-size: 0.875rem; }
+}

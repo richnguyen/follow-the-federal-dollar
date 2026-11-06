@@ -21,7 +21,11 @@ import { useHaptics } from '../game/haptics';
 import { COACH, DESK_PARTY, REACT } from '../game/script';
 import { PlanForYou } from '../game/PlanForYou';
 import { activeChallenge, type Challenge, dropChallenge } from '../game/challenge';
-import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead } from '../game/ChallengeParts';
+import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead, headToHead } from '../game/ChallengeParts';
+import { CHALLENGE_LINES } from '../game/script';
+import { ShareButton } from '../game/ShareButton';
+import { countStep } from '../lib/backend';
+import { encodePlan } from '../game/plans';
 import { ballotFrom, compare, myName } from '../game/plans';
 import { useShareLink } from '../game/shortlinks';
 import { activeRoom, type RoomRef, setActiveRoom } from '../game/rooms';
@@ -175,7 +179,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   useEffect(() => {
     const counts = !!desk || isUnlocked(deskStop.id, journey.done, journey.settings.freeRoam);
     if (met && counts && (!journey.done.includes(deskStop.id) || ev.stars > (journey.stars[deskStop.id] ?? 0))) journey.completeLevel(deskStop.id, ev.stars);
-    if (met && desk && !wasMet.current) setParty(ev.stars);
+    // A friend's challenge shows its result on the page instead (see "You vs …" below).
+    if (met && desk && !wasMet.current && !challenge) setParty(ev.stars);
     wasMet.current = met;
   }, [met, ev.stars, deskStop.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const nextStop = desk ? STOPS[desk.n] : undefined;
@@ -183,8 +188,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // The latest plan that meets the goal is kept, for challenges and the Budget Story.
   useEffect(() => {
     if (!met || !desk) return;
-    journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString() });
-  }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars]); // eslint-disable-line react-hooks/exhaustive-deps
+    journey.savePlan(desk.id, { ids, lv, gradual, stars: ev.stars, at: new Date().toISOString(), hint: loaded === 'economists' });
+  }, [met, ids.join(), Object.values(lv).join(), gradual, ev.stars, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
   // Playing for a room: the plan that meets the goal is sent to the room (cards only).
   const [room, setRoom] = useState<RoomRef | null>(() => { const r = activeRoom(); return r && desk && r.level === desk.n ? r : null; });
   const [roomSent, setRoomSent] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
@@ -199,12 +204,21 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const theirs = challenge ? assessShared(challenge.plan) : null;
   const mineNow = challenge && met ? assessShared({ goal, ids, lv, gradual, stars: ev.stars, at: '' }) : null;
   const challengeBy = challenge?.plan.by || 'Your friend';
-  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars } : null, { by: myName() || undefined, ballot: ballotFrom(journey.choices) });
-  const shareText = desk ? `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars. Can you beat my plan?` : undefined;
+  const byShort = challengeBy === 'Your friend' ? 'your friend' : challengeBy;
+  const byCol = challengeBy === 'Your friend' ? 'Them' : challengeBy;
+  const hinted = loaded === 'economists';
+  const h2h = mineNow && theirs ? headToHead(mineNow, theirs, hinted, challenge?.plan.hint) : null;
+  // Someone who hasn't played anything else yet (they came straight to this level, say from a link).
+  const newcomer = !!desk && !journey.done.some((id) => id !== desk.id);
+  const challengeKey = challenge ? encodePlan(challenge.plan) : '';
+  const returned = () => { if (challenge) countStep('returned', challengeKey); };
+  useEffect(() => { if (met && challenge) countStep('met', challengeKey); }, [met, challengeKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars, hint: hinted } : null, { by: myName() || undefined, ballot: ballotFrom(journey.choices) });
+  const shareText = desk ? `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars${h2h?.outcome === 'won' ? `, and beat ${byShort}’s plan` : ''}. Can you beat mine?` : undefined;
   const challengeResult = (inCard: boolean) => challenge && theirs && mineNow ? (
     <div className="challenge-result">
       <div className="stat-label">Your challenge from {challengeBy}</div>
-      <HeadToHead mine={mineNow} theirs={theirs} by={challengeBy === 'Your friend' ? 'Them' : challengeBy} sam={!inCard} auto={false} />
+      <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={!inCard} auto={false} mineHint={hinted} theirsHint={challenge.plan.hint} />
       <AgreementCard a={compare({ ids, ballot: ballotFrom(journey.choices) }, { ids: challenge.plan.ids, ballot: challenge.plan.ballot })} by={challengeBy === 'Your friend' ? 'your friend' : challengeBy} shareUrl={myLink} />
     </div>
   ) : null;
@@ -288,7 +302,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       ? `Let’s be bolder. ${missionFacts(goal)} Economists often point to about 3% as a level the country can keep up for the long haul. Can you get me there by FY${lastFY}?`
       : `The big one: no borrowing at all. ${missionFacts(goal)} It hasn’t happened since FY2001. Fair warning: ${cardsCanWin ? 'this takes a lot of cards.' : 'even every card on the table isn’t quite enough, so we’ll need some across-the-board changes too.'}`;
   // On level 10 the board's coach also gives the opening line, since the board comes first.
-  const said = special && !met && prog <= 0.001 ? { mood: 'worried' as Mood, line: introLine } : coach;
+  // A friend's challenge opens with a short line, so the cards come sooner on a phone.
+  const said = special && !met && prog <= 0.001 ? (challenge ? { mood: 'happy' as Mood, line: CHALLENGE_LINES.start } : { mood: 'worried' as Mood, line: introLine }) : coach;
   const coachBlock = desk ? <div className="sb-coach"><SamSays mood={said.mood} compact auto={party == null && !(met && !wasMet.current)} delay={special ? 300 : 900}>{said.line}</SamSays></div> : null;
   const progressBlock = (
     <div aria-live="polite" className="sb-progress">
@@ -432,6 +447,20 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
             );
           })
   );
+  const leversBlock = (inline: boolean) => (
+    <details className="card more" open={inline || slidersUsed || undefined} id="levers">
+      <summary className="chart-title">Across-the-board changes{inline ? '' : ' (advanced)'}</summary>
+      {inline && <p className="small"><strong>The cards alone can’t {mission.short.toLowerCase()}.</strong> Finish with these across-the-board changes, or take the free hint. Plans built by hand win the “How it was built” row.</p>}
+      <p className="small muted">Blunt tools: percentage changes to whole categories, from the {cbo.projShort}. They count toward the goal but not toward the efficiency score.</p>
+        {LEVERS.map((l) => (
+          <div className="range-row" key={l.id}>
+            <label htmlFor={'lv-' + l.id}><span className="swatch" style={{ background: l.color }} />{l.label}</label>
+            <input id={'lv-' + l.id} type="range" min={l.min} max={l.max} step={1} value={lv[l.id]} onChange={(e) => { setLoaded(null); setLv((p) => ({ ...p, [l.id]: Number(e.target.value) })); }} />
+            <output htmlFor={'lv-' + l.id}>{lv[l.id] > 0 ? '+' : ''}{lv[l.id]}%</output>
+          </div>
+        ))}
+      </details>
+  );
   const bestStars = desk ? Math.max(journey.stars[desk.id] ?? 0, ev.stars) : Math.max(progress.stars[goal] ?? 0, ev.stars);
 
   return (
@@ -439,9 +468,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       <PageHead
         eyebrow={`Level ${desk?.n} of ${STOPS.length} · ${desk?.difficulty} level · budget desk`}
         title={desk ? mission.title : 'Can you fix the budget?'}
-        lede={desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
+        lede={challenge ? undefined : desk ? <>Play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</> : <>Pick a mission, then play policy cards, real options the Congressional Budget Office (CBO) has priced, until the bar reaches the goal. Earn stars for going easy on the economy and for balancing tax increases with spending cuts.</>}
       />
-      <Accomplishments stars={bestStars} badges={progress.badges} />
+      {!challenge && <Accomplishments stars={bestStars} badges={progress.badges} />}
 
 
 
@@ -458,13 +487,14 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       {challenge && theirs && (
         <div className="challenge-banner" role="note">
           <div>
-            <strong>Challenge from {challengeBy}:</strong> meet this goal and beat {challengeBy === 'Your friend' ? 'their' : `${challengeBy}’s`} plan ({theirs.ev.stars} of 3 stars, {theirs.shares.length} card{theirs.shares.length === 1 ? '' : 's'}, a {theirs.econ.rating} steepest year for the economy).
+            <strong>Challenge from {challengeBy}:</strong> meet the goal, then beat {challengeBy === 'Your friend' ? 'their' : `${challengeBy}’s`} plan: <Stars n={theirs.ev.stars} size="sm" label={`${theirs.ev.stars} of 3 stars`} /> {theirs.shares.length} card{theirs.shares.length === 1 ? '' : 's'}, {theirs.econ.rating} on the economy{challenge.plan.hint === true ? ', built with the free hint' : challenge.plan.hint === false ? ', built by hand' : ''}.
+            <div className="small muted challenge-banner-more">Win on more stars, a gentler economy, fewer cards, or building yours by hand.</div>
           </div>
-          <button type="button" className="btn" onClick={() => { dropChallenge(); setChallenge(null); }}>Drop the challenge</button>
+          <button type="button" className="link-btn small" onClick={() => { dropChallenge(); setChallenge(null); }}>Drop the challenge</button>
         </div>
       )}
       <>
-          <section className="topboard card" id="game" aria-label="Scoreboard">
+          <section className="topboard card" id="game" aria-label="Scoreboard" data-cm={challenge ? true : undefined}>
             <div className="tb-coach">{coachBlock}</div>
             <div className="tb-main">
               <div className="tb-head">
@@ -472,6 +502,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                 <StarsPopover stars={ev.stars} checks={ev.checks} extra={efficiencyBlock} />
               </div>
               {progressBlock}
+              {challenge && <div className="small muted tb-cm-line">Economy: {econ.rating} · Who pays: {revTen + spTen ? `${Math.round(revenueShare * 100)}% taxes, ${Math.round((1 - revenueShare) * 100)}% cuts` : 'no cards yet'}</div>}
               <div className="sb-actions tb-actions">
                 <button type="button" className="btn" onClick={() => loadPlan('economists')} disabled={!econPlan.ids.length}>Free hint: the economists’ answer</button>
                 <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
@@ -486,16 +517,31 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               {splitBlock(true)}
             </div>
           </section>
+          {challenge && theirs && mineNow && h2h && (
+            <section className="card challenge-live" id="vs" aria-live="polite">
+              <div className="challenge-live-head">
+                <strong className="challenge-live-title">{h2h.outcome === 'won' ? `You’re ahead of ${byShort}!` : h2h.outcome === 'tied' ? `Dead even with ${byShort}` : `Goal met, but ${byShort}’s plan is still ahead`}</strong>
+                <span className="small muted">{h2h.outcome === 'lost' ? 'Keep going: every row below is a way to win.' : 'Send it back, or keep improving to win by more.'}</span>
+              </div>
+              <HeadToHead mine={mineNow} theirs={theirs} by={byCol} sam={false} mineHint={hinted} theirsHint={challenge.plan.hint} />
+              <div className="sb-actions">
+                {myLink && shareText && <ShareButton text={shareText} url={myLink} label={`Send it back to ${challengeBy === 'Your friend' ? 'your friend' : challengeBy}`} className={h2h.outcome === 'lost' ? 'btn' : 'btn btn-primary'} kind="plan" onShare={returned} />}
+                <button type="button" className={h2h.outcome === 'lost' ? 'btn btn-primary' : 'btn'} onClick={() => document.getElementById('deck-t')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>Keep improving</button>
+                <button type="button" className="btn" onClick={() => setParty(ev.stars)}>I’m done</button>
+              </div>
+              <AgreementCard a={compare({ ids, ballot: ballotFrom(journey.choices) }, { ids: challenge.plan.ids, ballot: challenge.plan.ballot })} by={byShort} shareUrl={myLink} />
+            </section>
+          )}
           <section className="deck deck-wide" aria-labelledby="deck-t">
             <Carousel label="policy cards" count={deck.length} tools={deckTools}>
               {cardEls}
             </Carousel>
             {deckNote}
           </section>
+          {challenge && !cardsCanWin && leversBlock(true)}
       </>
-      {challenge && mineNow && <section className="card" aria-label="Challenge result">{challengeResult(false)}</section>}
       <PlanForYou ids={ids} lv={lv} gradual={gradual} />
-      {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '' }} />}
+      {met && desk && <ChallengeShare level={desk.id} plan={{ ids, lv, gradual, stars: ev.stars, at: '', hint: hinted }} onShare={returned} />}
 
       <div className="plan-bar" aria-hidden="true">
         <Stars n={ev.stars} size="sm" />
@@ -542,17 +588,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         {!econPlan.met && <p className="small" style={{ marginTop: 8 }}>With these rules, even every allowed card falls short of this mission. Loosen a rule or use across-the-board changes.</p>}
       </details>
 
-      <details className="card more" open={slidersUsed || undefined}>
-        <summary className="chart-title">Across-the-board changes (advanced)</summary>
-        <p className="small muted">Blunt tools: percentage changes to whole categories, from the {cbo.projShort}. They count toward the goal but not toward the efficiency score.</p>
-        {LEVERS.map((l) => (
-          <div className="range-row" key={l.id}>
-            <label htmlFor={'lv-' + l.id}><span className="swatch" style={{ background: l.color }} />{l.label}</label>
-            <input id={'lv-' + l.id} type="range" min={l.min} max={l.max} step={1} value={lv[l.id]} onChange={(e) => { setLoaded(null); setLv((p) => ({ ...p, [l.id]: Number(e.target.value) })); }} />
-            <output htmlFor={'lv-' + l.id}>{lv[l.id] > 0 ? '+' : ''}{lv[l.id]}%</output>
-          </div>
-        ))}
-      </details>
+      {!(challenge && !cardsCanWin) && leversBlock(false)}
 
       <details className="card more" id="method">
         <summary className="chart-title">How the scoring works</summary>
@@ -585,7 +621,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       <Toasts items={toasts.items} />
       {party != null && desk && (
         <Celebration stop={STOP_BY_ID[desk.id]} stars={party} onClose={() => setParty(null)}
-          line={DESK_PARTY[party]} share={myLink && shareText ? { url: myLink, text: shareText } : undefined}>
+          line={h2h?.outcome ? CHALLENGE_LINES[h2h.outcome] : DESK_PARTY[party]} share={myLink && shareText ? { url: myLink, text: shareText } : undefined}
+          challenge={challenge && h2h?.outcome ? { outcome: h2h.outcome, by: challengeBy === 'Your friend' ? 'your friend' : challengeBy } : undefined}
+          newcomer={newcomer} onShare={returned}>
           {challengeResult(true)}
         </Celebration>
       )}

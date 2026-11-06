@@ -82,10 +82,18 @@ accomplishment, creativity, friendly rivalry) and leaving out the pressure tacti
 expiring rewards, streaks that punish a missed day, public ranking of people).
 
 - **Challenge a friend** (`?p=…`): a finished budget-desk plan travels inside the link itself,
-  with an optional first name and, if the player chooses, their answers to the big questions.
-  The friend sees the plan (`#plan`), plays the same level straight away, and gets a
-  head-to-head (stars, steepest year for the economy, cards used) and an agreement count
-  ("you agree on 7 of 12 choices").
+  with an optional first name, whether it was built with the free hint, and, if the player
+  chooses, their answers to the big questions. The friend's first screen (`#plan`) is a short
+  summary of the plan and one "Take the challenge" button that opens the same level right away,
+  with no sign-up and nothing to read first.
+- **Challenge mode** on the desk: a banner shows the plan to beat; the free hint and the
+  scoreboard come first on phones; and when the cards alone can't reach the goal, the
+  across-the-board changes sit right under them. Meeting the goal opens a live head-to-head
+  (stars, steepest year for the economy, cards used, and built by hand or with the hint) with no
+  pop-up, so the friend can keep improving. A win or a tie ends on "Send it back to <name>"; a loss
+  ends on "Try again". Newcomers are pointed to level 1 at the end, and Uncle Sam's voice starts
+  downloading only after the first tap. The share stats count each step: took the challenge, met
+  the goal, sent a plan back.
 - **Your Budget Story** (`#story`): six phone-story cards (1080×1920) drawn as SVG and saved as
   PNG: a nonpartisan budget personality, the biggest move, the player's own tax receipt under the
   plan, the debt path against current law, and the closest real proposal.
@@ -113,8 +121,9 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   server. Every link can branch.
 - **Share stats** (`#stats`, linked from "How everyone played"): shares made, shared links opened,
   and new players whose first visit came through a shared link, by channel and kind of link, with
-  the viral coefficient K = shares per player × new players per share. Counts are anonymous daily
-  tallies; a player's channel is the first tagged link that brought them.
+  the viral coefficient K = shares per player × new players per share, and the friend-challenge
+  funnel (opened → took the challenge → met the goal → sent a plan back). Counts are anonymous
+  daily tallies; a player's channel is the first tagged link that brought them.
 - **Link previews that match the plan.** Crawlers ignore the query string, so a shared link goes
   through one of 54 small static pages, `/p/<level>-<stars>-<personality>/`, each with its own
   1200×630 card ("Can you beat The Steady Hand's 3-star plan?"); people are forwarded to the plan

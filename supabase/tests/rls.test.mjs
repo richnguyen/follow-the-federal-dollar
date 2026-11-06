@@ -179,6 +179,13 @@ ok(ss.players.plan.wh === 1 && ss.players.site.wh === 5 && ss.players.site.direc
 await db.query(`update public.players set created_at = now() - interval '60 days' where user_id = $1`, [U[2]]);
 ok(!(await as(null, 'select public.share_stats(30) as s')).rows[0].s.players.plan, 'players outside the window are left out');
 
+// The challenge funnel.
+for (const st of ['taken', 'taken', 'met', 'returned', 'bogus']) await as(null, 'select public.count_challenge_step($1)', [st]);
+ok((await as(null, 'select * from public.challenge_steps')).rows.length === 0, 'nobody reads the funnel counts directly');
+ok(await fails(() => as(null, `insert into public.challenge_steps (day, step, n) values (current_date, 'met', 50)`)), 'nobody writes the funnel counts directly');
+const fu = (await as(null, 'select public.share_stats(30) as s')).rows[0].s.funnel;
+ok(fu.taken === 2 && fu.met === 1 && fu.returned === 1, 'funnel steps counted; unknown steps ignored');
+
 // Deleting a user removes their data.
 await db.query('delete from auth.users where id = $1', [U[0]]);
 ok((await as(null, 'select public.ballot_totals() as t')).rows[0].t.voters === 2, 'deleting a user removes their ballot');

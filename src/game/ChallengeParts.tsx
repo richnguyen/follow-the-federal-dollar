@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Stars } from '../components/game';
 import { type Assessment, assess } from '../lib/assess';
 import { pct } from '../lib/format';
@@ -32,7 +32,7 @@ const RATING: Record<string, string> = { gentle: 'gentle', moderate: 'moderate',
 export const whoPays = (a: Assessment) => (a.revTen + a.spTen ? `${pct(a.revenueShare, 0)} taxes, ${pct(1 - a.revenueShare, 0)} cuts` : 'no cards');
 
 /** "Challenge a friend": your plan as a link, with an optional name and your answers to the big questions. */
-export function ChallengeShare({ level, plan }: { level: string; plan: SavedPlan }) {
+export function ChallengeShare({ level, plan, onShare }: { level: string; plan: SavedPlan; onShare?: () => void }) {
   const j = useJourney();
   const d = DESK.find((x) => x.id === level)!;
   const [name, setName] = useState(myName);
@@ -56,43 +56,58 @@ export function ChallengeShare({ level, plan }: { level: string; plan: SavedPlan
           <label className="switch"><input type="checkbox" checked={withBallot} onChange={(e) => setWithBallot(e.target.checked)} /> Include my answers to the {answered} big question{answered === 1 ? '' : 's'}</label>
         )}
       </div>
-      <div className="sb-actions"><ShareButton text={text} url={url} label="Send the challenge" className="btn btn-primary" /></div>
-      <SocialShare text={text} url={url} />
+      <div className="sb-actions"><ShareButton text={text} url={url} label="Send the challenge" className="btn btn-primary" kind="plan" onShare={onShare} /></div>
+      <SocialShare text={text} url={url} kind="plan" onShare={onShare} />
     </section>
   );
 }
 
-/** Head-to-head on the same level: stars, how hard each plan hits the economy, and how many cards it takes. */
-export function HeadToHead({ mine, theirs, by, sam = true, auto = true }: { mine: Assessment; theirs: Assessment; by: string; sam?: boolean; auto?: boolean }) {
-  const rows = [
-    { label: 'Stars', me: mine.ev.stars, them: theirs.ev.stars, show: (a: Assessment) => <Stars n={a.ev.stars} size="sm" />, better: (a: number, b: number) => a - b },
-    { label: 'Steepest year for the economy', me: mine.econ.peakStep, them: theirs.econ.peakStep, show: (a: Assessment) => <span className="num">{pct(a.econ.peakStep, 1)} of GDP · {RATING[a.econ.rating]}</span>, better: (a: number, b: number) => (Math.abs(a - b) < 0.0005 ? 0 : b - a) },
-    { label: 'Policy cards used', me: mine.shares.length, them: theirs.shares.length, show: (a: Assessment) => <span className="num">{a.shares.length}</span>, better: (a: number, b: number) => b - a },
+export type Outcome = 'won' | 'tied' | 'lost';
+interface Row { label: string; b: number; mine: ReactNode; theirs: ReactNode }
+
+/**
+ * The head-to-head measures: stars, how hard each plan hits the economy, how many cards it takes,
+ * and, when both are known, whether it was built by hand or taken from the free hint.
+ */
+export function headToHead(mine: Assessment, theirs: Assessment, mineHint?: boolean, theirsHint?: boolean) {
+  const steep = (a: Assessment) => a.econ.peakStep;
+  const rows: Row[] = [
+    { label: 'Stars', b: mine.ev.stars - theirs.ev.stars, mine: <Stars n={mine.ev.stars} size="sm" />, theirs: <Stars n={theirs.ev.stars} size="sm" /> },
+    { label: 'Steepest year for the economy', b: Math.abs(steep(mine) - steep(theirs)) < 0.0005 ? 0 : steep(theirs) - steep(mine), mine: <span className="num">{pct(steep(mine), 1)} of GDP · {RATING[mine.econ.rating]}</span>, theirs: <span className="num">{pct(steep(theirs), 1)} of GDP · {RATING[theirs.econ.rating]}</span> },
+    { label: 'Policy cards used', b: theirs.shares.length - mine.shares.length, mine: <span className="num">{mine.shares.length}</span>, theirs: <span className="num">{theirs.shares.length}</span> },
   ];
-  const wins = rows.filter((r) => r.better(r.me, r.them) > 0).length;
-  const losses = rows.filter((r) => r.better(r.me, r.them) < 0).length;
-  const outcome = !mine.met ? null : wins > losses ? 'won' : wins === losses ? 'tied' : 'lost';
+  if (mineHint != null && theirsHint != null) {
+    rows.push({ label: 'How it was built', b: (mineHint ? 0 : 1) - (theirsHint ? 0 : 1), mine: mineHint ? 'Free hint' : 'By hand', theirs: theirsHint ? 'Free hint' : 'By hand' });
+  }
+  const wins = rows.filter((r) => r.b > 0).length;
+  const losses = rows.filter((r) => r.b < 0).length;
+  const same = mine.shares.length === theirs.shares.length && mine.shares.every((x) => theirs.shares.some((y) => y.id === x.id));
+  const outcome: Outcome | null = !mine.met ? null : wins > losses ? 'won' : wins === losses ? 'tied' : 'lost';
+  return { rows, outcome, same };
+}
+
+/** Head-to-head on the same level, as a table. */
+export function HeadToHead({ mine, theirs, by, sam = true, auto = true, mineHint, theirsHint }: { mine: Assessment; theirs: Assessment; by: string; sam?: boolean; auto?: boolean; mineHint?: boolean; theirsHint?: boolean }) {
+  const { rows, outcome, same } = headToHead(mine, theirs, mineHint, theirsHint);
   return (
     <div className="h2h">
       {outcome && sam && <SamSays mood={outcome === 'won' ? 'cheering' : outcome === 'tied' ? 'happy' : 'thinking'} compact auto={auto}>{CHALLENGE_LINES[outcome]}</SamSays>}
       {outcome && !sam && <p><strong>{CHALLENGE_LINES[outcome]}</strong></p>}
+      {same && <p className="small"><strong>Same cards as {by}.</strong> Swap one for a gentler card, or build yours by hand, to pull ahead.</p>}
       <table className="h2h-table">
         <thead><tr><th scope="col"><span className="sr-only">Measure</span></th><th scope="col">You</th><th scope="col">{by}</th></tr></thead>
         <tbody>
-          {rows.map((r) => {
-            const b = r.better(r.me, r.them);
-            return (
-              <tr key={r.label}>
-                <th scope="row">{r.label}</th>
-                <td data-win={b > 0}>{r.show(mine)}</td>
-                <td data-win={b < 0}>{r.show(theirs)}</td>
-              </tr>
-            );
-          })}
+          {rows.map((r) => (
+            <tr key={r.label}>
+              <th scope="row">{r.label}</th>
+              <td data-win={r.b > 0}>{r.mine}</td>
+              <td data-win={r.b < 0}>{r.theirs}</td>
+            </tr>
+          ))}
           <tr><th scope="row">Who pays</th><td>{whoPays(mine)}</td><td>{whoPays(theirs)}</td></tr>
         </tbody>
       </table>
-      <p className="small muted">More stars, a gentler steepest year, and fewer cards each count as a win. Who pays is a matter of taste, so it doesn’t count either way.</p>
+      <p className="small muted">More stars, a gentler steepest year, fewer cards, and building it by hand each count as a win. Who pays is a matter of taste, so it doesn’t count either way.</p>
     </div>
   );
 }

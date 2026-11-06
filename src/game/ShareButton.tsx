@@ -6,7 +6,7 @@ import { linkKind, shareText, SITE_URL, socialLinks } from './share';
 import { useJourney } from './state';
 
 /** A Share button (share sheet → clipboard → text to copy) and, on the public site, "Save image". */
-export function ShareButton({ text, title, url, card, label = 'Share', className = 'btn', kind }: { text: string; title?: string; url?: string; card?: () => Promise<Blob | null>; label?: string; className?: string; kind?: LinkKind }) {
+export function ShareButton({ text, title, url, card, label = 'Share', className = 'btn', kind, onShare }: { text: string; title?: string; url?: string; card?: () => Promise<Blob | null>; label?: string; className?: string; kind?: LinkKind; onShare?: () => void }) {
   const j = useJourney();
   const buzz = useHaptics();
   const [state, setState] = useState<'idle' | 'copied' | 'shared' | 'manual'>('idle');
@@ -17,7 +17,7 @@ export function ShareButton({ text, title, url, card, label = 'Share', className
     }
     const r = await shareText({ title, text, url, files, kind });
     if (r === 'cancelled') return;
-    if (r !== 'manual') { j.mark('share'); buzz('tap'); }
+    if (r !== 'manual') { j.mark('share'); buzz('tap'); onShare?.(); }
     setState(r === 'shared' ? 'shared' : r);
   };
   const save = async () => {
@@ -41,14 +41,14 @@ export function ShareButton({ text, title, url, card, label = 'Share', className
 }
 
 /** A row of social networks to post to; each opens that network's own share page in a new tab. */
-export function SocialShare({ text, url = SITE_URL, kind }: { text: string; url?: string; kind?: LinkKind }) {
+export function SocialShare({ text, url = SITE_URL, kind, onShare }: { text: string; url?: string; kind?: LinkKind; onShare?: () => void }) {
   const j = useJourney();
   return (
     <div className="social" role="group" aria-label="Share on social media">
       <span className="stat-label">Post it</span>
       <div className="social-links">
         {socialLinks(text, url, kind).map((s) => (
-          <a key={s.id} className="social-link" data-net={s.id} href={s.href} target="_blank" rel="noopener noreferrer" onClick={() => { j.mark('share'); countShare(kind ?? linkKind(url), s.ch); }}>{s.label}</a>
+          <a key={s.id} className="social-link" data-net={s.id} href={s.href} target="_blank" rel="noopener noreferrer" onClick={() => { j.mark('share'); countShare(kind ?? linkKind(url), s.ch); onShare?.(); }}>{s.label}</a>
         ))}
       </div>
     </div>

@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { EconMeter, SplitBar, Stars } from '../components/game';
 import { Section } from '../components/ui';
 import { LAST_FY } from '../lib/assess';
-import { rpc } from '../lib/backend';
+import { countStep, rpc } from '../lib/backend';
 import { pct } from '../lib/format';
 import { acceptChallenge } from './challenge';
 import { AgreementCard, assessShared, cardName, GOAL_PLAN, HeadToHead, whoPays } from './ChallengeParts';
 import { PlanProposal } from './DeskExtras';
 import { LevelIcon } from './icons';
 import { STOP_BY_ID, STOPS } from './levels';
-import { BALLOT, ballotFrom, closestPreset, compare, decodePlan, myName } from './plans';
+import { BALLOT, ballotFrom, closestPreset, compare, decodePlan, encodePlan, myName } from './plans';
 import { useShareLink } from './shortlinks';
 import { PLAN_LINES } from './script';
 import { useJourney } from './state';
@@ -57,7 +57,8 @@ export default function PlanPage({ param }: { param: string | null }) {
   const taxes = a.shares.filter((s) => s.side === 'revenue');
   const cuts = a.shares.filter((s) => s.side === 'spending');
   const answered = BALLOT.filter((q) => plan.ballot?.[q.key]);
-  const take = () => { acceptChallenge(plan); location.hash = plan.level; };
+  const take = () => { countStep('taken', encodePlan(plan)); acceptChallenge(plan); location.hash = plan.level; };
+  const RATING: Record<string, string> = { gentle: 'gentle on the economy', moderate: 'moderate on the economy', steep: 'steep on the economy' };
   const share = (x: number) => (x >= 1 ? 'the whole gap' : x < 0.01 ? 'under 1%' : `${Math.round(x * 100)}%`);
 
   return (
@@ -66,7 +67,16 @@ export default function PlanPage({ param }: { param: string | null }) {
         <div className="eyebrow level-eyebrow"><LevelIcon id={stop.icon} size={16} /> A plan from a friend · level {stop.n} of {STOPS.length} · {stop.difficulty}</div>
         <h1 className="page-title">{by === 'Your friend' ? 'Your friend’s' : `${by}’s`} {GOAL_PLAN[plan.goal]}</h1>
       </header>
-      <SamSays mood="surprised" auto>{mine ? PLAN_LINES.played : PLAN_LINES.intro}</SamSays>
+      {/* The first screen: what the plan scored, and the button to take it on. */}
+      <section className="card friendplan-quick" aria-label="The challenge">
+        <div className="friendplan-quick-line">
+          <Stars n={a.ev.stars} size="md" label={`${a.ev.stars} of 3 stars`} />
+          <span className="small">{a.shares.length} card{a.shares.length === 1 ? '' : 's'} · {whoPays(a)} · {RATING[a.econ.rating]}{plan.hint === true ? ' · built with the free hint' : plan.hint === false ? ' · built by hand' : ''}</span>
+        </div>
+        <button type="button" className="btn btn-primary btn-lg" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
+        <span className="small muted">Opens level {stop.n} right away · about {stop.minutes} minutes · no sign-up</span>
+      </section>
+      <SamSays mood="surprised" compact auto>{mine ? PLAN_LINES.played : PLAN_LINES.intro}</SamSays>
 
       <section className="card friendplan" aria-label="How the plan scores">
         <div className="friendplan-head">
@@ -83,14 +93,14 @@ export default function PlanPage({ param }: { param: string | null }) {
       </section>
 
       <div className="sb-actions plan-cta">
-        <button type="button" className="btn btn-primary btn-lg" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
+        <button type="button" className="btn btn-primary" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
         <a className="btn" href="#journey">Start the game from level 1</a>
       </div>
-      <p className="small muted">The challenge opens level {stop.n} right away, even if you haven’t reached it yet. Beat {by === 'Your friend' ? 'their' : `${by}’s`} plan on stars, a gentler steepest year for the economy, or fewer cards.</p>
+      <p className="small muted">Beat {by === 'Your friend' ? 'their' : `${by}’s`} plan on stars, a gentler steepest year for the economy, fewer cards, or building yours by hand.</p>
 
       {mine && (
         <Section id="vs" title="Your plan against theirs" sub={`Your latest plan on level ${stop.n}, scored the same way.`}>
-          <HeadToHead mine={mine} theirs={a} by={by === 'Your friend' ? 'Them' : by} />
+          <HeadToHead mine={mine} theirs={a} by={by === 'Your friend' ? 'Them' : by} mineHint={mineSaved?.hint} theirsHint={plan.hint} />
         </Section>
       )}
       {agreement.of > 0 && (

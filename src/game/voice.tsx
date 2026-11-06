@@ -79,7 +79,30 @@ export async function lineAudio(text: string): Promise<ArrayBuffer[] | null> {
   for (const k of keys) { const c = MANIFEST[k]; const buf = await loadBank(c[0]); out.push(buf.slice(c[1], c[1] + c[2])); }
   return out;
 }
-export const prefetchVoice = (route: string) => { if (hasRecordings) loadBank(bankFor(route)).catch(() => {}); };
+// Phones won't play sound until the visitor first taps the page, so the recordings wait for that
+// tap too: someone who only glances at a shared link downloads none of them.
+let waiting: Set<string> | null = null;
+const activated = () => {
+  const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
+  return ua ? ua.hasBeenActive : true;
+};
+export const prefetchVoice = (route: string) => {
+  if (!hasRecordings) return;
+  const bank = bankFor(route);
+  if (activated()) { loadBank(bank).catch(() => {}); return; }
+  if (!waiting) {
+    waiting = new Set();
+    const go = () => {
+      window.removeEventListener('pointerdown', go, true);
+      window.removeEventListener('keydown', go, true);
+      const w = waiting; waiting = null;
+      w?.forEach((b) => loadBank(b).catch(() => {}));
+    };
+    window.addEventListener('pointerdown', go, true);
+    window.addEventListener('keydown', go, true);
+  }
+  waiting.add(bank);
+};
 
 // ---------- device voices (fallback, or by choice) ----------
 // Novelty and formant-synthesis voices (macOS's Fred, Ralph, Zarvox, the Eloquence set, eSpeak)

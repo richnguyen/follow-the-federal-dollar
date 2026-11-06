@@ -60,6 +60,7 @@ export const CHALLENGE_LINES = {
   won: 'You beat their plan! Send yours back and see if they can top it.',
   tied: 'Dead even. Great minds think alike, partner.',
   lost: 'Goal met, but their plan still edges out yours. Fancy another go?',
+  start: 'Your move, partner. Pick cards below, or take the free hint to get going.',
 };
 
 export const STORY_LINES = {

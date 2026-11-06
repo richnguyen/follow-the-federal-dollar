@@ -161,3 +161,16 @@ export function countArrival(kind: LinkKind, channel: string) {
   if (!backendOn() || !(CHANNELS as readonly string[]).includes(channel)) return;
   rpc('count_arrival', { p_kind: kind, p_channel: channel }).catch(() => {});
 }
+
+// ---------- challenge funnel: taken → goal met → sent back ----------
+export type ChallengeStep = 'taken' | 'met' | 'returned';
+/** Counts one step of a friend's challenge, once per challenge per browser (no identity is sent). */
+export function countStep(step: ChallengeStep, challengeKey: string) {
+  if (!backendOn()) return;
+  const seen = load<Record<string, ChallengeStep[]>>('steps', {});
+  const list = seen[challengeKey] ?? [];
+  if (list.includes(step)) return;
+  seen[challengeKey] = [...list, step];
+  save('steps', Object.fromEntries(Object.entries(seen).slice(-50)));
+  rpc('count_challenge_step', { p_step: step }).catch(() => {});
+}

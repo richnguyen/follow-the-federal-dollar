@@ -35,7 +35,7 @@ export function shortIdFor(level: string, plan: Pick<SavedPlan, 'ids' | 'lv' | '
  * The link to share for a finished plan: the short link once the site has stored the plan,
  * the long link (which works anywhere, with no server) until then or when there is no server.
  */
-export function useShareLink(level: string | undefined, plan: Pick<SavedPlan, 'ids' | 'lv' | 'gradual' | 'stars'> | null, extra: Pick<SharedPlan, 'by' | 'ballot'>): string | undefined {
+export function useShareLink(level: string | undefined, plan: Pick<SavedPlan, 'ids' | 'lv' | 'gradual' | 'stars' | 'hint'> | null, extra: Pick<SharedPlan, 'by' | 'ballot'>): string | undefined {
   const d = level ? DESK.find((x) => x.id === level) : undefined;
   const code = d && plan ? planCode({ level: d.id, goal: d.goal, ids: plan.ids, lv: plan.lv, gradual: plan.gradual }) : '';
   const [id, setId] = useState<string | null>(() => (code ? cache[code] ?? null : null));
@@ -50,7 +50,8 @@ export function useShareLink(level: string | undefined, plan: Pick<SavedPlan, 'i
   if (!d || !plan) return undefined;
   // The link opens a static page whose preview matches the plan (level, stars, personality).
   const path = `p/${previewKind(d.id, plan)}/`;
-  return id ? shortLink(id, extra, path) : planLink({ level: d.id, goal: d.goal, ids: plan.ids, lv: plan.lv, gradual: plan.gradual, ...extra }, undefined, path);
+  const all = { ...extra, hint: plan.hint };
+  return id ? shortLink(id, all, path) : planLink({ level: d.id, goal: d.goal, ids: plan.ids, lv: plan.lv, gradual: plan.gradual, ...all }, undefined, path);
 }
 
 /** Which link preview fits a plan: its level, its stars, and its budget personality. */
