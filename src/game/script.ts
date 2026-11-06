@@ -10,6 +10,12 @@ export const QUIZ_LINES = {
   rightLater: 'You got it. Nice work sticking with it.',
   reveal: 'That one’s tricky. Here’s the answer.',
   revealSay: (answer: string) => `That one’s tricky. Here’s the answer. It’s ${answer}.`,
+  // A guess comes before the answer is shown: one pick, then the answer, and no effect on stars.
+  guessPrompt: 'Take a guess. There’s no wrong answer, and guesses don’t count toward stars.',
+  guessAsk: (question: string) => `Take a guess. ${question}`,
+  guessRight: 'Good guess!',
+  guessReveal: 'Good try. Here’s the answer.',
+  guessRevealSay: (answer: string) => `Good try. It’s ${answer}.`,
 };
 
 export const lockedLine = (unlock: string) => `We’ll get there. This level builds on the one before it. ${unlock}.`;
@@ -38,6 +44,18 @@ export const COACH = {
   almost: 'Almost there! One more card should do it.',
   partway: 'Good progress. We’re partway there.',
   begun: 'That’s a start. Keep going.',
+};
+
+// Level 5's hint: one card to try (by name), or what earns the next star once the goal is met.
+export const HINT_LINES = {
+  card: (name: string) => `Here’s a hint: try “${name}.”`,
+  finishes: 'On its own, it would finish the job, and gently.',
+  bigShare: 'It closes a big share of what’s left.',
+  gentle: 'We met the goal. For another star, go easier on the economy: phase it in, or swap a card for a gentler one.',
+  addTax: 'For another star, share the load: add a tax card, so spending cuts aren’t doing all the work.',
+  addCut: 'For another star, share the load: add a spending cut, so taxes aren’t doing all the work.',
+  done: 'Three stars. I wouldn’t change a thing.',
+  stuck: 'Stuck? Tap Hint, and I’ll point you to a card.',
 };
 
 export const VOICE_TEST = 'Howdy, partner. This is Uncle Sam. Let’s get my books in order.';

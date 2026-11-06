@@ -17,7 +17,8 @@ import { QUOTES, type Quote } from './quotes';
 // the same official data the rest of the site uses.
 // ---------------------------------------------------------------------------------------------
 
-export interface Quiz { id: string; question: string; choices: string[]; correct: number; explain: ReactNode }
+/** `guess`: asked before the step that shows the answer. One pick, then the answer; it never counts toward stars. */
+export interface Quiz { id: string; question: string; choices: string[]; correct: number; explain: ReactNode; guess?: boolean }
 export type VoteSpec =
   | { kind: 'option'; optionId: string }
   | { kind: 'issue'; id: string; question: string; context: ReactNode; choices: { value: string; label: string }[] };
@@ -97,7 +98,7 @@ function TaxTry() {
     <div className="try try-receipt">
       <div className="try-controls">
         <WageControls id="try-w" {...w} />
-        <p className="small muted">Your Social Security and Medicare taxes go to those programs’ trust funds; your income tax is split across the rest of Uncle Sam’s spending. Estimates use {tax.year} IRS rates and the standard deduction, with wages as your only income. <a href="#receipt">More options and assumptions</a></p>
+        <p className="small muted">An estimate: {tax.year} IRS rates, the standard deduction, and wages as your only income. <a href="#receipt">More options and assumptions</a></p>
       </div>
       <TaxReceipt wages={w.wages} status={w.status} />
     </div>
@@ -182,18 +183,18 @@ export const LEVELS: Level[] = [
     id: 'level-1', n: 1, title: 'Uncle Sam’s paycheck', topic: 'Where the money comes from', difficulty: 'Easy', minutes: 4, icon: 'paycheck', badge: 'Revenue basics',
     steps: [
       { id: 'meet', label: 'Meet Uncle Sam', kind: 'story', mood: 'happy', sam: <>Howdy, I’m Uncle Sam. I’m a regular guy with a very big household: {people(POP)} of you. Like plenty of families, I spend more than I bring in, and I could use your help sorting it out. Let’s start with my paycheck.</> },
-      { id: 'sources', label: 'Where it comes from', kind: 'facts', mood: 'thinking', sam: <>Last year I brought in {moneyWords(T.receipts)}. Most of it comes from your paychecks.</>,
-        body: () => <ChartFrame title={`Revenue by source, FY${FY}`} sourceIds={['mts9']}><BarList items={REC.map((r) => ({ id: r.id, label: REVENUE_BY_ID[r.id].label, value: r.amount, color: REVENUE_BY_ID[r.id].color }))} total={REC_TOTAL} /></ChartFrame> },
-      { id: 'q1', label: 'Quick check', kind: 'quiz', quiz: {
-        id: 'l1q1', question: 'Which source brings Uncle Sam the most money?',
+      { id: 'q1', label: 'Take a guess', kind: 'quiz', quiz: {
+        id: 'l1q1', guess: true, question: 'Which source brings Uncle Sam the most money?',
         choices: [REVENUE_BY_ID[REC[2].id].label, REVENUE_BY_ID[REC[0].id].label, REVENUE_BY_ID[REC[1].id].label], correct: 1,
         explain: <>{REVENUE_BY_ID[REC[0].id].label} brought in {money(REC[0].amount)}, {pct(REC[0].amount / REC_TOTAL, 0)} of all revenue in FY{FY}. Add payroll taxes and {pct(EARN / REC_TOTAL, 0)} of the money comes from taxes on what people earn.</> } },
-      { id: 'you', label: 'Your share', kind: 'try', mood: 'happy', sam: <>Want to see your part? Slide to your salary and I’ll print your own federal tax receipt: what you paid and where every dollar went.</>, body: () => <TaxTry /> },
+      { id: 'sources', label: 'Where it comes from', kind: 'facts', mood: 'thinking', sam: <>Last year I brought in {moneyWords(T.receipts)}. Most of it comes from your paychecks.</>,
+        body: () => <ChartFrame title={`Revenue by source, FY${FY}`} sourceIds={['mts9']}><BarList items={REC.map((r) => ({ id: r.id, label: REVENUE_BY_ID[r.id].label, value: r.amount, color: REVENUE_BY_ID[r.id].color }))} total={REC_TOTAL} /></ChartFrame> },
+      { id: 'you', label: 'Your share', kind: 'try', mood: 'happy', sam: <>Now your part. Slide to your salary, and I’ll print your own tax receipt.</>, body: () => <TaxTry /> },
       { id: 'q2', label: 'Quick check', kind: 'quiz', quiz: {
         id: 'l1q2', question: 'Where does the Social Security tax on your paycheck go?',
         choices: ['Into the general pot, like income taxes', 'Into Social Security’s trust funds, which can only pay its benefits', 'To your state government'], correct: 1,
         explain: <>Payroll taxes are dedicated by law. In FY{FY} the retirement and disability <Term id="trust-fund">trust funds</Term> received {money(budget.payroll.filter((p) => /OASI|\(DI\)/.test(p.name)).reduce((s, p) => s + p.amount, 0))} from them. Income taxes, by contrast, go into the Treasury’s general fund.</> } },
-      { id: 'vote', label: 'Your vote', kind: 'vote', mood: 'thinking', sam: <>Here’s a real idea CBO has priced. This year, the Social Security tax stops at {dollars(tax.ssWageBase)} of wages. What do you think?</>, vote: { kind: 'option', optionId: 'ss-tax-earnings-over-250k' } },
+      { id: 'vote', label: 'Your vote', kind: 'vote', mood: 'thinking', sam: <>This year, the Social Security tax stops at {dollars(tax.ssWageBase)} of wages. Here’s an idea CBO has priced.</>, vote: { kind: 'option', optionId: 'ss-tax-earnings-over-250k' } },
     ],
     takeaways: [`About ${pct(EARN / REC_TOTAL, 0)} of federal revenue comes from taxes on what people earn.`, 'Payroll taxes are set aside for Social Security and Medicare; income taxes go into the general fund.', `For every dollar spent in FY${FY}, about ${Math.round(BORROWED * 100)} cents was borrowed.`],
     deepDive: [{ route: 'revenue', label: 'Where it comes from' }, { route: 'receipt', label: 'Your tax receipt' }],
@@ -203,11 +204,11 @@ export const LEVELS: Level[] = [
     id: 'level-2', n: 2, title: 'Uncle Sam’s bills', topic: 'Where the money goes', difficulty: 'Easy', minutes: 5, icon: 'bills', badge: 'Spending basics',
     steps: [
       { id: 'intro', label: 'The bills', kind: 'story', mood: 'thinking', sam: <>Now the bills. I spent {moneyWords(T.outlays)} last year. That’s about {money(T.outlays / 365)} a day, or {dollars(T.outlays / HH)} for every household.</> },
-      { id: 'every100', label: 'Every $100', kind: 'facts', mood: 'thinking', sam: <>Here’s where every $100 went. Point at a row to light it up.</>, body: () => <WaffleBlock /> },
-      { id: 'q1', label: 'Quick check', kind: 'quiz', quiz: {
-        id: 'l2q1', question: 'Which single program costs Uncle Sam the most?',
+      { id: 'q1', label: 'Take a guess', kind: 'quiz', quiz: {
+        id: 'l2q1', guess: true, question: 'Which single program costs Uncle Sam the most?',
         choices: ['National defense', 'Medicare', 'Social Security', 'Net interest on the debt'], correct: 2,
         explain: <>Social Security paid out {money(cat('ss'))} in FY{FY}, about {pct(cat('ss') / T.outlays, 0)} of all spending, to roughly {ssa.beneficiaries ? people(ssa.beneficiaries.total) : '71 million'} people.</> } },
+      { id: 'every100', label: 'Every $100', kind: 'facts', mood: 'thinking', sam: <>Here’s where every $100 went. Point at a row to light it up.</>, body: () => <WaffleBlock /> },
       { id: 'kinds', label: 'Three kinds of bills', kind: 'facts', mood: 'worried', sam: <>Most of my bills are on autopilot. They’re set by permanent laws, so they get paid without a yearly vote.</>,
         body: () => (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -249,12 +250,12 @@ export const LEVELS: Level[] = [
   {
     id: 'level-4', n: 4, title: 'Spending more than I make', topic: 'Deficits and the structural gap', difficulty: 'Medium', minutes: 5, icon: 'gap', badge: 'Deficits',
     steps: [
-      { id: 'intro', label: 'The problem', kind: 'story', mood: 'worried', sam: <>Here’s my real problem. It isn’t one bad month. I’ve borrowed every single year since {LAST_SURPLUS + 1}. Last year the gap was {moneyWords(T.deficit)}.</> },
-      { id: 'gap', label: 'The gap', kind: 'facts', mood: 'worried', sam: <>The dark band is spending that runs on autopilot, plus interest. The light band on top is what Congress votes on each year. The line is everything I take in. Lately the line barely clears the dark band.</>, body: () => <GapChart /> },
-      { id: 'q1', label: 'Quick check', kind: 'quiz', quiz: {
-        id: 'l4q1', question: 'When did Uncle Sam last take in more than he spent?',
+      { id: 'intro', label: 'The problem', kind: 'story', mood: 'worried', sam: <>Here’s my real problem. It isn’t one bad month. Last year the gap was {moneyWords(T.deficit)}, and it’s been a long time since I took in more than I spent.</> },
+      { id: 'q1', label: 'Take a guess', kind: 'quiz', quiz: {
+        id: 'l4q1', guess: true, question: 'When did Uncle Sam last take in more than he spent?',
         choices: dSurplusChoices.map((y) => `FY${y}`), correct: dSurplusChoices.indexOf(LAST_SURPLUS),
         explain: <>FY{LAST_SURPLUS} was the last surplus. Deficits jumped in the 2008–09 financial crisis and the pandemic, and have stayed large since.</> } },
+      { id: 'gap', label: 'The gap', kind: 'facts', mood: 'worried', sam: <>The dark band is spending that runs on autopilot, plus interest. The light band on top is what Congress votes on each year. The line is everything I take in. Lately the line barely clears the dark band.</>, body: () => <GapChart /> },
       { id: 'q2', label: 'Quick check', kind: 'quiz', quiz: {
         id: 'l4q2', question: `In FY${BUCKET.y.fy}, how much of all revenue did mandatory programs plus interest use up?`,
         choices: ['About a quarter', 'About half', `About ${Math.round(MI_SHARE * 100)}%`], correct: 2,
@@ -273,6 +274,10 @@ export const LEVELS: Level[] = [
     id: 'level-6', n: 6, title: 'The credit card', topic: 'Debt and interest', difficulty: 'Medium', minutes: 5, icon: 'card', badge: 'Debt and interest',
     steps: [
       { id: 'intro', label: 'The balance', kind: 'story', mood: 'worried', sam: <>All that borrowing goes on the card. My total debt was {money(D.total)} on {dateLabel(D.date)}. That’s about {dollars(D.total / HH)} per household.</> },
+      { id: 'q1', label: 'Take a guess', kind: 'quiz', quiz: {
+        id: 'l5q1', guess: true, question: `Which cost more in FY${FY}: interest on the debt or national defense?`,
+        choices: ['National defense', 'Interest on the debt', 'About the same'], correct: interestBeatsDefense ? 1 : 0,
+        explain: <>Net interest was {money(cat('interest'))} and national defense was {money(cat('defense'))} in FY{FY}.</> } },
       { id: 'who', label: 'Who I owe', kind: 'facts', mood: 'thinking', sam: <>Most of it I owe to investors, banks, other countries, and the Federal Reserve. The rest I owe to my own trust funds, like Social Security.</>,
         body: () => (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -284,10 +289,6 @@ export const LEVELS: Level[] = [
             </ChartFrame>
           </div>
         ) },
-      { id: 'q1', label: 'Quick check', kind: 'quiz', quiz: {
-        id: 'l5q1', question: `Which cost more in FY${FY}: interest on the debt or national defense?`,
-        choices: ['National defense', 'Interest on the debt', 'About the same'], correct: interestBeatsDefense ? 1 : 0,
-        explain: <>Net interest was {money(cat('interest'))} and national defense was {money(cat('defense'))} in FY{FY}.</> } },
       { id: 'rates', label: 'The interest rate', kind: 'facts', mood: 'worried', sam: <>Interest rates matter too. A few years ago I was paying very little. Now my old cheap loans are being replaced by new ones at higher rates.</>,
         body: () => {
           const rates = debt.rates.filter((r) => r.date >= '2005-01-01');
@@ -318,6 +319,10 @@ export const LEVELS: Level[] = [
     id: 'level-7', n: 7, title: 'Who writes my budget?', topic: 'How Congress budgets, and the laws that moved the needle', difficulty: 'Medium', minutes: 7, icon: 'capitol', badge: 'The budget process',
     steps: [
       { id: 'intro', label: 'Kitchen table', kind: 'story', mood: 'thinking', sam: <>In my house we sit down at the kitchen table once a year and plan. Congress is supposed to do the same, with a deadline of October 1. Let’s see how that’s going.</> },
+      { id: 'q1', label: 'Take a guess', kind: 'quiz', quiz: {
+        id: 'l6q1', guess: true, question: 'When did Congress last pass all of its regular spending bills on time?',
+        choices: ['FY2019', `FY${process.lastAllOnTime?.fy ?? 1997}`, 'FY2009'], correct: 1,
+        explain: <>{process.lastAllOnTime?.note ?? 'All regular bills were last enacted on time in FY1997.'}</> } },
       { id: 'paper', label: 'On paper vs. practice', kind: 'facts', mood: 'worried', sam: <>On paper it’s orderly. In practice, Congress usually misses the deadline and passes stopgaps called <Term id="cr">continuing resolutions</Term>.</>,
         body: () => (
           <div className="grid-3" style={{ gap: 12 }}>
@@ -326,11 +331,7 @@ export const LEVELS: Level[] = [
             <Stat label="Budget plan not adopted" value={`${process.years.filter((y) => !y.resolution).length} years`} note={`of the ${process.years.length} shown`} />
           </div>
         ) },
-      { id: 'q1', label: 'Quick check', kind: 'quiz', quiz: {
-        id: 'l6q1', question: 'When did Congress last pass all of its regular spending bills on time?',
-        choices: ['FY2019', `FY${process.lastAllOnTime?.fy ?? 1997}`, 'FY2009'], correct: 1,
-        explain: <>{process.lastAllOnTime?.note ?? 'All regular bills were last enacted on time in FY1997.'}</> } },
-      { id: 'laws', label: 'Laws that moved it', kind: 'facts', mood: 'surprised', sam: <>Deficits are written into law. Here are the biggest laws of the past 25 years, with the official estimates made when each passed. Tap one to see what it did and why it cost so much.</>,
+      { id: 'laws', label: 'Laws that moved it', kind: 'facts', mood: 'surprised', sam: <>Deficits are written into law. Here are the biggest laws of the past 25 years. Tap one to see what it did.</>,
         body: () => <LawExplorer /> },
       { id: 'q2', label: 'Quick check', kind: 'quiz', quiz: {
         id: 'l6q2', question: 'Which of these laws was officially estimated to reduce deficits?',
@@ -350,6 +351,10 @@ export const LEVELS: Level[] = [
     id: 'level-9', n: 9, title: 'Keeping my promises', topic: 'Social Security’s future', difficulty: 'Medium', minutes: 6, icon: 'shield', badge: 'Social Security',
     steps: [
       { id: 'intro', label: 'A promise', kind: 'story', mood: 'proud', sam: <>I made a promise to the folks who worked their whole lives. Social Security pays about {ssa.beneficiaries ? people(ssa.beneficiaries.total) : '71 million'} people. But its savings are running down.</> },
+      { id: 'q1', label: 'Take a guess', kind: 'quiz', quiz: {
+        id: 'l7q1', guess: true, question: `What happens when the retirement fund runs out in late ${ssa.depletion.oasi.year}?`,
+        choices: ['Benefits stop completely', `Benefits are cut automatically to what incoming taxes can pay, about ${ssa.depletion.oasi.payablePct}%`, 'Nothing changes; the Treasury covers the difference'], correct: 1,
+        explain: <>Benefits don’t stop. By law they can be paid only from incoming taxes, which would cover about {ssa.depletion.oasi.payablePct}% of scheduled retirement and survivor benefits, unless Congress acts first.</> } },
       { id: 'fund', label: 'The savings', kind: 'facts', mood: 'worried', sam: <>Since FY{ssa.oasdi.find((r) => r.year >= 2015 && r.cost > r.income)?.year ?? 2021} the program has paid out more than it takes in each year, so the trust fund is shrinking.</>,
         body: () => {
           const h = ssa.oasdi;
@@ -367,10 +372,6 @@ export const LEVELS: Level[] = [
             </div>
           );
         } },
-      { id: 'q1', label: 'Quick check', kind: 'quiz', quiz: {
-        id: 'l7q1', question: `What happens when the retirement fund runs out in late ${ssa.depletion.oasi.year}?`,
-        choices: ['Benefits stop completely', `Benefits are cut automatically to what incoming taxes can pay, about ${ssa.depletion.oasi.payablePct}%`, 'Nothing changes; the Treasury covers the difference'], correct: 1,
-        explain: <>Benefits don’t stop. By law they can be paid only from incoming taxes, which would cover about {ssa.depletion.oasi.payablePct}% of scheduled retirement and survivor benefits, unless Congress acts first.</> } },
       { id: 'you', label: 'What it means for you', kind: 'try', mood: 'thinking', sam: <>Let’s make it personal. What year were you born?</>, body: () => <AgeTry /> },
       { id: 'q2', label: 'Quick check', kind: 'quiz', quiz: {
         id: 'l7q2', question: 'According to the trustees, which single change made now would close Social Security’s 75-year gap?',
@@ -386,9 +387,10 @@ export const LEVELS: Level[] = [
 ];
 
 /** The budget desk levels: the hard "wall" levels where the player fixes the budget with real options. */
-export interface DeskLevel { id: string; n: number; goal: 'stabilize' | 'deficit3' | 'balance'; title: string; topic: string; difficulty: Difficulty; minutes: number; icon: IconId; badge: string }
+/** `hint`: the first desk level offers a hint (Uncle Sam points to one card, or to the next star). */
+export interface DeskLevel { id: string; n: number; goal: 'stabilize' | 'deficit3' | 'balance'; title: string; topic: string; difficulty: Difficulty; minutes: number; icon: IconId; badge: string; hint?: boolean }
 export const DESK: DeskLevel[] = [
-  { id: 'level-5', n: 5, goal: 'stabilize', title: 'Stop the debt from outgrowing the economy', topic: 'Budget desk: fix the budget with real options CBO has priced', difficulty: 'Hard', minutes: 8, icon: 'gauge', badge: 'Debt stabilized' },
+  { id: 'level-5', n: 5, goal: 'stabilize', title: 'Stop the debt from outgrowing the economy', topic: 'Budget desk: fix the budget with real options CBO has priced', difficulty: 'Hard', minutes: 8, icon: 'gauge', badge: 'Debt stabilized', hint: true },
   { id: 'level-8', n: 8, goal: 'deficit3', title: 'Cut the deficit to 3% of GDP', topic: 'Budget desk: a bigger fix, with the same rules', difficulty: 'Hard', minutes: 8, icon: 'target', badge: 'Deficit tamed' },
   { id: 'level-10', n: 10, goal: 'balance', title: 'Balance the budget', topic: 'Budget desk: the final challenge, no borrowing at all', difficulty: 'Super hard', minutes: 10, icon: 'scale', badge: 'Budget balanced' },
 ];
@@ -415,11 +417,15 @@ export function unlockText(id: string) {
 }
 
 /** Stars for a chapter level: three for every question right on the first try. */
+/** The quick checks that count toward a level's stars (guesses never do). */
+export const checksOf = (level: Level) => level.steps.filter((s) => s.quiz && !s.quiz.guess).map((s) => s.quiz!);
+
+/** Three stars for every quick check right on the first try; two for right on the second try (or half the points); otherwise one. */
 export function chapterStars(level: Level, quiz: Record<string, { tries: number; correct: boolean }>) {
-  const qs = level.steps.filter((s) => s.quiz).map((s) => quiz[s.quiz!.id]);
+  const qs = checksOf(level).map((q) => quiz[q.id]);
   if (!qs.length) return 3;
-  const first = qs.filter((q) => q?.correct && q.tries === 1).length;
-  return first === qs.length ? 3 : first >= qs.length / 2 ? 2 : 1;
+  const points = qs.reduce((a, q) => a + (q?.correct ? (q.tries === 1 ? 2 : 1) : 0), 0);
+  return points === qs.length * 2 ? 3 : points >= qs.length ? 2 : 1;
 }
 
 export function useLevel(id: string) {

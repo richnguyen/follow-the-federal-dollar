@@ -96,10 +96,12 @@ const activated = () => {
   const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
   return ua ? ua.hasBeenActive : true;
 };
+// Level 5's hint lines live in their own bank, fetched only there.
+const extraBanks = (route: string) => (route === 'level-5' && Object.values(MANIFEST).some((c) => c[0] === 'hint') ? ['hint'] : []);
 export const prefetchVoice = (route: string) => {
   if (!hasRecordings) return;
-  const bank = bankFor(route);
-  if (activated()) { loadBank(bank).catch(() => {}); return; }
+  const all = [bankFor(route), ...extraBanks(route)];
+  if (activated()) { all.forEach((b) => loadBank(b).catch(() => {})); return; }
   if (!waiting) {
     waiting = new Set();
     const go = () => {
@@ -111,7 +113,7 @@ export const prefetchVoice = (route: string) => {
     window.addEventListener('pointerdown', go, true);
     window.addEventListener('keydown', go, true);
   }
-  waiting.add(bank);
+  all.forEach((b) => waiting!.add(b));
 };
 
 // ---------- device voices (fallback, or by choice) ----------

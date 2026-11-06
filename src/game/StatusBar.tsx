@@ -9,10 +9,10 @@ import { ReadingSettings } from './Settings';
 import { useJourney } from './state';
 import { useNarrator } from './voice';
 
-// The one bar at the top of every page. Left: the road map ("Your journey"). Middle: the current
-// level and the ten-level track; hovering it (or tapping) lists every level to jump to, plus the
-// field-guide chapters. Then stars and accomplishments. Right: continue, Uncle Sam's voice, the
-// glossary, sources & methods, and settings.
+// The one bar at the top of every page. Left: the current level and the ten-level track; hovering
+// it (or tapping) lists every level to jump to, plus the field-guide chapters. Then stars and
+// accomplishments. Right: continue, Uncle Sam's voice, the glossary, sources & methods,
+// settings, and the road map ("Your journey").
 
 /** Budget-desk badges are saved by the desk itself; re-read them whenever it saves. */
 function useDeskBadges() {
@@ -77,7 +77,6 @@ export function StatusBar({ route }: { route: string }) {
     <header className="appbar" ref={bar} aria-label="Game bar">
       <div className="ab-inner">
         <a className="ab-brand" href="#journey" aria-label="Help Uncle Sam Balance the Budget: your journey"><BrandMark /></a>
-        <a className="ab-btn ab-journey" href="#journey" aria-current={route === 'journey' ? 'page' : undefined}><MapIcon /><span className="ab-label">Your journey</span></a>
 
         <Pop id="levels" open={open} setOpen={setOpen} hover className="ab-levels" button={(p) => (
           <div className="ab-levelbar">
@@ -162,6 +161,7 @@ export function StatusBar({ route }: { route: string }) {
             <div className="ab-panel-head"><strong>Settings</strong><span className="small muted">Saved in this browser</span></div>
             <ReadingSettings />
           </Pop>
+          <a className="ab-btn ab-journey" href="#journey" aria-current={route === 'journey' ? 'page' : undefined}><MapIcon /><span className="ab-label">Your journey</span></a>
         </div>
       </div>
     </header>

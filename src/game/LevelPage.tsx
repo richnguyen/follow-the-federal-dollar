@@ -6,7 +6,7 @@ import { Celebration } from './Celebrate';
 import { Stars } from '../components/game';
 import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
-import { chapterStars, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
+import { chapterStars, checksOf, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
 import { useJourney } from './state';
 import { plain, SamSays, UncleSam } from './UncleSam';
 import { lockedLine, QUIZ_LINES } from './script';
@@ -74,7 +74,8 @@ function LevelRun({ level }: { level: Level }) {
   };
 
   const step = level.steps[i];
-  const quizOk = step?.kind !== 'quiz' || !!j.quiz[step.quiz!.id]?.correct || (j.quiz[step.quiz!.id]?.tries ?? 0) >= 2;
+  // A quick check needs the right answer (or two tries); a guess needs any one pick.
+  const quizOk = step?.kind !== 'quiz' || !!j.quiz[step.quiz!.id]?.correct || (j.quiz[step.quiz!.id]?.tries ?? 0) >= (step.quiz!.guess ? 1 : 2);
 
   // Keyboard play, so nothing waits on the mouse: Enter or → continues, ← goes back.
   const keys = useRef({ finishStep, go, i, quizOk, step, party });
@@ -105,7 +106,7 @@ function LevelRun({ level }: { level: Level }) {
           <div className="level-nav">
             <button type="button" className="btn" onClick={() => go(Math.max(0, i - 1))} disabled={i === 0}>Back</button>
             <button type="button" className="btn btn-primary" onClick={finishStep} disabled={!quizOk}>
-              {!quizOk ? 'Answer to continue' : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
+              {!quizOk ? (step.quiz?.guess ? 'Make a guess to continue' : 'Answer to continue') : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
             </button>
             <span className="keyhint small muted" aria-hidden="true">{step.kind === 'quiz' ? <><kbd>1</kbd>–<kbd>{step.quiz!.choices.length}</kbd> answer · </> : null}<kbd>Enter</kbd> continue · <kbd>←</kbd> back</span>
           </div>
@@ -172,8 +173,10 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
   const rec = j.quiz[quiz.id];
   const [picked, setPicked] = useState<number | null>(rec?.correct ? quiz.correct : null);
   const [wrong, setWrong] = useState<number[]>([]);
+  const guess = !!quiz.guess;
   const solved = picked === quiz.correct;
-  const revealed = !solved && (rec?.tries ?? 0) >= 2;
+  // A quick check shows the answer after two misses; a guess shows it after the first pick.
+  const revealed = !solved && (rec?.tries ?? 0) >= (guess ? 1 : 2);
   const buzz = useHaptics();
   const pick = (k: number) => {
     if (solved) return;
@@ -184,7 +187,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
   };
   const pickRef = useRef(pick);
   pickRef.current = pick;
-  const blocked = (k: number) => solved || (wrong.includes(k) && !revealed) || (revealed && k !== quiz.correct);
+  const blocked = (k: number) => solved || (guess && revealed) || (wrong.includes(k) && !revealed) || (revealed && k !== quiz.correct);
   const blockedRef = useRef(blocked);
   blockedRef.current = blocked;
   useEffect(() => {
@@ -198,10 +201,15 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
     window.addEventListener('keydown', on);
     return () => window.removeEventListener('keydown', on);
   }, [quiz.choices.length]);
-  const mood = solved ? 'proud' : revealed ? 'thinking' : picked != null ? 'worried' : 'happy';
+  const mood = solved ? 'proud' : revealed ? (guess ? 'surprised' : 'thinking') : picked != null ? 'worried' : 'happy';
   const Q = QUIZ_LINES;
-  const line = solved ? (rec && rec.tries > 1 ? Q.rightLater : Q.right) : picked != null ? (revealed ? Q.reveal : Q.wrong) : Q.prompt;
-  const say = solved ? `${line} ${plain(quiz.explain)}` : revealed ? `${Q.revealSay(quiz.choices[quiz.correct])} ${plain(quiz.explain)}` : picked != null ? line : Q.ask(quiz.question);
+  const ex = plain(quiz.explain);
+  const line = guess
+    ? (solved ? Q.guessRight : revealed ? Q.guessReveal : Q.guessPrompt)
+    : solved ? (rec && rec.tries > 1 ? Q.rightLater : Q.right) : picked != null || revealed ? (revealed ? Q.reveal : Q.wrong) : Q.prompt;
+  const say = guess
+    ? (solved ? `${Q.guessRight} ${ex}` : revealed ? `${Q.guessRevealSay(quiz.choices[quiz.correct])} ${ex}` : Q.guessAsk(quiz.question))
+    : solved ? `${line} ${ex}` : revealed ? `${Q.revealSay(quiz.choices[quiz.correct])} ${ex}` : picked != null ? line : Q.ask(quiz.question);
   return (
     <div className="quiz">
       <SamSays mood={mood} compact auto say={say}>{line}</SamSays>
@@ -222,7 +230,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
         </div>
         {(solved || revealed || picked != null) && (
           <div className="quiz-feedback" data-ok={solved} role="status">
-            <strong>{solved ? 'Correct.' : revealed ? `The answer is ${CHOICE_LETTERS[quiz.correct]}.` : 'Not quite.'}</strong>{' '}
+            <strong>{solved ? (guess ? 'Good guess.' : 'Correct.') : revealed ? `The answer is ${CHOICE_LETTERS[quiz.correct]}.` : 'Not quite.'}</strong>{' '}
             {solved || revealed ? quiz.explain : 'Give it another try.'}
           </div>
         )}
@@ -269,7 +277,7 @@ function VoteCard({ vote }: { vote: VoteSpec }) {
             <span className="small muted num">{pct(t.support / n, 0)} support · {n} vote{n === 1 ? '' : 's'}</span>
           </div>
         )}
-        <VoteFoot votes={votes} />
+        {cur && <VoteFoot votes={votes} />}
         <p className="small"><a href={o.source.url} target="_blank" rel="noreferrer">Read CBO’s full write-up of this option</a></p>
       </article>
     );
@@ -303,7 +311,7 @@ function VoteCard({ vote }: { vote: VoteSpec }) {
         ))}
       </div>
       {cur && <p className="small muted">Your vote is recorded{votes.available && n > 0 ? `, along with ${n - 1 > 0 ? `${n - 1} other${n - 1 === 1 ? '' : 's'}` : 'no others yet'}` : ''}. You can change it any time.</p>}
-      <VoteFoot votes={votes} />
+      {cur && <VoteFoot votes={votes} />}
     </article>
   );
 }
@@ -318,7 +326,7 @@ function VoteFoot({ votes }: { votes: ReturnType<typeof useVotes> }) {
 function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
   const j = useJourney();
   const next = STOPS[level.n];
-  const quizzes = level.steps.filter((s) => s.quiz).map((s) => j.quiz[s.quiz!.id]);
+  const quizzes = checksOf(level).map((q) => j.quiz[q.id]);
   const firstTry = quizzes.filter((q) => q?.correct && q.tries === 1).length;
   const levelsDone = STOPS.filter((l) => j.done.includes(l.id)).length;
   const stars = j.stars[level.id] ?? chapterStars(level, j.quiz);
@@ -329,7 +337,7 @@ function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
         <div>
           <div className="eyebrow">Level {level.n} complete · <span className="complete-stars" aria-label={`${stars} of 3 stars`}>{'★'.repeat(stars)}<span className="muted">{'★'.repeat(3 - stars)}</span></span></div>
           <h2 className="complete-title" id="complete-t">{level.badge}: explained</h2>
-          <p className="small muted">{firstTry === quizzes.length ? 'Every question right on the first try. ' : `${firstTry} of ${quizzes.length} questions right on the first try; replay for three stars. `}{levelsDone} of {STOPS.length} levels done.</p>
+          <p className="small muted">{firstTry === quizzes.length ? `${quizzes.length === 1 ? 'The quick check' : 'Every quick check'} right on the first try. ` : `${firstTry} of ${quizzes.length} quick check${quizzes.length === 1 ? '' : 's'} right on the first try; replay for three stars. `}{levelsDone} of {STOPS.length} levels done.</p>
         </div>
       </div>
       <div className="stat-label">What we figured out together</div>

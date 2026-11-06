@@ -38,7 +38,13 @@ const banks = await page.evaluate(async () => {
   for (const l of L.LEVELS) {
     for (const st of l.steps) {
       if (st.sam) add(l.id, U.plain(st.sam));
-      if (st.quiz) {
+      if (st.quiz?.guess) {
+        // A guess: asked first, then the answer, right or not.
+        const q = st.quiz, ex = U.plain(q.explain), Q = S.QUIZ_LINES;
+        add(l.id, Q.guessAsk(q.question));
+        add(l.id, `${Q.guessRight} ${ex}`);
+        add(l.id, `${Q.guessRevealSay(q.choices[q.correct])} ${ex}`);
+      } else if (st.quiz) {
         const q = st.quiz, ex = U.plain(q.explain), Q = S.QUIZ_LINES;
         add(l.id, Q.ask(q.question));
         add(l.id, Q.wrong);
@@ -53,6 +59,11 @@ const banks = await page.evaluate(async () => {
   Object.values(S.DESK_PARTY).forEach((t) => add('desk', t));
   Object.values(S.COACH).forEach((t) => add('desk', t));
   Object.values(S.REACT).forEach((t) => add('desk', t));
+  // Level 5's hint: one sentence naming each card, and the star tips. Their own bank, so the
+  // other desk levels don't download them.
+  const P = await import('/src/lib/planData.ts');
+  for (const o of P.OPTIONS_DATA.options) add('hint', S.HINT_LINES.card(o.name));
+  for (const k of ['finishes', 'bigShare', 'gentle', 'addTax', 'addCut', 'done']) add('hint', S.HINT_LINES[k]);
   // Shared plans, challenges, the Budget Story, and the Daily Dollar (pages outside the levels).
   Object.values(S.PLAN_LINES).forEach((t) => add('common', t));
   Object.values(S.CHALLENGE_LINES).forEach((t) => add('common', t));

@@ -24,16 +24,22 @@ budget adviser.
   Three **budget-desk levels** (5, 8 and 10) are the hard "wall" levels, where the player fixes
   the budget with CBO-priced options. Each keeps a thin scoreboard pinned at the top while the
   player scrolls through policy cards, each linked to the closest real proposal in Congress.
-  There are no hints and no plans to copy: the player works the plan out. The star tips say what
-  earns each star, never which card to play; when the cards alone can't reach the goal, the
-  across-the-board changes sit right under them. There are no ready-made plans to load or pick
+  There are no plans to copy: the player works the plan out. Only the first desk level (5) has a
+  hint, to ease the jump from the easy levels: Uncle Sam marks one card that would help (the
+  gentlest one that would finish the job on its own), or, once the goal is met, says what earns
+  the next star; the player still plays it. Elsewhere the star tips say what earns each star,
+  never which card to play; when the cards alone can't reach the goal, the across-the-board
+  changes sit right under them. There are no ready-made plans to load or pick
   from; a finished plan is matched to the closest real budget proposal on a shared plan's page and
   in the Budget Story. Difficulty runs in a rhythm: easy, easy, easy, medium, hard, then a
   breather, and so on up to a final super-hard level.
-- **Steps, checks and votes.** Each chapter is 4–6 short steps with a segmented progress bar.
-  Quick checks give explanatory feedback and reveal the answer after two tries. Each chapter
-  ends with one vote on a real policy choice. Level 7 explains each major law: what it did and
-  why its official estimate came out so large.
+- **Guesses, steps, checks and votes.** Each chapter is 4–6 short steps (at most about 80 words
+  each) with a segmented progress bar. Most chapters open with a guess, asked before the step
+  that shows the answer: one pick, then the answer and why, and it never counts toward stars.
+  Quick checks come after the lesson, give explanatory feedback, and reveal the answer after two
+  tries; stars count only those (three for right the first time, two for right on the second try).
+  Each chapter ends with one vote on a real policy choice. Level 7 lists the major laws, and
+  tapping one explains what it did and why its official estimate came out so large.
 - **Uncle Sam talks and reacts.** His lines are pre-recorded with Kokoro, an open-weight
   neural voice model, so he sounds natural and the same on every device; his pace follows his
   mood. Visitors can switch to one of their device's voices in settings. His face,
@@ -75,7 +81,7 @@ budget adviser.
 4. **Be generous with rewards.** Stars, certificates, adviser titles, fact cards from every
    chapter, and medals that reward taking part (voting, reading the original documents,
    exploring the field guide, sharing) as much as winning. Every level can be finished by hand,
-   with no hints to lean on. The article's other tactic, levels tuned to be
+   with only a gentle hint on level 5. The article's other tactic, levels tuned to be
    "almost winnable" to sell boosters, is deliberately left out: there are no timers, lives,
    streak penalties, leaderboards, ads or purchases.
 5. **Make it easy to share.** Share buttons on the celebration card, fact cards, ballot and

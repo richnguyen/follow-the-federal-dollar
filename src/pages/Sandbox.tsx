@@ -18,7 +18,7 @@ import { useJourney } from '../game/state';
 import { SamSays } from '../game/UncleSam';
 import type { Mood } from '../game/voice';
 import { useHaptics } from '../game/haptics';
-import { COACH, DESK_PARTY, REACT } from '../game/script';
+import { COACH, DESK_PARTY, HINT_LINES, REACT } from '../game/script';
 import { PlanForYou } from '../game/PlanForYou';
 import { activeChallenge, type Challenge, dropChallenge } from '../game/challenge';
 import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead, headToHead } from '../game/ChallengeParts';
@@ -114,6 +114,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const toasts = useToasts();
   // Uncle Sam's fact about a card, the first time it is played on this visit.
   const [react, setReact] = useState<string | null>(null);
+  // Level 5's hint: Uncle Sam's line, and the card he points to (cleared when the plan changes).
+  const [hint, setHint] = useState<{ line: string; card?: string } | null>(null);
   const told = useRef(new Set<string>());
   const mission = MISSIONS.find((m) => m.id === goal)!;
 
@@ -261,7 +263,32 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
     if (adding) told.current.add(id);
     setIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   };
-  const reset = () => { setIds([]); setLv({ ...ZERO }); setReact(null); setCopied('idle'); };
+  const reset = () => { setIds([]); setLv({ ...ZERO }); setReact(null); setCopied('idle'); setHint(null); };
+  useEffect(() => { setHint(null); }, [ids.join(), Object.values(lv).join(), gradual]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The hint (level 5 only): before the goal, the gentlest card that would finish the job on its
+  // own, or else the biggest one left (cards that break a protection only when nothing else is
+  // left); once the goal is met, what earns the next star. It points; the player still plays it.
+  const giveHint = () => {
+    buzz('tap');
+    if (met) {
+      const line = ev.stars >= 3 ? HINT_LINES.done : !ev.gentle ? HINT_LINES.gentle : revenueShare > 2 / 3 ? HINT_LINES.addCut : HINT_LINES.addTax;
+      setHint({ line });
+      return;
+    }
+    const remaining = Math.max(0, 1 - prog);
+    const crosses = (o: (typeof ctx.options)[number]) => o.econ.tags.some((t) => t === 'retirees' || t === 'lowIncome' || t === 'investment');
+    const left = ctx.options.filter((o) => !ids.includes(o.id) && (shareOf[o.id] ?? 0) > 0);
+    const pool = left.some((o) => !crosses(o)) ? left.filter((o) => !crosses(o)) : left;
+    const harm = (o: (typeof ctx.options)[number]) => Math.max(0.01, score(o.econ)) * o.savings10;
+    const finisher = pool.filter((o) => (shareOf[o.id] ?? 0) >= remaining * 1.02).sort((a, b) => harm(a) - harm(b))[0];
+    const pick = finisher ?? [...pool].sort((a, b) => (shareOf[b.id] ?? 0) - (shareOf[a.id] ?? 0))[0];
+    if (!pick) { setHint({ line: COACH.cardsShort }); return; }
+    if (filter !== 'all' && filter !== pick.side) setFilter('all');
+    setHint({ line: `${HINT_LINES.card(pick.name)} ${finisher ? HINT_LINES.finishes : HINT_LINES.bigShare}`, card: pick.id });
+    requestAnimationFrame(() => document.querySelector(`[data-card="${pick.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }));
+  };
+  const hintButton = desk?.hint ? <button type="button" className="btn btn-hint" onClick={giveHint}>Hint</button> : null;
   const text = planText({ mission, names: selected.map((o) => o.name), deficit: pct(Math.max(0, last.deficit) / last.gdp, 1), debt: pct(last.debt / last.gdp, 0), stars: ev.stars, fy: lastFY });
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied('done'); } catch { setCopied('manual'); }
@@ -285,13 +312,13 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // Every budget-desk level lays its scoreboard across the top, pinned while you scroll.
   const special = !!desk;
   const introLine = goal === 'stabilize'
-    ? `Here’s my budget desk. My debt is growing faster than the economy. ${missionFacts(goal)} Help me pick changes that stop that by FY${lastFY}, without knocking the economy flat or putting the whole load on one group.`
+    ? `Here’s my budget desk. My debt is growing faster than the economy. ${missionFacts(goal)} Help me pick changes that stop that by FY${lastFY}, without knocking the economy flat or putting the whole load on one group.${desk?.hint ? ` ${HINT_LINES.stuck}` : ''}`
     : goal === 'deficit3'
       ? `Let’s be bolder. ${missionFacts(goal)} Economists often point to about 3% as a level the country can keep up for the long haul. Can you get me there by FY${lastFY}?`
       : `The big one: no borrowing at all. ${missionFacts(goal)} It hasn’t happened since FY2001. Fair warning: ${cardsCanWin ? 'this takes a lot of cards.' : 'even every card on the table isn’t quite enough, so we’ll need some across-the-board changes too.'}`;
   // On level 10 the board's coach also gives the opening line, since the board comes first.
   // A friend's challenge opens with a short line, so the cards come sooner on a phone.
-  const said = special && !met && prog <= 0.001 ? (challenge ? { mood: 'happy' as Mood, line: CHALLENGE_LINES.start } : { mood: 'worried' as Mood, line: introLine }) : coach;
+  const said = hint ? { mood: 'thinking' as Mood, line: hint.line } : special && !met && prog <= 0.001 ? (challenge ? { mood: 'happy' as Mood, line: CHALLENGE_LINES.start } : { mood: 'worried' as Mood, line: introLine }) : coach;
   const coachBlock = desk ? <div className="sb-coach"><SamSays mood={said.mood} compact auto={party == null && !(met && !wasMet.current)} delay={special ? 300 : 900}>{said.line}</SamSays></div> : null;
   const progressBlock = (
     <div aria-live="polite" className="sb-progress">
@@ -359,7 +386,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
                 o.econ.tags.includes('investment') && 'Cuts public investment',
               ].filter(Boolean) as string[];
               return (
-                <article key={o.id} className="pcard" data-on={on} data-side={o.side}>
+                <article key={o.id} className="pcard" data-on={on} data-side={o.side} data-card={o.id} data-hint={hint?.card === o.id || undefined}>
+                  {hint?.card === o.id && <span className="pcard-hint">Uncle Sam’s hint</span>}
                   <div className="pcard-top">
                     <span className="pcard-icon" style={{ color: SIDE_COLOR[o.side] }}><LeverIcon lever={o.lever} /></span>
                     <span className="pcard-kind">{o.side === 'revenue' ? 'Tax' : `Spending cut · ${LEVER_NAME[o.lever]}`}</span>
@@ -458,6 +486,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
               {progressBlock}
               {challenge && <div className="small muted tb-cm-line">Economy: {econ.rating} · Who pays: {revTen + spTen ? `${Math.round(revenueShare * 100)}% taxes, ${Math.round((1 - revenueShare) * 100)}% cuts` : 'no cards yet'}</div>}
               <div className="sb-actions tb-actions">
+                {hintButton}
                 <button type="button" className="btn" onClick={reset} disabled={!ids.length && !slidersUsed}>Start over</button>
                 {met && <a className="btn" href="#challenge" onClick={(e) => { e.preventDefault(); document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>Challenge a friend</a>}
                 {met && <button type="button" className="btn" onClick={copy}>{copied === 'done' ? 'Copied' : 'Copy my plan'}</button>}
@@ -502,6 +531,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
         <span aria-hidden="true"><Stars n={ev.stars} size="sm" /></span>
         <span className="plan-bar-track" aria-hidden="true"><span style={{ width: `${Math.min(1, Math.max(0, prog)) * 100}%` }} /></span>
         <span className="num" aria-hidden="true">{met ? 'Goal met' : `${Math.min(99, Math.floor(Math.max(0, prog) * 100))}%`}</span>
+        {!met && hintButton}
         {met && desk && (challenge && h2h
           ? <button type="button" className="btn btn-primary" onClick={() => document.getElementById('vs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>See how you did</button>
           : nextStop ? <a className="btn btn-primary" href={'#' + nextStop.id}>Play level {nextStop.n}</a> : <a className="btn btn-primary" href="#story">Your Budget Story</a>)}
