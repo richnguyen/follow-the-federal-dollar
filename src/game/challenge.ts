@@ -22,9 +22,10 @@ export function takeLinkFromSearch() {
     if (id && /^[0-9a-f]{12}$/.test(id)) keep.set('id', id);
     for (const k of ['p', 'lv', 'ph', 'by', 'b']) { const v = q.get(k); if (v != null) keep.set(k, v); }
     const daily = q.has('daily');
+    const peoples = q.has('peoples');
     const isPlan = keep.has('p') || keep.has('id');
-    if (!isPlan && !daily && !s) return;
-    const hash = isPlan ? '#plan?' + keep.toString() : daily ? '#daily' : location.hash;
+    if (!isPlan && !daily && !peoples && !s) return;
+    const hash = isPlan ? '#plan?' + keep.toString() : daily ? '#daily' : peoples ? '#peoples' : location.hash;
     // A link through a preview page (/p/<kind>/) lands on the game's root.
     history.replaceState(null, '', location.pathname.replace(/p\/[^/]+\/?$/, '') + hash);
   } catch { /* not allowed in this frame */ }

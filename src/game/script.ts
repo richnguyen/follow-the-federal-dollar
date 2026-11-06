@@ -106,3 +106,10 @@ export const REACT: Record<string, string> = {
   'cut-transport-education-grants': `Cutting these grants by a third saves about ${ten('cut-transport-education-grants')} over ten years, and roads, transit, and schools in every state would feel it.`,
   'crop-insurance-subsidies': `Crop insurance subsidies come to about ${ten('crop-insurance-subsidies')} over ten years. Real money, and still small next to the gap.`,
 };
+
+export const PEOPLES_LINES = {
+  intro: 'This one belongs to everybody. Each of you gets one move a day: push one card in or out. Let’s see what the whole country builds.',
+  moved: 'Thanks, partner. That’s your move for today. Come back tomorrow for another.',
+  met: 'Look at that! Together, folks have stopped my debt from outgrowing the economy.',
+  offline: 'The People’s Budget lives on the public site, balancethebudget.us. Come build it with everyone.',
+};

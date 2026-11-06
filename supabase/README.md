@@ -20,10 +20,13 @@ are all refused, and a real browser sign-in succeeds).
 | `ballots` | player | support/oppose on cards, favorite ready-made plan, answers to the big questions | only that player |
 | `players` | player | levels done, stars, first-try quiz results, medals, state (if picked), first-visit channel | only that player |
 | `plans` | finished budget-desk plan | the plan part of the link, cards, stars | only its creator; others open one by its short-link id |
+| `peoples_moves` | player per day | today's People's Budget move: one card, pushed in (+1) or out (-1) | only that player; only today's move can be changed or taken back |
 
 Everyone can read totals through functions that return counts only: `ballot_totals()`,
 `player_totals()`, `card_rankings(level)`, `state_rankings()` (states with 5+ players), and
-`get_plan(id)`. Players sign in anonymously: no email, no name, no password.
+`get_plan(id)`, `peoples_budget(window_days)` (each card's net pushes over the last 30 days) and
+`peoples_recent(n)` (the latest moves, with no identity). Players sign in anonymously: no email,
+no name, no password.
 
 ## Setup (about 10 minutes)
 
@@ -35,8 +38,9 @@ Everyone can read totals through functions that return counts only: `ballot_tota
 3. **Create the tables.** Open **SQL Editor → New query**, paste each file in
    [`migrations/`](migrations/) in order, and **Run** each one:
    [`20261106000000_init.sql`](migrations/20261106000000_init.sql), then
-   [`20261106010000_rankings.sql`](migrations/20261106010000_rankings.sql). Each is safe to run
-   again.
+   [`20261106010000_rankings.sql`](migrations/20261106010000_rankings.sql), then
+   [`20261107000000_peoples_budget.sql`](migrations/20261107000000_peoples_budget.sql). Each is
+   safe to run again.
 4. **Copy two public values** from **Connect** (top of the dashboard) or **Settings → API Keys**:
    - the **Project URL**, like `https://abcdefghijklmnop.supabase.co`
    - the **publishable key**, starting `sb_publishable_`

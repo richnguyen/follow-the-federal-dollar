@@ -113,6 +113,7 @@ export default function Results() {
       {shared && c.canWrite === false && <div className="callout small">You can see everyone’s results, but adding your own needs Contributor access to this page; ask the person who shared it.</div>}
       {(c.error || v.error) && <div className="callout small">{c.error ?? v.error}</div>}
       {c.loading && shared && <p className="small muted">Loading results…</p>}
+      {c.source === 'site' && <div className="callout small">Build one budget with everyone: <a href="#peoples">the People’s Budget</a> takes one move a day.</div>}
 
       <div className="grid-4">
         <Stat label={shared ? 'Players' : 'Players counted here'} value={`${n}`} note={shared ? 'who finished a level or answered a question' : 'just you, in this browser'} />

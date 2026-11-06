@@ -92,6 +92,36 @@ ok(share('vat-5pct') === 0.5 && share('cut-defense-budget') === 0 && share('inco
 let capped = false;
 for (let k = 0; k < 31; k++) { try { await as(U[3], `insert into public.plans (level, code, stars) values (5, 'p=5.a', 1)`); } catch (e) { capped = /Too many/.test(e.message); break; } }
 ok(capped, 'daily cap on shared plans');
+
+// The People's Budget: one move a day, changeable that day only.
+const upsertMove = (u, card, dir) => as(u, `insert into public.peoples_moves (card, dir) values ($1, $2)
+  on conflict (user_id, day) do update set card = excluded.card, dir = excluded.dir`, [card, dir]);
+await upsertMove(U[0], 'vat-5pct', 1);
+await upsertMove(U[1], 'vat-5pct', 1);
+await upsertMove(U[2], 'vat-5pct', -1);
+await upsertMove(U[3], 'cut-defense-budget', 1);
+ok(await fails(() => as(U[0], `insert into public.peoples_moves (card, dir) values ('chained-cpi', 1)`)), 'only one move a day');
+await upsertMove(U[3], 'chained-cpi', -1);
+ok((await as(U[3], 'select card, dir from public.peoples_moves')).rows[0].card === 'chained-cpi', 'today’s move can be changed');
+ok(await fails(() => as(U[4], `insert into public.peoples_moves (day, card, dir) values ((now() at time zone 'utc')::date - 3, 'vat-5pct', 1)`)), 'no moves on past days');
+ok(await fails(() => as(U[4], `insert into public.peoples_moves (card, dir) values ('vat-5pct', 2)`)), 'a move is +1 or -1');
+ok(await fails(() => as(U[4], `insert into public.peoples_moves (user_id, card, dir) values ($1, 'vat-5pct', 1)`, [U[5]])), 'cannot move for someone else');
+ok((await as(U[0], 'select * from public.peoples_moves')).rows.length === 1, 'a player sees only their own moves');
+ok((await as(null, 'select * from public.peoples_moves')).rows.length === 0, 'signed-out visitors cannot read moves');
+// An older move (written as the owner of the table) can't be changed or taken back.
+await db.query(`insert into public.peoples_moves (user_id, day, card, dir) values ($1, (now() at time zone 'utc')::date - 40, 'alcohol-tax', 1), ($1, (now() at time zone 'utc')::date - 5, 'gas-tax-15c', 1)`, [U[5]]);
+ok((await as(U[5], `update public.peoples_moves set dir = -1 where card = 'gas-tax-15c'`)).affectedRows === 0, 'yesterday’s moves stay as they were');
+ok((await as(U[5], `delete from public.peoples_moves where card = 'gas-tax-15c'`)).affectedRows === 0, 'yesterday’s moves cannot be taken back');
+await as(U[2], `delete from public.peoples_moves where day = (now() at time zone 'utc')::date`);
+ok((await as(U[2], 'select * from public.peoples_moves')).rows.length === 0, 'today’s move can be taken back');
+const pb = (await as(null, 'select public.peoples_budget() as t')).rows[0].t;
+console.log('  peoples_budget:', JSON.stringify(pb));
+ok(pb.cards['vat-5pct'].net === 2 && pb.cards['chained-cpi'].net === -1 && pb.cards['gas-tax-15c'].net === 1, 'net pushes per card');
+ok(!pb.cards['alcohol-tax'] && pb.contributors === 4 && pb.today === 3 && pb.all_time === 5, 'moves older than 30 days drop out');
+ok((await as(null, 'select public.peoples_budget(60) as t')).rows[0].t.cards['alcohol-tax'].net === 1, 'a longer window can be asked for');
+const pr = (await as(null, 'select * from public.peoples_recent(3)')).rows;
+ok(pr.length === 3 && pr.every((r) => !('user_id' in r)) && Object.keys(pr[0]).join() === 'card,dir,at', 'recent moves carry no identity');
+
 // Deleting a user removes their data.
 await db.query('delete from auth.users where id = $1', [U[0]]);
 ok((await as(null, 'select public.ballot_totals() as t')).rows[0].t.voters === 2, 'deleting a user removes their ballot');

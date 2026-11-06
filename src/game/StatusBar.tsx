@@ -108,6 +108,7 @@ export function StatusBar({ route }: { route: string }) {
           </ol>
           <div className="ab-extras">
             <a className="ab-results" href="#daily" aria-current={route === 'daily' ? 'page' : undefined}>The Daily Dollar: today’s puzzle</a>
+            <a className="ab-results" href="#peoples" aria-current={route === 'peoples' ? 'page' : undefined}>The People’s Budget: one move a day</a>
             <a className="ab-results" href="#story" aria-current={route === 'story' ? 'page' : undefined}>Your Budget Story</a>
             <a className="ab-results" href="#results" aria-current={route === 'results' ? 'page' : undefined}>How everyone played: results and votes</a>
           </div>

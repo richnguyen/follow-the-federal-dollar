@@ -99,6 +99,11 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   record so first visits can be counted by channel.
 - Short links (`?plan=<id>`) for finished plans, and rankings of policy cards and states (never of
   people) on "How everyone played".
+- **The People's Budget** (`#peoples`, `?peoples`): one shared budget built by everyone. Each
+  player gets one move a day (push one card in or out, changeable that day), a card is in when
+  more moves pushed it in than out over the last 30 days, and the result is scored on all three
+  desk goals with the same model. Moves are anonymous; a "latest moves" feed shows only the card,
+  direction, and time.
 - **Link previews that match the plan.** Crawlers ignore the query string, so a shared link goes
   through one of 54 small static pages, `/p/<level>-<stars>-<personality>/`, each with its own
   1200×630 card ("Can you beat The Steady Hand's 3-star plan?"); people are forwarded to the plan

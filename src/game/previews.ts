@@ -30,6 +30,14 @@ const GOAL: Record<number, { phrase: string; short: string }> = {
   10: { phrase: 'A plan to balance Uncle Sam’s budget.', short: 'Balance the budget' },
 };
 
+/** The People's Budget's own preview (public/p/peoples/). */
+export const PEOPLES_PREVIEW = {
+  id: 'peoples',
+  title: 'The People’s Budget: fix Uncle Sam’s books together',
+  description: 'One budget, built by everyone who plays. One move a day: push a policy card in or out, and watch the country close the gap together. Real CBO numbers.',
+  alt: 'The People’s Budget: one budget built by everyone, one move a day.',
+};
+
 export function previewText(k: PreviewKind) {
   const a = ARCHETYPES[k.archetype];
   const d = DESK.find((x) => x.n === k.level)!;

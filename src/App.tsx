@@ -27,6 +27,7 @@ const PlanPage = lazy(() => import('./game/PlanPage'));
 const Story = lazy(() => import('./game/Story'));
 const Daily = lazy(() => import('./game/Daily'));
 const OgCard = lazy(() => import('./game/OgCard'));
+const Peoples = lazy(() => import('./game/Peoples'));
 import { activeChallenge } from './game/challenge';
 import { JourneyProvider, useJourney } from './game/state';
 import Journey from './game/Journey';
@@ -74,6 +75,7 @@ const TITLE: Partial<Record<Route, string>> = Object.fromEntries([
   ['plan', 'A plan from a friend'],
   ['story', 'Your Budget Story'],
   ['daily', 'The Daily Dollar'],
+  ['peoples', 'The People’s Budget'],
   ...STOPS.map((l) => [l.id, `Level ${l.n}: ${l.title}`]),
 ]);
 
@@ -112,6 +114,7 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   story: () => <Story />,
   daily: () => <Daily />,
   'og-card': ({ param }) => <OgCard param={param} />,
+  peoples: () => <Peoples />,
 };
 
 function DeskPage({ id }: { id: string }) {

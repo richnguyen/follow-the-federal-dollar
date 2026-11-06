@@ -4,6 +4,7 @@
 // The public copy of the game. The public site shares the address it is being viewed at, so links
 // survive a domain or repository change; the claude.ai copy (a private page) points here.
 const PUBLIC_URL = 'https://balancethebudget.us/';
+export const PUBLIC_SITE = PUBLIC_URL;
 export const SITE_URL = !__ARTIFACT__ && typeof location !== 'undefined' && /^https?:$/.test(location.protocol) ? location.origin + location.pathname : PUBLIC_URL;
 export const GAME_NAME = 'Help Uncle Sam Balance the Budget';
 

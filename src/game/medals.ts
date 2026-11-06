@@ -16,6 +16,7 @@ export const MEDALS: Medal[] = [
   { id: 'perfect', name: 'Perfect level', desc: 'Earn three stars on any level.', earned: (j) => Object.values(j.stars).some((n) => n >= 3) },
   { id: 'fine-print', name: 'Fine-print reader', desc: 'Open one of the original government documents in Sources & methods.', earned: (j) => j.marks.includes('doc') },
   { id: 'explorer', name: 'Field-guide explorer', desc: 'Read five chapters of the field guide.', earned: (j) => FIELD_GUIDE.filter((p) => j.marks.includes('page:' + p)).length >= 5 },
+  { id: 'many-hands', name: 'Many hands', desc: 'Make a move in the People’s Budget.', earned: (j) => j.marks.includes('peoples') },
   { id: 'neighbor', name: 'Good neighbor', desc: 'Share your progress or a fact with someone.', earned: (j) => j.marks.includes('share') },
   { id: 'halfway', name: 'Halfway there', desc: 'Finish five levels.', earned: (j) => STOPS.filter((s) => j.done.includes(s.id)).length >= 5 },
   { id: 'full-ballot', name: 'Full ballot', desc: `Vote on all ${voteIds.length} questions.`, earned: (j) => votesCast(j) >= voteIds.length },

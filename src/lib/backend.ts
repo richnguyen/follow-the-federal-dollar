@@ -80,7 +80,7 @@ async function call<T>(path: string, init: RequestInit & { auth?: boolean; prefe
 export const rpc = <T>(fn: string, args: object = {}) => call<T>(`rpc/${fn}`, { method: 'POST', body: JSON.stringify(args) });
 
 /** Saves this player's single row in a table (insert or replace). */
-export const upsertOwn = (table: 'ballots' | 'players', row: object) =>
+export const upsertOwn = (table: 'ballots' | 'players' | 'peoples_moves', row: object) =>
   call<null>(table, { method: 'POST', body: JSON.stringify(row), auth: true, prefer: 'resolution=merge-duplicates,return=minimal' });
 
 /** This player's own row, if they have signed in before. */
@@ -95,3 +95,22 @@ export async function createPlan(row: { level: number; code: string; cards: stri
   const rows = await call<{ id: string }[]>('plans?select=id', { method: 'POST', body: JSON.stringify(row), auth: true, prefer: 'return=representation' });
   return rows?.[0]?.id ?? null;
 }
+
+// ---------- the People's Budget: one move a day ----------
+/** Today's date on the server's clock (UTC), which is when a day's move resets. */
+export const todayUTC = () => new Date().toISOString().slice(0, 10);
+
+export interface Move { card: string; dir: 1 | -1 }
+
+/** This player's move today, if they have made one (and have ever signed in). */
+export async function myMoveToday(): Promise<Move | null> {
+  if (!(await existingSession())) return null;
+  const rows = await call<Move[]>(`peoples_moves?select=card,dir&day=eq.${todayUTC()}`);
+  return rows?.[0] ?? null;
+}
+
+/** Makes today's move, or replaces it (signing in first if needed). */
+export const saveMove = (m: Move) => upsertOwn('peoples_moves', { card: m.card, dir: m.dir });
+
+/** Takes back today's move. */
+export const takeBackMove = () => call<null>(`peoples_moves?day=eq.${todayUTC()}`, { method: 'DELETE', auth: true, prefer: 'return=minimal' });
