@@ -1493,15 +1493,22 @@ body:has(.page .actionbar) .actionbar-default { display: none; }
 /* ---------- Uncle Sam's dock ----------
    He always speaks from the same place: standing on the action bar at the bottom left, over
    whatever is behind him. Each new line slides him in from the left; Continue (or a tap on him,
-   or anywhere else) slides him back out, and the handle at the edge brings him back. */
+   or anywhere else) slides him back out, and the handle at the edge brings him back.
+   He and his words sit on a pane of frosted glass, so the page behind doesn't compete with them. */
 :root { --abh: 0px; }
 .samdock {
-  position: fixed; z-index: 45; bottom: var(--abh);
-  left: max(8px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
+  position: fixed; z-index: 45; bottom: var(--abh); left: 0; right: 0;
   display: flex; pointer-events: none;
 }
 .samdock .samdock-inner {
-  display: flex; flex-direction: row; align-items: flex-end; gap: 0; width: min(100%, 760px); pointer-events: auto;
+  display: flex; flex-direction: row; align-items: flex-end; gap: 0; width: 100%; pointer-events: auto;
+  padding: 12px max(12px, env(safe-area-inset-right, 0px)) 0 max(6px, env(safe-area-inset-left, 0px));
+  cursor: pointer;
+  border-radius: 22px 22px 0 0;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.1); backdrop-filter: blur(22px) saturate(1.1);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-bottom: 0;
+  box-shadow: 0 -14px 32px -20px rgba(0, 0, 0, 0.4), inset 0 1px 0 color-mix(in srgb, var(--surface) 88%, #fff);
   transform: translateX(calc(-100% - 40px)); opacity: 0; visibility: hidden;
   transition: transform 0.36s cubic-bezier(0.4, 0, 0.7, 0.2), opacity 0.3s ease 0.06s, visibility 0s linear 0.36s;
 }
@@ -1532,8 +1539,16 @@ body:has(.page .actionbar) .actionbar-default { display: none; }
 .samdock-peek .sam { width: 34px; height: auto; margin-top: 10px; }
 @keyframes peek-in { from { transform: translateX(-100%); } to { transform: none; } }
 html.modal-open .samdock, html.modal-open .samdock-peek { display: none; }
+/* Without frosted glass (older browsers), a nearly solid pane does the same job. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .samdock .samdock-inner { background: color-mix(in srgb, var(--paper) 94%, transparent); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .samdock .samdock-inner { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
 @media (min-width: 901px) {
-  .samdock { left: max(12px, calc((100vw - 1120px) / 2 + 12px)); }
+  .samdock { left: max(12px, calc((100vw - 1120px) / 2 + 12px)); right: max(12px, env(safe-area-inset-right, 0px)); }
+  .samdock .samdock-inner { width: min(100%, 800px); padding: 16px 18px 0 10px; }
   .samdock-avatar .sam { width: 140px; }
   .samdock .bubble { margin-bottom: 22px; padding: 14px 18px; }
   .samdock .bubble-text { font-size: var(--step-1); }

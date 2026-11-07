@@ -104,8 +104,9 @@ emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
   the right edge of the page's column. The celebration opens as a sheet from the bottom with its
   next step pinned in reach.
 - **Uncle Sam in one place.** He always speaks from the same spot: standing on the action bar at
-  the bottom left, over whatever is behind him (`src/game/samdock.tsx`; pages say his lines with
-  `<SamSays>`, which hands them to the dock). Each new line slides him in from the left. On a level
+  the bottom left, on a pane of frosted glass that blurs the page behind him so it doesn't compete
+  with his words (`src/game/samdock.tsx`; pages say his lines with `<SamSays>`, which hands them
+  to the dock). Each new line slides him in from the left. On a level
   step with something to see or do (a chart, a quiz, a slider, a vote), Continue first slides him
   out of view and the next Continue moves on; a step that is only his words moves on in one tap.
   Back brings him back first, then goes to the previous step. A new line, such as a quiz answer,

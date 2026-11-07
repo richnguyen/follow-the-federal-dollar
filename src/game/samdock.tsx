@@ -104,16 +104,17 @@ export function SamDockView({ route }: { route: string }) {
   }, [shown, hide]);
 
   if (route === 'og-card') return null;
-  const onBubble = (e: React.MouseEvent) => { if (!(e.target as Element).closest('button, a, .term, input, select')) hide(); };
+  // A tap on his glass pane or his words slides him away too (but not on the links and buttons in them).
+  const onPane = (e: React.MouseEvent) => { if (!(e.target as Element).closest('button, a, .term, input, select')) hide(); };
   return (
     <>
       <div className="samdock" data-shown={(shown && !!line) || undefined} ref={box} aria-hidden={!(shown && line) || undefined}>
         {line && (
-          <div className="samsays samdock-inner" data-speaking={speaking || undefined} data-mood={line.mood}>
+          <div className="samsays samdock-inner" data-speaking={speaking || undefined} data-mood={line.mood} onClick={onPane}>
             <button type="button" className="samdock-avatar" onClick={hide} aria-label="Slide Uncle Sam away" tabIndex={shown ? 0 : -1}>
               <UncleSam mood={line.mood} size={120} speaking={speaking} />
             </button>
-            <div className="bubble" onClick={onBubble}>
+            <div className="bubble">
               <div className="bubble-name">Uncle Sam{speaking && <span className="bubble-live" aria-hidden="true"><i /><i /><i /></span>}</div>
               <div className="bubble-text" aria-live="polite">{line.node}</div>
               {n.supported && line.text && (
