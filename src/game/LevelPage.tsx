@@ -80,12 +80,12 @@ function LevelRun({ level }: { level: Level }) {
   const quizOk = step?.kind !== 'quiz' || !!j.quiz[step.quiz!.id]?.correct || (j.quiz[step.quiz!.id]?.tries ?? 0) >= (step.quiz!.guess ? 1 : 2);
 
   // Uncle Sam says each step's line from his dock above the bar. On a step with something to see
-  // or do (a chart, a quiz, a slider, a vote), Continue first slides him away to show it, and the
-  // next Continue moves on; a step that is only his words moves on at once. A new line (an answer
-  // to the quick check) slides him back in. Back brings him back first, then goes back.
+  // or do (a chart, a quiz, a slider, a vote), the main button first reads "Skip this narrative"
+  // and slides him away to show it; then it reads Continue and moves on. A step that is only his
+  // words moves on at once. A new line (an answer to the quick check) slides him back in. Back
+  // brings him back first, then goes back.
   const dock = useSamDock();
   const samUp = !!dock?.shown && !!dock?.line;
-  const wrong = step?.kind === 'quiz' && !quizOk && (j.quiz[step.quiz!.id]?.tries ?? 0) > 0;
   const reveal = !!step && samUp && step.kind !== 'story';
   const primary = () => {
     if (!step) return;
@@ -126,7 +126,7 @@ function LevelRun({ level }: { level: Level }) {
           <ActionBar className="level-nav" label="Step" keepSam>
             <button type="button" className="btn" onClick={back} disabled={i === 0 && (samUp || !dock?.line)}>Back</button>
             <button type="button" className="btn btn-primary" onClick={primary} disabled={!reveal && !quizOk}>
-              {reveal ? (wrong ? 'Try again' : 'Continue') : !quizOk ? (step.quiz?.guess ? 'Make a guess to continue' : 'Answer to continue') : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
+              {reveal ? 'Skip this narrative' : !quizOk ? (step.quiz?.guess ? 'Make a guess to continue' : 'Answer to continue') : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
             </button>
             <span className="keyhint small muted" aria-hidden="true">{step.kind === 'quiz' ? <><kbd>1</kbd>–<kbd>{step.quiz!.choices.length}</kbd> answer · </> : null}<kbd>Enter</kbd> continue · <kbd>←</kbd> back</span>
           </ActionBar>

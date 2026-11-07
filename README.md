@@ -107,8 +107,9 @@ emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
   the bottom left, on a pane of frosted glass that blurs the page behind him so it doesn't compete
   with his words (`src/game/samdock.tsx`; pages say his lines with `<SamSays>`, which hands them
   to the dock). Each new line slides him in from the left. On a level
-  step with something to see or do (a chart, a quiz, a slider, a vote), Continue first slides him
-  out of view and the next Continue moves on; a step that is only his words moves on in one tap.
+  step with something to see or do (a chart, a quiz, a slider, a vote), the main button reads
+  **Skip this narrative** while he speaks and slides him out of view; then it reads Continue and
+  moves on. A step that is only his words moves on in one tap.
   Back brings him back first, then goes to the previous step. A new line, such as a quiz answer,
   a reaction on the budget desk or a Daily Dollar result, slides him back in; tapping him or
   anywhere else slides him away, and a small handle at the left edge brings him back. Only the
