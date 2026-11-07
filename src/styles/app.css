@@ -1504,10 +1504,10 @@ body:has(.page .actionbar) .actionbar-default { display: none; }
   display: flex; flex-direction: row; align-items: flex-end; gap: 0; width: 100%; pointer-events: auto;
   padding: 12px max(12px, env(safe-area-inset-right, 0px)) 0 max(6px, env(safe-area-inset-left, 0px));
   cursor: pointer;
-  border-radius: 22px 22px 0 0;
-  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
   -webkit-backdrop-filter: blur(22px) saturate(1.1); backdrop-filter: blur(22px) saturate(1.1);
-  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-bottom: 0;
+  border: 0; border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
   box-shadow: 0 -14px 32px -20px rgba(0, 0, 0, 0.4), inset 0 1px 0 color-mix(in srgb, var(--surface) 88%, #fff);
   transform: translateX(calc(-100% - 40px)); opacity: 0; visibility: hidden;
   transition: transform 0.36s cubic-bezier(0.4, 0, 0.7, 0.2), opacity 0.3s ease 0.06s, visibility 0s linear 0.36s;
@@ -1547,8 +1547,8 @@ html.modal-open .samdock, html.modal-open .samdock-peek { display: none; }
   .samdock .samdock-inner { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 @media (min-width: 901px) {
-  .samdock { left: max(12px, calc((100vw - 1120px) / 2 + 12px)); right: max(12px, env(safe-area-inset-right, 0px)); }
-  .samdock .samdock-inner { width: min(100%, 800px); padding: 16px 18px 0 10px; }
+  /* The pane runs the full width; Uncle Sam and his words line up with the page's column. */
+  .samdock .samdock-inner { padding: 16px max(24px, calc((100vw - 1120px) / 2 + 24px)) 0 max(12px, calc((100vw - 1120px) / 2 + 12px)); }
   .samdock-avatar .sam { width: 140px; }
   .samdock .bubble { margin-bottom: 22px; padding: 14px 18px; }
   .samdock .bubble-text { font-size: var(--step-1); }
