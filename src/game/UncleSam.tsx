@@ -107,10 +107,11 @@ export function UncleSam({ mood = 'happy', size = 140, title, speaking = false, 
         <circle cx="42" cy="97" r={mood === 'cheering' || mood === 'proud' ? 5 : 4} fill="#e9a58a" opacity={mood === 'worried' ? 0.2 : 0.45} />
         <circle cx="78" cy="97" r={mood === 'cheering' || mood === 'proud' ? 5 : 4} fill="#e9a58a" opacity={mood === 'worried' ? 0.2 : 0.45} />
         <g className="sam-mouth-rest">{rest[mood]}</g>
-        <g className="sam-mouth-talk">{talk}</g>
-        <g className="sam-m sam-m1"><path d="M53 103 q7 5 14 0 q-7 2 -14 0z" fill={C.line} /></g>
-        <g className="sam-m sam-m2"><path d="M51 102 q9 10 18 0 q-9 3 -18 0z" fill={C.line} />{tongue}</g>
-        <g className="sam-m sam-m3"><ellipse cx="60" cy="105.5" rx="6" ry="7" fill={C.line} />{tongue}</g>
+        {/* The talking shapes start hidden, so a still picture of him (a share card) shows his resting mouth. */}
+        <g className="sam-mouth-talk" opacity="0">{talk}</g>
+        <g className="sam-m sam-m1" opacity="0"><path d="M53 103 q7 5 14 0 q-7 2 -14 0z" fill={C.line} /></g>
+        <g className="sam-m sam-m2" opacity="0"><path d="M51 102 q9 10 18 0 q-9 3 -18 0z" fill={C.line} />{tongue}</g>
+        <g className="sam-m sam-m3" opacity="0"><ellipse cx="60" cy="105.5" rx="6" ry="7" fill={C.line} />{tongue}</g>
         {mood === 'worried' && <path className="sam-sweat" d="M89 70 q4 6 0 9 q-4 -3 0 -9z" fill="#9cc3e6" />}
         <g className="sam-hat" transform={HAT[mood]}>
           <ellipse cx="60" cy="61" rx="38" ry="7" fill={C.navy} />
