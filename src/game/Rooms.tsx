@@ -76,6 +76,7 @@ export default function Rooms() {
           </div>
           <button type="button" className="btn btn-primary" onClick={start} disabled={busy != null}>{busy === 'start' ? 'Starting…' : 'Start the room'}</button>
           <p className="small muted">You get a 6-character code to share. The room sees totals for its members, never who did what; vote breakdowns appear once 3 people have joined.</p>
+          <p className="small"><a href="#teach">Teachers: a ready 45-minute lesson plan</a></p>
         </section>
         <section className="card rooms-form" aria-labelledby="join-t">
           <h2 className="section-title" id="join-t">Join with a code</h2>

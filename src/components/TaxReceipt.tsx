@@ -59,30 +59,37 @@ export function WageControls({ id, wages, setWages, status, setStatus }: { id: s
   );
 }
 
-/** The receipt itself. */
-export function TaxReceipt({ wages, status, method = 'dedicated' }: { wages: number; status: FilingStatus; method?: Method }) {
+/**
+ * What a salary pays in federal income and payroll taxes, and where those dollars went.
+ * "simple": every tax dollar is split like total spending. "dedicated": payroll taxes go to their
+ * trust-fund programs, and income tax is split across the rest.
+ */
+export function receiptFor(wages: number, status: FilingStatus, method: Method = 'dedicated') {
   const fy = budget.latestFY;
   const t = fyTotals(fy);
-  const cats = useMemo(() => categoryTotals(fy), [fy]);
+  const cats = categoryTotals(fy);
   const r = estimateTaxes(wages, status, tax);
   const totalOut = cats.reduce((s, c) => s + c.amount, 0);
-
-  // Allocation. "simple": every tax dollar is split like total spending.
-  // "dedicated": payroll taxes go to their trust-fund programs; income tax is split across the rest.
-  const lines = useMemo(() => {
-    if (method === 'simple') return cats.map((c) => ({ ...c, mine: (r.total * c.amount) / totalOut }));
+  let lines;
+  if (method === 'simple') lines = cats.map((c) => ({ ...c, mine: (r.total * c.amount) / totalOut }));
+  else {
     const dedicated: Record<string, number> = {
       ss: budget.payroll.filter((p) => /OASI|\(DI\)/.test(p.name)).reduce((s, p) => s + p.amount, 0),
       medicare: budget.payroll.filter((p) => /\(HI\)/.test(p.name)).reduce((s, p) => s + p.amount, 0),
     };
     const remaining = cats.map((c) => Math.max(0, c.amount - (dedicated[c.id] ?? 0)));
     const remTotal = remaining.reduce((s, v) => s + v, 0);
-    return cats.map((c, i) => ({
+    lines = cats.map((c, i) => ({
       ...c,
       mine: (c.id === 'ss' ? r.ssTax : c.id === 'medicare' ? r.medicareTax : 0) + (r.incomeTax * remaining[i]) / remTotal,
     }));
-  }, [method, cats, r.total, r.ssTax, r.medicareTax, r.incomeTax, totalOut]);
-  const borrowedOnTop = r.total * (t.deficit / t.receipts);
+  }
+  return { fy, t, r, lines, borrowedOnTop: r.total * (t.deficit / t.receipts) };
+}
+
+/** The receipt itself. */
+export function TaxReceipt({ wages, status, method = 'dedicated' }: { wages: number; status: FilingStatus; method?: Method }) {
+  const { fy, t, r, lines, borrowedOnTop } = useMemo(() => receiptFor(wages, status, method), [wages, status, method]);
   const debtShare = debt.latest.total / POP;
 
   return (

@@ -31,6 +31,12 @@ const Rooms = lazy(() => import('./game/Rooms'));
 const RoomPage = lazy(() => import('./game/RoomPage'));
 const Chain = lazy(() => import('./game/Chain'));
 const StatsPage = lazy(() => import('./game/Stats'));
+const Teach = lazy(() => import('./game/Teach'));
+// The card, the clock and the play-together cards also appear on the home screen and in levels,
+// so they load with the app.
+import MyShare from './game/MyShare';
+import ClockPage from './game/DebtClock';
+import Together from './game/Together';
 import { activeChallenge } from './game/challenge';
 import { activeRoom } from './game/rooms';
 import { JourneyProvider, useJourney } from './game/state';
@@ -87,6 +93,10 @@ const TITLE: Partial<Record<Route, string>> = Object.fromEntries([
   ['room', 'A room'],
   ['chain', 'Pass the budget'],
   ['stats', 'Share stats'],
+  ['me', 'Your share of Uncle Sam'],
+  ['clock', 'The debt clock'],
+  ['together', 'Play together'],
+  ['teach', 'For teachers'],
   ...STOPS.map((l) => [l.id, `Level ${l.n}: ${l.title}`]),
 ]);
 
@@ -130,6 +140,10 @@ const PAGES: Record<Route, (p: { param: string | null }) => JSX.Element> = {
   room: ({ param }) => <RoomPage param={param} />,
   chain: ({ param }) => <Chain param={param} />,
   stats: () => <StatsPage />,
+  me: () => <MyShare />,
+  clock: () => <ClockPage />,
+  together: () => <Together />,
+  teach: () => <Teach />,
 };
 
 function DeskPage({ id }: { id: string }) {

@@ -68,6 +68,11 @@ export const DATASETS = {
     title: 'Interest Expense on the Public Debt Outstanding',
     page: 'https://fiscaldata.treasury.gov/datasets/interest-expense-debt-outstanding/interest-expense-on-the-public-debt-outstanding',
   },
+  dtsLimit: {
+    endpoint: '/v1/accounting/dts/debt_subject_to_limit',
+    title: 'Daily Treasury Statement, Table III-C: Debt Subject to Limit',
+    page: 'https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/debt-subject-to-limit',
+  },
   rates: {
     endpoint: '/v2/accounting/od/avg_interest_rates',
     title: 'Average Interest Rates on U.S. Treasury Securities',
@@ -108,5 +113,7 @@ export async function fetchTreasury() {
   out.interest = await fetchAll(DATASETS.interest.endpoint, { sort: 'record_date' });
   console.log('[treasury] Average interest rates…');
   out.rates = await fetchAll(DATASETS.rates.endpoint, { sort: 'record_date' });
+  console.log('[treasury] Debt subject to limit (Daily Treasury Statement, last 20 days)…');
+  out.dtsLimit = await fetchAll(DATASETS.dtsLimit.endpoint, { filter: `record_date:gte:${new Date(Date.now() - 20 * 86400000).toISOString().slice(0, 10)}`, sort: '-record_date,src_line_nbr' });
   return out;
 }

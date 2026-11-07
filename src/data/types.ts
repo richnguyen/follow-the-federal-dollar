@@ -88,6 +88,8 @@ export interface DebtData {
   byFY: { fy: number; total: number; change: number | null }[];
   interestByFY: { fy: number; gross: number }[];
   rates: { date: string; marketable: number; total: number }[];
+  /** The statutory debt limit and the debt subject to it (Daily Treasury Statement, Table III-C). */
+  limit?: { date: string; limit: number; subject: number };
 }
 
 export interface CBOYear {

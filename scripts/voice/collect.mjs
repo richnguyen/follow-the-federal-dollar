@@ -72,7 +72,11 @@ const banks = await page.evaluate(async () => {
   Object.values(S.ROOM_LINES).forEach((t) => add('common', t));
   Object.values(S.CHAIN_LINES).forEach((t) => add('common', t));
   add('common', S.DAILY_LINES.intro);
-  for (const k of ['budgetWeek', 'taxWeek', 'taxDay', 'calls']) add('common', S.DAILY_LINES[k]);
+  for (const k of ['budgetWeek', 'taxWeek', 'taxDay', 'shutdownWeek', 'shutdownDay', 'debtWeek', 'debtDay', 'calls']) add('common', S.DAILY_LINES[k]);
+  // The level 1 card, the debt clock, and playing together.
+  Object.values(S.ME_LINES).forEach((t) => add('common', t));
+  Object.values(S.CLOCK_LINES).forEach((t) => add('common', t));
+  Object.values(S.TOGETHER_LINES).forEach((t) => add('common', t));
   add('common', S.DAILY_LINES.done);
   S.DAILY_LINES.score.forEach((t) => add('common', t));
   add('common', S.VOICE_TEST);

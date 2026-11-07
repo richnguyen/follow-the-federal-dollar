@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { NameField } from './NameField';
 import { Seg } from '../components/ui';
 import { type TextSize, type ThemeChoice, useJourney } from './state';
 import { hasRecordings, isMaleVoice, pickVoice, useNarrator } from './voice';
@@ -19,6 +20,7 @@ export function ReadingSettings({ compact = false }: { compact?: boolean }) {
   const auto = pickVoice(n.voices);
   return (
     <div className={'settings' + (compact ? ' compact' : '')}>
+      <NameField id={vid + '-name'} label="Your first name" hint="Uncle Sam greets you by it, and it signs your cards and challenges. Kept on this device." />
       <div className="settings-row">
         <span className="stat-label">Text size</span>
         <Seg<TextSize> label="Text size" value={s.text} onChange={(v) => j.setSettings({ text: v })} options={[{ value: 'normal', label: 'Standard' }, { value: 'large', label: 'Large' }, { value: 'larger', label: 'Larger' }]} />

@@ -6,7 +6,7 @@ import { PageHead, Section } from '../components/ui';
 import { budget } from '../data';
 import { assess, BASELINE, CTX, LAST_FY } from '../lib/assess';
 import { dollars, moneyWords, pct } from '../lib/format';
-import { personalEffect, savedWages } from '../lib/personal';
+import { partOfTheFix, personalEffect, savedWages } from '../lib/personal';
 import { GOAL_DONE, whoPays } from './ChallengeParts';
 import { ClipMaker } from './Clip';
 import { DESK, MAX_STARS, rankFor, STOPS } from './levels';
@@ -37,7 +37,7 @@ export function useStoryPlan() {
   return null;
 }
 
-function buildCards(level: string, plan: SavedPlan, o: { name: string; stars: number; done: number; rank: string }): StoryCard[] {
+function buildCards(level: string, plan: SavedPlan, o: { name: string; stars: number; done: number; rank: string; split: boolean }): StoryCard[] {
   const d = DESK.find((x) => x.id === level)!;
   const a = assess(d.goal, plan.ids, plan.lv, plan.gradual);
   const slidersUsed = Object.values(plan.lv).some((v) => v !== 0);
@@ -66,7 +66,8 @@ function buildCards(level: string, plan: SavedPlan, o: { name: string; stars: nu
       eyebrow: 'My budget personality',
       title: arche.name,
       body: arche.line,
-      chips: [whoPays(a), `${cap(a.econ.rating)} on the economy`, `${plan.ids.length} card${plan.ids.length === 1 ? '' : 's'}`, ...(a.ev.promiseKept ? ['Kept every protection'] : [])],
+      // How the plan splits taxes and cuts reads as a political stance, so it is on the card only if the player chooses.
+      chips: [...(o.split ? [whoPays(a)] : []), `${cap(a.econ.rating)} on the economy`, `${plan.ids.length} card${plan.ids.length === 1 ? '' : 's'}`, ...(a.ev.promiseKept ? ['Kept every protection'] : [])],
       alt: `My budget personality: ${arche.name}. ${arche.line}`,
     },
   ];
@@ -81,12 +82,18 @@ function buildCards(level: string, plan: SavedPlan, o: { name: string; stars: nu
       alt: `My biggest move: ${top.name}, ${shareOf(top.share).toLowerCase()}.`,
     });
   }
-  cards.push({
+  const fix = partOfTheFix(plan.ids, plan.lv, plan.gradual, pe);
+  const cut = dollars(Math.max(0, fix.borrowingCut));
+  if (o.split) cards.push({
     id: 'receipt', color: COLORS.green,
     eyebrow: 'What my plan means for me',
-    title: 'My own tax receipt',
+    title: 'My part of the fix',
     big: Math.abs(pe.direct) < 1 ? 'No change' : `${signed(pe.direct)} a year`,
-    body: Math.abs(pe.direct) < 1 ? 'to my own federal income and payroll taxes.' : 'in my own federal income and payroll taxes.',
+    body: Math.abs(pe.direct) < 1
+      ? `to my own federal taxes. My plan cuts Uncle Sam’s yearly borrowing by about ${cut} per household by FY${fix.lastFY}.`
+      : pe.direct > 0
+        ? `in my own federal taxes, about ${'$' + fix.perDay.toFixed(2)} a day. Together, it cuts Uncle Sam’s yearly borrowing by about ${cut} per household by FY${fix.lastFY}.`
+        : 'in my own federal income and payroll taxes.',
     rows: [
       ...pe.lines.map((l) => ({ label: l.label, value: signed(l.amount) })),
       ...(pe.prices.perHousehold > 0 ? [{ label: `Through prices (${pe.prices.names.length} card${pe.prices.names.length === 1 ? '' : 's'}), average per household`, value: `${dollars(pe.prices.perHousehold)}/yr` }] : []),
@@ -122,11 +129,13 @@ export default function Story() {
   const [samSvg, setSamSvg] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
+  // Off unless the player turns it on: how the plan splits taxes and cuts, and what it means for their own taxes.
+  const [split, setSplit] = useState(false);
   useEffect(() => { setSamSvg(samBox.current?.querySelector('svg.sam')?.outerHTML); }, []);
   const done = STOPS.filter((s) => j.done.includes(s.id)).length;
   const stars = STOPS.reduce((a, s) => a + (j.stars[s.id] ?? 0), 0);
   const name = myName();
-  const cards = useMemo(() => (sp ? buildCards(sp.level, sp.plan, { name, stars, done, rank: rankFor(done).name }) : []), [sp?.level, sp?.plan.at, name, stars, done]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cards = useMemo(() => (sp ? buildCards(sp.level, sp.plan, { name, stars, done, rank: rankFor(done).name, split }) : []), [sp?.level, sp?.plan.at, name, stars, done, split]); // eslint-disable-line react-hooks/exhaustive-deps
   const svgs = useMemo(() => cards.map((c) => storySvg(c, samSvg)), [cards, samSvg]);
   const link = useShareLink(sp?.level, sp?.plan ?? null, { by: name || undefined, ballot: ballotFrom(j.choices) }) ?? '';
 
@@ -134,7 +143,7 @@ export default function Story() {
     const first = DESK[0];
     return (
       <>
-        <PageHead eyebrow="Your Budget Story" title="Your Budget Story" lede="Six cards about how you’d run Uncle Sam’s books: your budget personality, your biggest move, and what your plan means for your own taxes." />
+        <PageHead eyebrow="Your Budget Story" title="Your Budget Story" lede="Cards about how you’d run Uncle Sam’s books: your budget personality, your biggest move, and the result." />
         <SamSays mood="thinking" auto>{STORY_LINES.locked}</SamSays>
         <ActionBar label="Next step"><a className="btn btn-primary" href={'#' + first.id}>Go to level {first.n}</a></ActionBar>
       </>
@@ -168,10 +177,12 @@ export default function Story() {
 
   return (
     <>
-      <PageHead eyebrow={`Your Budget Story · from level ${d.n}`} title="Your Budget Story" lede="Your budget personality, your biggest move, and what your plan means for your own taxes, as cards sized for a phone story. Built from your latest plan on the budget desk." />
+      <PageHead eyebrow={`Your Budget Story · from level ${d.n}`} title="Your Budget Story" lede="Your budget personality, your biggest move, and the result, as cards sized for a phone story. Built from your latest plan on the budget desk." />
       <div className="sr-only" ref={samBox} aria-hidden="true"><UncleSam mood="cheering" size={120} /></div>
       <SamSays mood="cheering" auto>{STORY_LINES.ready}</SamSays>
       <Section id="cards" title="Your cards" sub="Swipe through. Save any card as an image, or share them all at once.">
+        <label className="switch story-split"><input type="checkbox" checked={split} onChange={(e) => setSplit(e.target.checked)} /> Include how my plan splits taxes and cuts, and my part of the fix</label>
+        <p className="small muted story-split-note">Off by default: the cards say how you did, not where you stand. Turn it on to share the details too.</p>
         <Carousel label="story cards" count={cards.length}>
           {cards.map((c, i) => (
             <figure className="story-card" key={c.id}>

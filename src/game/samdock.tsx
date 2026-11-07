@@ -90,6 +90,12 @@ export function SamDockView({ route }: { route: string }) {
   useActionBarHeight();
   const { line, shown, hide, show } = dock;
   const speaking = !!line && n.speakingId === line.owner;
+  // He waves hello only on the first line after sliding in; each later line gets just a reaction.
+  const [enterSeq, setEnterSeq] = useState<number | null>(null);
+  useEffect(() => {
+    if (!shown || !line) { setEnterSeq(null); return; }
+    setEnterSeq((cur) => (cur == null ? line.seq : cur));
+  }, [shown, line?.seq]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A tap anywhere else slides him away, except on a level step's own bar, which decides itself.
   useEffect(() => {
@@ -112,7 +118,7 @@ export function SamDockView({ route }: { route: string }) {
         {line && (
           <div className="samsays samdock-inner" data-speaking={speaking || undefined} data-mood={line.mood} onClick={onPane}>
             <button type="button" className="samdock-avatar" onClick={hide} aria-label="Slide Uncle Sam away" tabIndex={shown ? 0 : -1}>
-              <UncleSam mood={line.mood} size={120} speaking={speaking} />
+              <UncleSam key={line.seq} mood={line.mood} size={120} speaking={speaking} greet={enterSeq == null || enterSeq === line.seq} />
             </button>
             <div className="bubble">
               <div className="bubble-name">Uncle Sam{speaking && <span className="bubble-live" aria-hidden="true"><i /><i /><i /></span>}</div>

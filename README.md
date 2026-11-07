@@ -114,6 +114,14 @@ emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
   a reaction on the budget desk or a Daily Dollar result, slides him back in; tapping him or
   anywhere else slides him away, and a small handle at the left edge brings him back. Only the
   level-complete pop-up keeps him inside it.
+- **Uncle Sam acts.** He is the main character, so he is never a still picture: he breathes,
+  blinks and glances around while he waits, and looks toward his words while he speaks. Each mood
+  has its own hands (a wave hello, then a hand that talks along with him; a hand on his heart when
+  proud; wringing hands when worried; hands up in surprise; a hand at his chin when thinking; both
+  arms up when cheering), and each new line starts with a small reaction (a nod, a jump, a
+  bounce). His mouth follows his recorded voice: `scripts/voice/synth.py` stores how loud every
+  1/15 of a second of each recording is, and the narrator opens his mouth to match (with a device
+  voice, it opens on each word). With reduced motion he holds still.
 - **Thumb-friendly.** Every control is at least 44 × 44 px on a touch screen.
 - **Less on screen.** Five controls in the top bar on phones (Glossary and Methods move into the
   settings menu), and the top bar's Continue moves down to the action bar at every width; the footer is one line, with the field guide
@@ -147,6 +155,20 @@ Built from the Mambo.io list of 108 gamification elements, keeping the white-hat
 accomplishment, creativity, friendly rivalry) and leaving out the pressure tactics (timers,
 expiring rewards, streaks that punish a missed day, public ranking of people).
 
+- **Your name.** The game asks for a first name once (on level 1's card, in the challenge pop-up,
+  or in settings), keeps it on the device, and uses it where it makes things personal: the card,
+  challenge links and their message ("Rich here. I balanced Uncle Sam's budget…"), the Budget
+  Story, chains, and Uncle Sam's greeting on screen (his recorded voice says the line without it).
+- **"My share of Uncle Sam"** (`#me`), the card at the end of level 1: what the player's salary
+  pays in federal taxes, how long that keeps the whole federal government running ("1/22 of a
+  second", from FY spending per second), and where the dollars go, as a 1080×1350 image with
+  their name. It is about the player, not a position, so it is safe to post anywhere
+  (`src/game/MyShare.tsx`).
+- **Certificates that give nothing away.** A chapter level's share says the stars, how long it
+  took (active time only, `src/game/levelTime.ts`), and one fact chosen never to be the answer to
+  any quick check in the game (each level's `shareFact`), so friends still get to guess.
+- **Safe by default.** Shares say how you did, not where you stand: the Budget Story's tax-and-cut
+  split and "my part of the fix" card are added only when the player switches them on.
 - **Challenge a friend** (`?p=…`): a finished budget-desk plan travels inside the link itself,
   with an optional first name and, if the player chooses, their answers to the big questions. The friend's first screen (`#plan`) is a short
   summary of the plan and one "Take the challenge" button that opens the same level right away,
@@ -158,9 +180,10 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   ends on "Try again". Newcomers are pointed to level 1 at the end, and Uncle Sam's voice starts
   downloading only after the first tap. The share stats count each step: took the challenge, met
   the goal, sent a plan back.
-- **Your Budget Story** (`#story`): six phone-story cards (1080×1920) drawn as SVG and saved as
-  PNG: a nonpartisan budget personality, the biggest move, the player's own tax receipt under the
-  plan, the debt path against current law, and the closest real proposal.
+- **Your Budget Story** (`#story`): phone-story cards (1080×1920) drawn as SVG and saved as
+  PNG: a nonpartisan budget personality, the biggest move, the debt path against current law, and
+  the closest real proposal; and, if the player chooses, how the plan splits taxes and cuts and
+  their part of the fix.
 - **A 10-second clip** of the plan bending the debt curve, with Uncle Sam's recorded voice, made
   in the browser with a canvas and MediaRecorder (MP4 where supported, else WebM).
 - **The Daily Dollar** (`#daily`, `?daily`): five higher-or-lower calls a day on real federal
@@ -173,8 +196,37 @@ expiring rewards, streaks that punish a missed day, public ranking of people).
   Tax Day itself, what a paycheck pays. The page, Uncle Sam, the share text, the road map's Today
   card ("Coming up: Tax Week, April 9–15" three weeks ahead) and the reminder notification all say
   which week it is. `#daily?d=2027-04-15` previews any day's puzzle without saving it.
+  **Deadline editions** for news the whole country is watching: **Shutdown Watch**, the seven
+  days up to the last day current law funds the government (what Washington spends, stopgap bills
+  by year, and what Congress approves each year), ending on "Deadline day"; and **Debt Limit
+  Watch**, the week before a Treasury X-date (the debt through the years, interest, and the debt
+  next to the economy). The dates live in `src/data/curated/deadlines.json` (now: Dec. 11, 2026,
+  under P.L. 119-103, and Sept. 30, 2027), repeated in `public/sw.js`; update both when Congress
+  passes a new stopgap. The road map's Today card counts down to the next funding deadline, and
+  shows a **debt limit watch** when the room left under the limit is under six months at the
+  past year's pace.
+- **The debt clock** (`#clock`, on the road map, and on the debt chapter): the Treasury's Debt to
+  the Penny, carried forward second by second at the pace of the past twelve months, each
+  person's and household's share, the interest cost per second, what has been added since the
+  page opened, and the legal debt limit with the room left (Daily Treasury Statement, Table
+  III-C). The site fetches the latest figures from the Treasury's Fiscal Data API when it opens
+  and every half hour after that; the ticking part is labeled as an estimate. (Other debt clocks,
+  such as usdebtclock.org, publish their own estimates with no data feed; this one uses only the
+  Treasury's published figures.) `node scripts/fetch-debt-limit.mjs` refreshes the baked-in
+  limit between full data runs.
+- **Your part of the fix**, on the budget desk: what the plan changes in the player's own federal
+  taxes, per year and per day, next to what it buys (the yearly borrowing it stops and the
+  interest it saves, per household), and the interest every household already pays. A tax
+  increase is still called one, line by line.
 - **Uncle Sam reacts** the first time each policy card is played, with one true fact from CBO's
-  data, and the desk shows what the plan means for the player's own tax receipt.
+  data.
+- **Play together** (`#together`, and on the road map): the three ways to play with other
+  people, each with who it's for, how long it takes, and one button: a room for a class, club,
+  or office; the Daily Dollar as a group-chat habit ("Invite the group"); and pass the budget.
+  Each chapter level's last screen points to them too.
+- **For teachers** (`#teach`, linked from Rooms): a ready 45-minute class (Daily Dollar warm-up,
+  levels 1 and 2, a room on level 5, discussion), five discussion questions that don't take
+  sides, what students need, "Copy the lesson plan", and "Send this to a teacher".
 - Shared links carry a channel tag (`?s=x`, `wh`, `sh`…), saved with the player's anonymous
   record so first visits can be counted by channel.
 - Short links (`?plan=<id>`) for finished plans, and rankings of policy cards and states (never of

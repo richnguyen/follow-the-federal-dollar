@@ -67,6 +67,24 @@ export const JOURNEY_LINES = {
   back: (rank: string) => `Welcome back. You’re my ${rank} now. Let’s pick up where we left off.`,
 };
 
+// The level 1 card ("my share of Uncle Sam"), and asking the player's name.
+export const ME_LINES = {
+  celebrate: 'Your card is ready, partner. It shows what your taxes do for the whole country. Put your name on it and show your friends.',
+  page: 'Here’s your share of my household, partner. Put your name on your card and see what your friends chip in.',
+};
+
+// The debt clock: Treasury's own figure, ticking at the pace of the past year.
+export const CLOCK_LINES = {
+  intro: 'That’s my debt, ticking up as we speak. It starts from the Treasury’s own count, and it grows every second.',
+  limit: 'There’s a legal limit on how much I can borrow. When I get close to it, Congress has to act.',
+};
+
+// Playing together: rooms for a class or club, the Daily Dollar with a group, pass the budget.
+export const TOGETHER_LINES = {
+  intro: 'Budgets are better with company. Pick a way to play together: with your class, your group chat, or a few friends.',
+  teach: 'Teachers, this one’s for your class. Everybody plays on their own phone, and the class builds one plan together. No accounts, no sign-ups.',
+};
+
 export const PLAN_LINES = {
   intro: 'A friend sent you their plan for my budget. Have a look, then see if you can do better.',
   played: 'You’ve played this level too. Here’s how your plan stacks up against theirs.',
@@ -81,7 +99,7 @@ export const CHALLENGE_LINES = {
 };
 
 export const STORY_LINES = {
-  ready: 'Here’s your Budget Story, partner: six cards about how you’d run my books. Share the ones you like.',
+  ready: 'Here’s your Budget Story, partner: a few cards about how you’d run my books. Share the ones you like.',
   locked: 'Your story unlocks when you finish your first budget-desk level. That’s level 5.',
 };
 
@@ -91,6 +109,11 @@ export const DAILY_LINES = {
   budgetWeek: 'It’s Budget Week, partner. My budget request is due to Congress, so all week the Daily Dollar is about my budget.',
   taxWeek: 'It’s Tax Week. Returns are due on Tax Day, so all week the Daily Dollar is about taxes.',
   taxDay: 'It’s Tax Day! Returns are due today, so today’s numbers are all about taxes.',
+  // Deadline editions (see daily.ts): the week before a funding deadline or a debt-limit date.
+  shutdownWeek: 'It’s Shutdown Watch, partner. My funding runs out soon unless Congress acts, so all week the Daily Dollar is about what Congress pays for each year.',
+  shutdownDay: 'Today’s the deadline. If Congress doesn’t act, my funding runs out at midnight, and parts of my government shut down.',
+  debtWeek: 'It’s Debt Limit Watch. I’m close to the legal limit on what I can borrow, so all week the Daily Dollar is about my debt.',
+  debtDay: 'Today’s the day I hit the legal limit on what I can borrow. The Daily Dollar is all about my debt.',
   calls: 'Five quick calls: is the next number higher or lower?',
   done: 'You’ve played today’s. A new one is ready tomorrow, partner.',
   score: [

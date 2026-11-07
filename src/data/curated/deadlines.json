@@ -1,0 +1,17 @@
+{
+ "note": "Deadlines in the news that get their own Daily Dollar edition: the seven days up to and including each date. shutdown: the last day current law funds the government. debt: the day the Treasury says it may run out of room under the debt limit (the X-date), once it names one. Update this list when Congress passes a new stopgap or the spending bills, or when the Treasury gives a new estimate. public/sw.js repeats the dates for the reminder's wording: keep the two in step.",
+ "deadlines": [
+  {
+   "kind": "shutdown",
+   "date": "2026-12-11",
+   "what": "A stopgap law (P.L. 119-103) funds the government through Friday, Dec. 11, 2026. Unless Congress passes the 12 spending bills or another stopgap by then, funding lapses on Dec. 12 and parts of the government shut down.",
+   "source": { "title": "CRS, Overview of Continuing Appropriations for FY2027 (R49353)", "url": "https://www.congress.gov/crs-product/R49353" }
+  },
+  {
+   "kind": "shutdown",
+   "date": "2027-09-30",
+   "what": "Fiscal year 2028 starts on Oct. 1, 2027. Unless Congress passes the 12 spending bills or a stopgap by Sept. 30, funding lapses and parts of the government shut down.",
+   "source": { "title": "31 U.S.C. 1102: the federal fiscal year", "url": "https://www.law.cornell.edu/uscode/text/31/1102" }
+  }
+ ]
+}

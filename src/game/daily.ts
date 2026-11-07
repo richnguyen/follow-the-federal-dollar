@@ -1,4 +1,5 @@
-import { accounts, budget, cbo, geo, tax } from '../data';
+import { accounts, budget, cbo, debt, geo, process, tax } from '../data';
+import deadlinesJson from '../data/curated/deadlines.json';
 import { dollars, money, pct } from '../lib/format';
 import { estimateTaxes } from '../lib/tax';
 import { OPTIONS_DATA } from '../lib/planData';
@@ -100,6 +101,26 @@ const cboTaxItems = (): Item[] => OPTIONS_DATA.options.filter((o) => o.side === 
   source: { name: 'CBO, Options for Reducing the Deficit', url: o.source.url },
 }));
 
+// Shutdown Watch: what Congress funds each year, and how often it has needed stopgaps.
+const crsItems = (): Item[] => process.years.filter((y) => y.crs > 0).map((y) => ({
+  id: 'cr:' + y.fy, label: `Stopgap funding bills (CRs) Congress passed for FY${y.fy}`, value: y.crs, shown: `${y.crs} stopgap bill${y.crs === 1 ? '' : 's'}`,
+  source: { name: 'Congressional Research Service, continuing resolutions by fiscal year', url: process.sources[0]?.url },
+}));
+const appropriatedItems = (): Item[] => cbo.history.filter((h) => h.actual && h.fy >= 1980 && h.defense > 0 && h.nondefense > 0).flatMap((h) => [
+  { id: `ad:${h.fy}`, label: `What Congress approved for defense in FY${h.fy}`, value: h.defense, shown: money(h.defense), source: { name: 'OMB Historical Tables (discretionary outlays)', id: 'omb-hist' } },
+  { id: `an:${h.fy}`, label: `What Congress approved for everything else it funds yearly in FY${h.fy}`, value: h.nondefense, shown: money(h.nondefense), source: { name: 'OMB Historical Tables (discretionary outlays)', id: 'omb-hist' } },
+]);
+// Debt Limit Watch: the debt through the years, the interest on it, and its size next to the economy.
+const debtYearItems = (): Item[] => debt.byFY.filter((d) => d.fy >= 1940 && d.total > 0).map((d) => ({
+  id: 'dy:' + d.fy, label: `The national debt at the end of FY${d.fy}`, value: d.total, shown: money(d.total), source: { name: 'Treasury, Historical Debt Outstanding', id: 'debtHist' },
+}));
+const interestItems = (): Item[] => debt.interestByFY.filter((d) => d.gross > 0).map((d) => ({
+  id: 'di:' + d.fy, label: `Interest paid on the debt in FY${d.fy}`, value: d.gross, shown: money(d.gross), source: { name: 'Treasury, Interest Expense on the Public Debt Outstanding', id: 'interest' },
+}));
+const debtShareItems = (): Item[] => cbo.history.filter((h) => h.actual && h.gdp > 0 && h.debtPublic > 0).map((h) => ({
+  id: 'ds:' + h.fy, label: `Debt held by the public in FY${h.fy}, next to the economy`, value: h.debtPublic / h.gdp, shown: `${pct(h.debtPublic / h.gdp, 0)} of GDP`, source: { name: 'OMB Historical Tables (debt and GDP by fiscal year)', id: 'omb-hist' },
+}));
+
 export const THEME_POOLS: Record<ThemeId, Pool[]> = {
   budget: [
     { id: 'functions', title: `Federal spending by budget function, FY${budget.latestFY}`, ask: 'spent more or less than', unit: 'spending in a year, by the categories Congress budgets in', items: functionItems() },
@@ -112,6 +133,16 @@ export const THEME_POOLS: Record<ThemeId, Pool[]> = {
     { id: 'cbo-tax', title: 'What CBO’s tax options would raise over ten years', ask: 'would raise more or less than', unit: 'ten-year revenue', items: cboTaxItems() },
     { id: 'tax-sources', title: `What each federal tax brought in, FY2015–FY${budget.latestFY}`, ask: 'brought in more or less than', unit: 'revenue in a year', items: taxSourceItems() },
   ],
+  shutdown: [
+    { id: 'spend', title: `What Washington spent in FY${accounts.fy}`, ask: 'spent more or less than', unit: 'spending in a year', items: spendItems() },
+    { id: 'crs', title: `Stopgap funding bills, FY${process.years[0].fy}–FY${process.years.at(-1)!.fy}`, ask: 'needed more or fewer stopgaps than', unit: 'continuing resolutions passed for a fiscal year', items: crsItems() },
+    { id: 'appropriated', title: 'What Congress approves each year, FY1980 onward', ask: 'was more or less than', unit: 'discretionary spending, the part Congress votes on every year', items: appropriatedItems() },
+  ],
+  debt: [
+    { id: 'debt-years', title: 'The national debt through the years', ask: 'was bigger or smaller than', unit: 'total public debt outstanding at the end of the fiscal year', items: debtYearItems() },
+    { id: 'interest', title: `Interest on the debt, FY${debt.interestByFY[0]?.fy ?? 2010} onward`, ask: 'cost more or less than', unit: 'interest paid in a year', items: interestItems() },
+    { id: 'debt-share', title: 'The debt next to the economy', ask: 'was bigger or smaller than', unit: 'debt held by the public, as a share of GDP', items: debtShareItems() },
+  ],
 };
 
 // The pool for each day of a themed week. Budget Week opens on the budget's own categories; Tax
@@ -119,6 +150,8 @@ export const THEME_POOLS: Record<ThemeId, Pool[]> = {
 const THEME_DAYS: Record<ThemeId, string[]> = {
   budget: ['functions', 'deficits', 'spend', 'functions', 'deficits', 'spend', 'functions'],
   tax: ['months', 'tax-sources', 'cbo-tax', 'paycheck', 'months', 'tax-sources', 'paycheck'],
+  shutdown: ['spend', 'crs', 'appropriated', 'spend', 'crs', 'appropriated', 'spend'],
+  debt: ['debt-years', 'interest', 'debt-share', 'debt-years', 'interest', 'debt-share', 'interest'],
 };
 const themePool = (t: Theme) => { const ps = THEME_POOLS[t.id]; return ps.find((p) => p.id === THEME_DAYS[t.id][t.day - 1]) ?? ps[0]; };
 
@@ -173,9 +206,22 @@ export function puzzleFor(key: string): { n: number; pool: Pool; chain: Item[]; 
 //   Budget Week: the seven days from the first Monday in February, the day the law asks the
 //     President to send Congress a budget request (31 U.S.C. 1105(a)).
 //   Tax Week: the seven days up to and including Tax Day, when federal income tax returns are due.
-// public/sw.js repeats these two date rules for the reminder's wording; keep them in step.
-export type ThemeId = 'budget' | 'tax';
-export interface Theme { id: ThemeId; name: string; day: number; days: number; start: string; end: string; anchor: string; finale: boolean }
+// And editions for deadlines in the news (src/data/curated/deadlines.json):
+//   Shutdown Watch: the seven days up to and including the last day current law funds the
+//     government.
+//   Debt Limit Watch: the seven days up to the Treasury's X-date, once it names one.
+// A deadline edition takes the place of a themed week if the two ever meet.
+// public/sw.js repeats these date rules (and the deadline dates) for the reminder's wording; keep them in step.
+export type ThemeId = 'budget' | 'tax' | 'shutdown' | 'debt';
+export interface Theme { id: ThemeId; name: string; day: number; days: number; start: string; end: string; anchor: string; finale: boolean; what?: string; source?: { title: string; url: string } }
+
+export interface Deadline { kind: 'shutdown' | 'debt'; date: string; what: string; source: { title: string; url: string } }
+export const DEADLINES = (deadlinesJson as { deadlines: Deadline[] }).deadlines;
+const DEADLINE_NAME: Record<Deadline['kind'], string> = { shutdown: 'Shutdown Watch', debt: 'Debt Limit Watch' };
+/** What the last day of each edition is called. */
+export const FINALE_NAME: Record<ThemeId, string> = { budget: 'Budget Week', tax: 'Tax Day', shutdown: 'Deadline day', debt: 'Debt limit day' };
+/** "Tax Day", "Shutdown Watch", …: the edition's name for that day. */
+export const editionName = (t: Theme) => (t.finale ? FINALE_NAME[t.id] : t.name);
 
 const keyDate = (key: string) => { const [y, m, d] = key.split('-').map(Number); return new Date(y, m - 1, d); };
 const plusDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -199,16 +245,23 @@ export function taxDay(year: number) {
   return d;
 }
 
-function weeksOf(year: number) {
+interface Week { id: ThemeId; name: string; start: Date; end: Date; anchor: Date; what?: string; source?: Deadline['source'] }
+function weeksOf(year: number): Week[] {
   const b = budgetDay(year), t = taxDay(year);
+  // Deadline editions first, so they win if they ever overlap a themed week.
+  const due = DEADLINES.filter((x) => Number(x.date.slice(0, 4)) === year).map((x): Week => {
+    const a = keyDate(x.date);
+    return { id: x.kind, name: DEADLINE_NAME[x.kind], start: plusDays(a, -6), end: a, anchor: a, what: x.what, source: x.source };
+  });
   return [
-    { id: 'budget' as const, name: 'Budget Week', start: b, end: plusDays(b, 6), anchor: b },
-    { id: 'tax' as const, name: 'Tax Week', start: plusDays(t, -6), end: t, anchor: t },
+    ...due,
+    { id: 'budget', name: 'Budget Week', start: b, end: plusDays(b, 6), anchor: b },
+    { id: 'tax', name: 'Tax Week', start: plusDays(t, -6), end: t, anchor: t },
   ];
 }
-const asTheme = (w: ReturnType<typeof weeksOf>[number], d: Date): Theme => {
+const asTheme = (w: Week, d: Date): Theme => {
   const day = Math.round((d.getTime() - w.start.getTime()) / 86400000) + 1;
-  return { id: w.id, name: w.name, day, days: 7, start: todayKey(w.start), end: todayKey(w.end), anchor: todayKey(w.anchor), finale: todayKey(d) === todayKey(w.anchor) && w.id === 'tax' };
+  return { id: w.id, name: w.name, day, days: 7, start: todayKey(w.start), end: todayKey(w.end), anchor: todayKey(w.anchor), finale: todayKey(d) === todayKey(w.anchor) && w.id !== 'budget', what: w.what, source: w.source };
 };
 
 /** The themed week this date falls in, if any. */
@@ -236,8 +289,17 @@ export const span = (t: Theme) => {
   const a = keyDate(t.start), b = keyDate(t.end);
   return a.getMonth() === b.getMonth() ? `${MON[a.getMonth()]} ${a.getDate()}–${b.getDate()}` : `${MON[a.getMonth()]} ${a.getDate()}–${MON[b.getMonth()]} ${b.getDate()}`;
 };
+/** The next deadline in the news (a funding lapse or a debt-limit date), if it is within `within` days. */
+export function nextDeadline(key: string, within = 45) {
+  const d = keyDate(key);
+  const up = DEADLINES.map((x) => ({ ...x, days: Math.round((keyDate(x.date).getTime() - d.getTime()) / 86400000) })).filter((x) => x.days >= 0 && x.days <= within).sort((a, b) => a.days - b.days);
+  return up[0] ?? null;
+}
+
 /** What the week is about, in a sentence or two. */
 export function themeBlurb(t: Theme) {
+  if (t.id === 'shutdown') return t.finale ? `Today’s the deadline. ${t.what ?? ''} All week, the Daily Dollar has been about what Congress pays for each year.` : `${t.what ?? ''} All week, the Daily Dollar is about what Congress pays for each year.`;
+  if (t.id === 'debt') return t.finale ? `The Treasury says it may run out of room under the debt limit today. ${t.what ?? ''}` : `${t.what ?? ''} All week, the Daily Dollar is about the debt.`;
   if (t.id === 'budget') return `The law asks the President to send Congress a budget request by the first Monday in February (this year, ${longDate(t.anchor)}). All week, the Daily Dollar is about the budget.`;
   return t.finale ? 'It’s Tax Day: federal income tax returns are due today. The Daily Dollar is about taxes all week, ending today.' : `Federal income tax returns are due on Tax Day, ${longDate(t.anchor)}. All week, the Daily Dollar is about taxes.`;
 }

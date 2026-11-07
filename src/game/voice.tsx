@@ -14,7 +14,10 @@ export type Mood = 'happy' | 'proud' | 'worried' | 'thinking' | 'surprised' | 'c
 /** Mood shows in pace, not pitch: changing pitch makes natural voices sound synthetic. */
 const RATE: Record<Mood, number> = { happy: 1.0, proud: 0.97, worried: 0.93, thinking: 0.96, surprised: 1.05, cheering: 1.06 };
 
-type Clip = [bank: string, offset: number, length: number, seconds: number];
+// `env`: how loud the clip is, 15 times a second, as digits 0–3 (scripts/voice/synth.py), so
+// Uncle Sam's mouth can follow his voice.
+type Clip = [bank: string, offset: number, length: number, seconds: number, env?: string];
+const ENV_FPS = 15;
 const MANIFEST = manifestJson as unknown as Record<string, Clip>;
 export const hasRecordings = Object.keys(MANIFEST).length > 0;
 
@@ -157,6 +160,10 @@ interface Narrator {
 
 const Ctx = createContext<Narrator | null>(null);
 
+/** How open Uncle Sam's mouth should be right now (0 closed – 3 wide), for whoever is drawing him. */
+export type MouthSubscribe = (f: (level: number) => void) => () => void;
+export const MouthContext = createContext<MouthSubscribe | null>(null);
+
 // A one-sample silent WAV, played on the first tap so mobile Safari lets the page play audio.
 const SILENT = 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==';
 
@@ -172,6 +179,40 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
   const retry = useRef<(() => void) | null>(null);
   const speakRef = useRef<(id: string, text: string, mood?: Mood) => void>(() => {});
   const recorded = hasRecordings && settings.voice === 'auto';
+
+  // ---- the mouth: follows the recording's loudness, or the device voice's words ----
+  const mouthSubs = useRef(new Set<(n: number) => void>());
+  const mouthLevel = useRef(0);
+  const env = useRef<string | null>(null);
+  const lastWord = useRef(0);
+  const setMouth = useCallback((n: number) => {
+    if (n === mouthLevel.current) return;
+    mouthLevel.current = n;
+    mouthSubs.current.forEach((f) => f(n));
+  }, []);
+  const subscribeMouth = useCallback<MouthSubscribe>((f) => {
+    mouthSubs.current.add(f);
+    f(mouthLevel.current);
+    return () => { mouthSubs.current.delete(f); };
+  }, []);
+  useEffect(() => {
+    if (!speakingId) { env.current = null; setMouth(0); return; }
+    let raf = 0;
+    let flutter = 0;
+    const tick = (now: number) => {
+      const a = audio.current;
+      if (env.current && a && !a.paused) {
+        const e = env.current;
+        setMouth(Number(e[Math.min(e.length - 1, Math.floor(a.currentTime * ENV_FPS))] ?? 0));
+      } else if (!env.current && now - lastWord.current > 700) {
+        // A device voice that doesn't report its words: a gentle, irregular flutter.
+        if (now - flutter > 110) { flutter = now; setMouth([0, 1, 2, 1, 2, 3, 1][Math.floor(Math.random() * 7)]); }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); setMouth(0); };
+  }, [speakingId, setMouth]);
 
   useEffect(() => {
     if (hasRecordings) {
@@ -226,13 +267,21 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
     s.cancel();
     parts.forEach((part, k) => {
       const u = new SpeechSynthesisUtterance(part);
+      // Each word opens the mouth, then it settles.
+      u.onboundary = (e) => {
+        if (e.name && e.name !== 'word') return;
+        lastWord.current = performance.now();
+        setMouth(2);
+        setTimeout(() => setMouth(1), 90);
+        setTimeout(() => setMouth(0), 190);
+      };
       if (voice) u.voice = voice;
       u.lang = voice?.lang ?? 'en-US';
       u.rate = RATE[mood];
       if (k === parts.length - 1) { u.onend = () => finish(my); u.onerror = () => finish(my); }
       s.speak(u);
     });
-  }, [synth, voice, finish]);
+  }, [synth, voice, finish, setMouth]);
 
   const speak = useCallback((id: string, text: string, mood: Mood = 'happy') => {
     const parts = toSentences(text);
@@ -252,6 +301,7 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
         if (!url) { speakDevice(my, parts.slice(k), mood); return; } // recordings unreachable
         a.src = url;
         a.playbackRate = RATE[mood];
+        env.current = MANIFEST[keys[k]][4] ?? null;
         const ok = await new Promise<boolean>((res) => {
           a.onended = () => res(true);
           a.onerror = () => res(false);
@@ -287,7 +337,11 @@ export function NarrationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const using = recorded ? 'Uncle Sam’s recorded voice' : voice ? `${voice.name}, a voice on this device` : 'no voice available';
-  return <Ctx.Provider value={{ supported: hasRecordings || synth, recorded, voices, voice, speakingId, using, speak, stop, canAutoplay }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={{ supported: hasRecordings || synth, recorded, voices, voice, speakingId, using, speak, stop, canAutoplay }}>
+      <MouthContext.Provider value={subscribeMouth}>{children}</MouthContext.Provider>
+    </Ctx.Provider>
+  );
 }
 
 export function useNarrator() {

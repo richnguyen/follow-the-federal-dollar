@@ -73,8 +73,10 @@ async function trim(cache) {
 }
 
 // ---------- Daily Dollar reminders (opt-in; see src/game/reminders.tsx) ----------
-// THEMED WEEKS: the same two date rules as src/game/daily.ts, so a reminder during Budget Week or
-// Tax Week says so, by the phone's own date (keep the two in step).
+// THEMED WEEKS: the same date rules as src/game/daily.ts, so a reminder during Budget Week, Tax
+// Week, or a deadline edition says so, by the phone's own date (keep the two in step). The
+// deadline dates repeat src/data/curated/deadlines.json.
+const DEADLINES = [['shutdown', '2026-12-11'], ['shutdown', '2027-09-30']];
 function budgetDay(y) { const d = new Date(y, 1, 1); while (d.getDay() !== 1) d.setDate(d.getDate() + 1); return d; }
 function taxDay(y) {
   const em = new Date(y, 3, 16);
@@ -86,6 +88,12 @@ function taxDay(y) {
 function themeOn(now) {
   const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const after = (a) => Math.round((d - a) / 86400000);
+  for (const [kind, date] of DEADLINES) {
+    const [y, m, day] = date.split('-').map(Number);
+    const k = after(new Date(y, m - 1, day));
+    if (k === 0) return kind + 'day';
+    if (k >= -6 && k < 0) return kind;
+  }
   const b = after(budgetDay(d.getFullYear())), t = after(taxDay(d.getFullYear()));
   if (b >= 0 && b <= 6) return 'budget';
   if (t === 0) return 'taxday';
@@ -97,6 +105,10 @@ const THEMED = {
   budget: { title: 'Budget Week: the Daily Dollar is ready', body: 'The President’s budget request is due this week, so today’s five calls are about the budget.' },
   tax: { title: 'Tax Week: the Daily Dollar is ready', body: 'Returns are due on Tax Day, so today’s five calls are about taxes.' },
   taxday: { title: 'It’s Tax Day: the Daily Dollar is ready', body: 'Returns are due today. Today’s five calls: what a paycheck pays in federal taxes.' },
+  shutdown: { title: 'Shutdown Watch: the Daily Dollar is ready', body: 'Federal funding runs out soon unless Congress acts, so today’s five calls are about what Congress pays for each year.' },
+  shutdownday: { title: 'Deadline day: the Daily Dollar is ready', body: 'Federal funding runs out at midnight unless Congress acts. Today’s five calls: what Congress pays for each year.' },
+  debt: { title: 'Debt Limit Watch: the Daily Dollar is ready', body: 'Uncle Sam is close to the legal limit on borrowing, so today’s five calls are about the debt.' },
+  debtday: { title: 'Debt limit day: the Daily Dollar is ready', body: 'The Treasury says it may run out of room under the debt limit today. Today’s five calls are about the debt.' },
 };
 
 self.addEventListener('push', (e) => {

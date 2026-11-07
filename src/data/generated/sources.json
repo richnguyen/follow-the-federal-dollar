@@ -29,6 +29,13 @@
   "retrieved": "2026-11-03T23:21:18.139Z"
  },
  {
+  "id": "dts-limit",
+  "title": "Daily Treasury Statement, Table III-C: Debt Subject to Limit",
+  "publisher": "U.S. Treasury, Bureau of the Fiscal Service",
+  "url": "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/debt-subject-to-limit",
+  "retrieved": "2026-11-07"
+ },
+ {
   "id": "debtHist",
   "title": "Historical Debt Outstanding",
   "publisher": "U.S. Treasury, Bureau of the Fiscal Service",

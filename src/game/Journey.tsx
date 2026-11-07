@@ -8,7 +8,8 @@ import { OPTIONS_DATA } from '../lib/planData';
 import { useVotes } from '../lib/votes';
 import { LevelIcon, LockIcon } from './icons';
 import { diffKey, isUnlocked, LEVELS, MAX_STARS, rankFor, STOPS, unlockText } from './levels';
-import { dayNumber, loadResults, nextTheme, ROUNDS, span, themeFor, todayKey, untilNext } from './daily';
+import { dayNumber, editionName, loadResults, longDate, nextDeadline, nextTheme, ROUNDS, span, type ThemeId, themeFor, todayKey, untilNext } from './daily';
+import { useDebtClock } from './DebtClock';
 import { backendOn } from '../lib/backend';
 import { MEDALS } from './medals';
 import { GAME_NAME, SITE_URL } from './share';
@@ -17,6 +18,9 @@ import { JOURNEY_LINES } from './script';
 import { ReadingSettings } from './Settings';
 import { InstallButton } from './install';
 import { useJourney } from './state';
+import { useMyName } from './plans';
+import { DebtClock } from './DebtClock';
+import { TogetherCards } from './Together';
 import { SamSays, UncleSam } from './UncleSam';
 
 export { LockIcon } from './icons';
@@ -24,8 +28,13 @@ export { LockIcon } from './icons';
 const hard = (d: string) => d === 'Hard' || d === 'Super hard';
 const pillFor = (d: string) => (d === 'Easy' ? 'pill-ok' : d === 'Medium' ? 'pill-warn' : 'pill-crit');
 
+// Uncle Sam greets a returning player by name on screen. His recorded voice says the line without
+// it (a name can't be recorded ahead of time).
+const byName = (line: string, name: string) => (!name ? line : /^Welcome back/.test(line) ? line.replace(/^Welcome back/, `Welcome back, ${name}`) : /^We did it, partner/.test(line) ? line.replace('partner', name) : line);
+
 export default function Journey() {
   const j = useJourney();
+  const name = useMyName();
   const votes = useVotes();
   const done = STOPS.filter((s) => j.done.includes(s.id));
   const next = STOPS.find((s) => !j.done.includes(s.id) && isUnlocked(s.id, j.done, j.settings.freeRoam)) ?? null;
@@ -37,20 +46,21 @@ export default function Journey() {
   const fresh = !j.started && done.length === 0;
   const T = budget.receiptsByFY[String(budget.latestFY)]?.reduce((s, r) => s + r.amount, 0) ?? 0;
 
+  const greeting = finished
+    ? JOURNEY_LINES.finished
+    : fresh
+      ? JOURNEY_LINES.fresh(moneyWords(T))
+      : next && hard(next.difficulty)
+        ? JOURNEY_LINES.hardNext(rank.name.toLowerCase(), next.n)
+        : JOURNEY_LINES.back(rank.name.toLowerCase());
   return (
     <div className="journey">
       <section className="journey-hero">
         <div className="journey-copy">
           <div className="eyebrow">A civic game about the federal budget</div>
           <h1 className="page-title">Help Uncle Sam balance the budget</h1>
-          <SamSays mood={finished ? 'cheering' : fresh ? 'happy' : next && hard(next.difficulty) ? 'worried' : 'thinking'} size={150} auto>
-            {finished
-              ? JOURNEY_LINES.finished
-              : fresh
-                ? JOURNEY_LINES.fresh(moneyWords(T))
-                : next && hard(next.difficulty)
-                  ? JOURNEY_LINES.hardNext(rank.name.toLowerCase(), next.n)
-                  : JOURNEY_LINES.back(rank.name.toLowerCase())}
+          <SamSays mood={finished ? 'cheering' : fresh ? 'happy' : next && hard(next.difficulty) ? 'worried' : 'thinking'} size={150} auto say={greeting}>
+            {byName(greeting, name)}
           </SamSays>
           <ActionBar label="Play">
             {next ? <a className="btn btn-primary btn-lg" href={'#' + next.id}>{fresh ? 'Start level 1' : `Continue: level ${next.n}, ${next.title}`}</a> : <a className="btn btn-primary btn-lg" href="#story">See your Budget Story</a>}
@@ -72,14 +82,11 @@ export default function Journey() {
       </section>
 
       {!fresh && <Today />}
+      <DebtClock compact />
 
-      <Section id="together" title="Play with others" sub="Ways to play with friends, family, a class, or everyone at once.">
-        <ul className="together">
-          <li><a href="#peoples"><strong>The People’s Budget</strong><span className="small muted">One budget built by everyone. One move a day.</span></a></li>
-          <li><a href="#rooms"><strong>Rooms</strong><span className="small muted">A class, an office, or a family builds one plan together.</span></a></li>
-          <li><a href="#chain"><strong>Pass the budget</strong><span className="small muted">Make one change, then send it to the next person.</span></a></li>
-          <li><a href="#daily"><strong>The Daily Dollar</strong><span className="small muted">Five higher-or-lower calls on real numbers, new each day.</span></a></li>
-        </ul>
+      <Section id="together" title="Play together" sub="With your class or club, your group chat, or a few friends. Nothing to sign up for.">
+        <TogetherCards compact />
+        <p className="small"><a href="#together">All the ways to play together</a> · <a href="#teach">For teachers: a ready lesson plan</a>{backendOn() ? <> · <a href="#peoples">The People’s Budget</a></> : null}</p>
       </Section>
 
       <Section id="map" title="The road map" sub="Ten levels. Easy chapters build up to three hard budget-desk levels, so a tough level is always followed by a breather.">
@@ -190,18 +197,37 @@ export default function Journey() {
 }
 
 /** Something new every day, for players coming back: today's Daily Dollar and People's Budget move. */
+const EDITION_ABOUT: Record<ThemeId, string> = { budget: 'All about the budget', tax: 'All about taxes', shutdown: 'All about what Congress funds each year', debt: 'All about the debt' };
+const inDays = (n: number) => (n === 0 ? 'today' : n === 1 ? 'tomorrow' : `in ${n} days`);
+
 function Today() {
   const key = todayKey();
   const played = loadResults()[key];
   const right = played?.filter(Boolean).length ?? 0;
   const theme = themeFor(key);
   const upcoming = theme ? null : nextTheme(key, 21);
+  // Deadlines in the news: a funding lapse coming up, and how much room is left under the debt limit.
+  const due = nextDeadline(key, 45);
+  const clock = useDebtClock();
+  const limitWatch = clock.monthsLeft != null && clock.monthsLeft < 6;
   return (
     <section className="card today" aria-label="Today">
       <span className="stat-label">Today</span>
+      {due && due.kind === 'shutdown' && (
+        <a className="today-row today-news" href="#process">
+          <strong>Shutdown watch: funding runs out {due.days === 0 ? 'at midnight tonight' : `after ${longDate(due.date)}`} ({inDays(due.days)})</strong>
+          <span className="small muted">{due.what}{theme?.id === 'shutdown' ? '' : ' The week before, the Daily Dollar is about what Congress pays for each year.'}</span>
+        </a>
+      )}
+      {limitWatch && (
+        <a className="today-row today-news" href="#clock">
+          <strong>Debt limit watch: {clock.monthsLeft! < 1 ? 'less than a month' : `about ${Math.round(clock.monthsLeft!)} month${Math.round(clock.monthsLeft!) === 1 ? '' : 's'}`} of room left</strong>
+          <span className="small muted">Uncle Sam can borrow about {moneyWords(clock.room!, 0)} more before he reaches the legal limit. After that, the Treasury’s workarounds buy a little time, and then Congress has to act. See the debt clock.</span>
+        </a>
+      )}
       <a className="today-row" href="#daily">
-        <strong>The Daily Dollar #{dayNumber(key)}{theme ? ` · ${theme.finale ? 'Tax Day' : theme.name}` : ''}</strong>
-        <span className="small muted">{played && played.length >= ROUNDS ? `You got ${right} of ${ROUNDS}. The next one is ready in ${untilNext()}.` : theme ? `${theme.id === 'tax' ? 'All about taxes' : 'All about the budget'} this week. Today’s puzzle is ready: five calls, about a minute.` : 'Today’s puzzle is ready: five higher-or-lower calls, about a minute.'}{upcoming ? ` Coming up: ${upcoming.name}, ${span(upcoming)}.` : ''}</span>
+        <strong>The Daily Dollar #{dayNumber(key)}{theme ? ` · ${editionName(theme)}` : ''}</strong>
+        <span className="small muted">{played && played.length >= ROUNDS ? `You got ${right} of ${ROUNDS}. The next one is ready in ${untilNext()}.` : theme ? `${EDITION_ABOUT[theme.id]} this week. Today’s puzzle is ready: five calls, about a minute.` : 'Today’s puzzle is ready: five higher-or-lower calls, about a minute.'}{upcoming ? ` Coming up: ${upcoming.name}, ${span(upcoming)}.` : ''}</span>
       </a>
       {backendOn() && <a className="today-row" href="#peoples">
         <strong>The People’s Budget</strong>

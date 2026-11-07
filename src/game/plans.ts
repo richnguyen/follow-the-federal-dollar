@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react';
 import type { Goal } from '../lib/plan';
 import { OPTIONS_DATA, PRESETS } from '../lib/planData';
 import { type LeverId, type Levers, ZERO } from '../lib/sandbox';
@@ -94,8 +95,18 @@ export function shortLink(id: string, p: Pick<SharedPlan, 'by' | 'ballot'>, path
   return `${siteRoot()}${path}?plan=${id}${rest ? '&' + rest : ''}`;
 }
 
+// The player's first name, if they gave one: kept in this browser, and sent only inside the links
+// they share themselves (a challenge, a chain, a card). Pages that show it listen for changes.
 export const myName = () => load<string>('name', '');
-export const setMyName = (n: string) => save('name', cleanName(n));
+export const setMyName = (n: string) => {
+  const v = cleanName(n);
+  if (v === myName()) return;
+  save('name', v);
+  window.dispatchEvent(new Event('ftd-name'));
+};
+const onName = (f: () => void) => { window.addEventListener('ftd-name', f); return () => window.removeEventListener('ftd-name', f); };
+/** The player's name, kept current when they change it anywhere in the game. */
+export const useMyName = () => useSyncExternalStore(onName, myName, () => '');
 
 /** The player's answers to the big questions, from their saved choices. */
 export const ballotFrom = (choices: Record<string, string>) => Object.fromEntries(BALLOT.filter((x) => choices[x.key]).map((x) => [x.key, choices[x.key]]));

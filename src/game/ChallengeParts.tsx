@@ -31,6 +31,9 @@ export const GOAL_PLAN: Record<Goal, string> = {
 const RATING: Record<string, string> = { gentle: 'gentle', moderate: 'moderate', steep: 'steep' };
 export const whoPays = (a: Assessment) => (a.revTen + a.spTen ? `${pct(a.revenueShare, 0)} taxes, ${pct(1 - a.revenueShare, 0)} cuts` : 'no cards');
 
+/** A challenge reads like a note from the player: "Rich here. I balanced Uncle Sam’s budget…" */
+export const challengeText = (name: string, body: string) => (name ? `${name} here. ${body}` : body);
+
 /** "Challenge a friend": your plan as a link, with an optional name and your answers to the big questions. */
 export function ChallengeShare({ level, plan, onShare }: { level: string; plan: SavedPlan; onShare?: () => void }) {
   const j = useJourney();
@@ -40,7 +43,7 @@ export function ChallengeShare({ level, plan, onShare }: { level: string; plan: 
   const answered = Object.keys(ballot).length;
   const [withBallot, setWithBallot] = useState(answered > 0);
   const url = useShareLink(level, plan, { by: name || undefined, ballot: withBallot ? ballot : undefined })!;
-  const text = `I ${GOAL_DONE[d.goal]} with ${plan.ids.length} policy card${plan.ids.length === 1 ? '' : 's'} and ${plan.stars} of 3 stars. Can you beat my plan?`;
+  const text = challengeText(name, `I ${GOAL_DONE[d.goal]} with ${plan.ids.length} policy card${plan.ids.length === 1 ? '' : 's'} and ${plan.stars} of 3 stars. Can you beat my plan?`);
   return (
     <section className="card challenge-share" id="challenge" aria-labelledby="challenge-t">
       <div className="eyebrow">Challenge a friend</div>
@@ -48,7 +51,7 @@ export function ChallengeShare({ level, plan, onShare }: { level: string; plan: 
       <p className="small">Your friend sees your plan, plays the same level, and finds out how much you two agree. Nothing is sent until you share the link; the plan travels inside the link itself.</p>
       <div className="challenge-fields">
         <div className="field">
-          <label htmlFor="ch-name">Sign it (optional)</label>
+          <label htmlFor="ch-name">Sign it with your first name, so your friend knows it’s from you</label>
           <input id="ch-name" className="input" value={name} maxLength={24} placeholder="Your first name" autoComplete="given-name"
             onChange={(e) => { setName(e.target.value); setMyName(e.target.value); }} />
         </div>

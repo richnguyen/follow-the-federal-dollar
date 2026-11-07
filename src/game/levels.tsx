@@ -48,6 +48,8 @@ export interface Level {
   badge: string;
   steps: Step[];
   takeaways: string[];
+  /** The one fact on the level's certificate: true, surprising, and never the answer to any quick check in the game. */
+  shareFact: string;
   deepDive: { route: string; label: string }[];
   sources: string[];
   links?: { title: string; url: string }[]; // full documents beyond the site's source list
@@ -197,6 +199,7 @@ export const LEVELS: Level[] = [
       { id: 'vote', label: 'Your vote', kind: 'vote', mood: 'thinking', sam: <>This year, the Social Security tax stops at {dollars(tax.ssWageBase)} of wages. Here’s an idea CBO has priced.</>, vote: { kind: 'option', optionId: 'ss-tax-earnings-over-250k' } },
     ],
     takeaways: [`About ${pct(EARN / REC_TOTAL, 0)} of federal revenue comes from taxes on what people earn.`, 'Payroll taxes are set aside for Social Security and Medicare; income taxes go into the general fund.', `For every dollar spent in FY${FY}, about ${Math.round(BORROWED * 100)} cents was borrowed.`],
+    shareFact: `For every dollar Uncle Sam spent in FY${FY}, about ${Math.round(BORROWED * 100)} cents was borrowed.`,
     deepDive: [{ route: 'revenue', label: 'Where it comes from' }, { route: 'receipt', label: 'Your tax receipt' }],
     sources: ['mts9', 'mts4', 'irs-rp2532', 'irs-p15'],
   },
@@ -229,6 +232,7 @@ export const LEVELS: Level[] = [
       { id: 'vote', label: 'Your vote', kind: 'vote', mood: 'thinking', sam: <>Defense is the biggest bill Congress votes on every year. Here’s one option CBO priced.</>, vote: { kind: 'option', optionId: 'cut-defense-budget' } },
     ],
     takeaways: [`Social Security is the biggest program: about $${Math.round((cat('ss') / CATS.reduce((s, c) => s + c.amount, 0)) * 100)} of every $100.`, `Only about ${pct(BUCKET.y.discretionary / BUCKET.y.outlays, 0)} of spending is voted on each year.`, interestBeatsDefense ? 'Interest on the debt now costs more than national defense.' : 'Interest on the debt is approaching what defense costs.'],
+    shareFact: `Uncle Sam spends about ${moneyWords(T.outlays / 365, 1)} a day.`,
     deepDive: [{ route: 'overview', label: 'The big picture' }, { route: 'spending', label: 'Where it goes' }],
     sources: ['mts9', 'mts5', 'omb-hist'],
   },
@@ -244,6 +248,7 @@ export const LEVELS: Level[] = [
       { id: 'vote', label: 'Your vote', kind: 'vote', mood: 'thinking', sam: <>States count on federal grants for roads, transit, and schools. Here’s a cut CBO has priced.</>, vote: { kind: 'option', optionId: 'cut-transport-education-grants' } },
     ],
     takeaways: [`Federal awards averaged ${dollars(geo.national.perCapita)} per person in FY${geo.fy}, not counting Medicare.`, `${topProgram} is the largest program in most states.`, 'Defense contracts and national labs make some states rank high per person.'],
+    shareFact: `Federal awards averaged ${dollars(geo.national.perCapita)} per person in FY${geo.fy}, not counting Medicare.`,
     deepDive: [{ route: 'state', label: 'Your state & district' }],
     sources: ['usaspending-geo', 'usaspending-cat'],
   },
@@ -266,6 +271,7 @@ export const LEVELS: Level[] = [
         ) } },
     ],
     takeaways: [`The government last ran a surplus in FY${LAST_SURPLUS}.`, `In FY${BUCKET.y.fy}, mandatory programs plus interest used ${pct(MI_SHARE, 0)} of all revenue.`, 'A deficit that persists in good times is called structural.'],
+    shareFact: `Uncle Sam’s deficit in FY${FY} was ${moneyWords(T.deficit, 2)}, about ${dollars(T.deficit / HH)} for every household.`,
     deepDive: [{ route: 'gap', label: 'Deficits & the structural gap' }],
     sources: ['omb-hist', 'mts9'],
     links: ['multipliers', 'composition'].map((id) => principle(id)).filter(Boolean).map((p) => ({ title: p!.source.title, url: p!.source.url })),
@@ -312,6 +318,7 @@ export const LEVELS: Level[] = [
         ], context: <>{principle('debt-stabilize')?.claim} {principle('debt-stabilize') && <a href={principle('debt-stabilize')!.source.url} target="_blank" rel="noreferrer">CBO</a>}</> } },
     ],
     takeaways: [`The debt was ${money(D.total)}, about ${dollars(D.total / HH)} per household.`, interestBeatsDefense ? `Interest (${money(cat('interest'))}) now costs more than defense (${money(cat('defense'))}).` : 'Interest is approaching what defense costs.', 'Refinancing old low-rate debt at higher rates pushes interest up.'],
+    shareFact: `The national debt is ${moneyWords(D.total, 1)}, about ${dollars(D.total / HH)} for every household.`,
     deepDive: [{ route: 'debt', label: 'Debt & interest' }],
     sources: ['penny', 'debtHist', 'rates', 'mts9'],
   },
@@ -343,6 +350,7 @@ export const LEVELS: Level[] = [
         ) } },
     ],
     takeaways: [`Congress passed ${totalCRs} continuing resolutions for FY${process.years[0].fy}–FY${process.years.at(-1)!.fy}.`, `All regular spending bills were last on time in FY${process.lastAllOnTime?.fy ?? 1997}.`, 'Tax cuts, emergency packages, and spending increases from both parties added trillions to projected deficits.'],
+    shareFact: `Congress passed ${totalCRs} stopgap funding bills (continuing resolutions) for FY${process.years[0].fy}–FY${process.years.at(-1)!.fy}.`,
     deepDive: [{ route: 'process', label: 'How Congress budgets' }, { route: 'laws', label: 'Laws that moved the needle' }],
     sources: ['cbo-options-2024'],
     links: [...process.sources, ...laws.filter((l) => top7ids.includes(l.id)).map((l) => l.source)].filter((x) => x.url),
@@ -380,6 +388,7 @@ export const LEVELS: Level[] = [
       { id: 'vote', label: 'Your vote', kind: 'vote', mood: 'thinking', sam: <>Here’s one change CBO has priced. It would phase in slowly and not touch anyone already collecting.</>, vote: { kind: 'option', optionId: 'raise-full-retirement-age-70' } },
     ],
     takeaways: [`The retirement fund runs out in late ${ssa.depletion.oasi.year}; then about ${ssa.depletion.oasi.payablePct}% of benefits would be payable.`, 'Benefits would be cut automatically, not stopped.', `Closing the gap now would take a payroll tax of about ${ssa.fixes?.[0]?.value ?? '16.65%'} or a benefit cut of about ${ssa.fixes?.[1]?.value.replace('−', '') ?? '25%'}.`],
+    shareFact: `Social Security paid out ${moneyWords(cat('ss'), 2)} in FY${FY}, about ${moneyWords(cat('ss') / 365, 1)} a day.`,
     deepDive: [{ route: 'social-security', label: 'Social Security’s future' }],
     sources: ['mts8', 'ssa-tr2026', 'ssa-facts', 'cms-tr2026'],
     links: [{ title: 'The 2026 Social Security Trustees Report (full report, PDF)', url: 'https://www.ssa.gov/oact/TR/2026/tr2026.pdf' }],

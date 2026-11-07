@@ -1,13 +1,18 @@
-import { type ReactNode, useEffect, useId, useRef } from 'react';
+import { type ReactNode, useContext, useEffect, useId, useRef } from 'react';
 import { useJourney } from './state';
 import { useSamDock } from './samdock';
-import { type Mood, useNarrator } from './voice';
+import { MouthContext, type Mood, useNarrator } from './voice';
 
 export type { Mood } from './voice';
 
 // Uncle Sam, drawn as a friendly everyday American: reading glasses pushed up on his hat, a
-// pencil in his pocket. Flat and quiet, in the same palette in both themes. His face, hat and
-// arms change with his mood, and he nods and talks while his line is read aloud.
+// pencil in his pocket. Flat and quiet, in the same palette in both themes.
+// He is the game's main character, so he acts: he breathes and blinks while he waits, glances
+// around, and looks toward his words when he speaks. Each mood has its own face, hat and hands
+// (a wave, a thumbs-up, wringing hands, hands up in surprise, a hand at the chin, both arms up),
+// and each new line starts with a small reaction (a nod, a jump, a bounce). His mouth follows his
+// recorded voice: the narrator sends how loud each moment is (see voice.tsx), and the mouth opens
+// to match. With reduced motion, he holds still and keeps the shapes only.
 
 const C = { navy: '#23406e', red: '#b8372f', white: '#fbfaf6', skin: '#f0c6a0', skinShade: '#dfa983', hair: '#eceae3', line: '#3b2f2a', glass: '#7fa3c8', gold: '#c9a645' };
 
@@ -20,7 +25,21 @@ const HAT: Record<Mood, string | undefined> = {
   cheering: 'translate(6 -13) rotate(14 60 40)',
 };
 
-export function UncleSam({ mood = 'happy', size = 140, title, speaking = false }: { mood?: Mood; size?: number; title?: string; speaking?: boolean }) {
+/** While he speaks, the narrator's loudness (0–3) sets his mouth, written straight onto the drawing. */
+function useMouth(svg: React.RefObject<SVGSVGElement | null>, speaking: boolean) {
+  const mouth = useContext(MouthContext);
+  useEffect(() => {
+    const el = svg.current;
+    if (!el || !speaking || !mouth) return;
+    const off = mouth((level) => { el.dataset.mouth = String(level); });
+    return () => { off(); delete el.dataset.mouth; };
+  }, [speaking, mouth, svg]);
+}
+
+/** `greet`: he waves hello (happy mood) — on by default; the dock turns it off after his first line. */
+export function UncleSam({ mood = 'happy', size = 140, title, speaking = false, greet = true }: { mood?: Mood; size?: number; title?: string; speaking?: boolean; greet?: boolean }) {
+  const svg = useRef<SVGSVGElement>(null);
+  useMouth(svg, speaking);
   const brows: Record<Mood, string> = {
     happy: 'M41 77 q6 -4 12 -1 M67 76 q6 -3 12 1',
     proud: 'M41 76 q6 -5 12 -2 M67 74 q6 -3 12 2',
@@ -37,11 +56,16 @@ export function UncleSam({ mood = 'happy', size = 140, title, speaking = false }
     surprised: <ellipse cx="60" cy="105" rx="4.5" ry="5.5" fill={C.line} />,
     cheering: <path d="M47 101 q13 15 26 0z" fill={C.line} />,
   };
-  // The open "talking" shape alternates with the resting mouth while he speaks.
+  // The open "talking" shape alternates with the resting mouth while he speaks, when there is no
+  // loudness to follow (a device voice); with his recorded voice, three openings follow the sound.
   const talk = mood === 'worried' ? <ellipse cx="60" cy="105" rx="5" ry="3.6" fill={C.line} /> : <path d="M50 102 q10 11 20 0 q-10 3 -20 0z" fill={C.line} />;
+  const tongue = <ellipse cx="60" cy="108.2" rx="3.6" ry="1.5" fill="#c75b54" />;
   const closedEyes = mood === 'happy' || mood === 'proud' || mood === 'cheering';
   return (
-    <svg className="sam" data-mood={mood} data-speaking={speaking || undefined} width={size} height={size * (150 / 120)} viewBox="0 0 120 150" role="img" aria-label={title ?? `Uncle Sam, looking ${mood}${speaking ? ', speaking' : ''}`}>
+    <svg ref={svg} className="sam" data-mood={mood} data-speaking={speaking || undefined} width={size} height={size * (150 / 120)} viewBox="0 0 120 150" role="img" aria-label={title ?? `Uncle Sam, looking ${mood}${speaking ? ', speaking' : ''}`}>
+      {/* A new mood re-draws him, so each one starts with its own small reaction. */}
+      <g className="sam-figure" key={mood}>
+      <g className="sam-breath">
       {/* raised arms when cheering */}
       {mood === 'cheering' && (
         <g className="sam-arms">
@@ -69,11 +93,13 @@ export function UncleSam({ mood = 'happy', size = 140, title, speaking = false }
           {closedEyes ? (
             <path d="M44 86 q4 -4 8 0 M68 86 q4 -4 8 0" fill="none" stroke={C.line} strokeWidth="2.6" strokeLinecap="round" />
           ) : (
-            <>
+            <g className="sam-pupils">
               <circle cx="48" cy="86" r={mood === 'surprised' ? 3.6 : 2.8} fill={C.line} />
               <circle cx="72" cy="86" r={mood === 'surprised' ? 3.6 : 2.8} fill={C.line} />
+              <circle cx="49" cy="85" r="0.9" fill="#fff" opacity="0.85" />
+              <circle cx="73" cy="85" r="0.9" fill="#fff" opacity="0.85" />
               {mood === 'thinking' && <path d="M45 84 h6 M69 84 h6" stroke={C.skin} strokeWidth="1.6" />}
-            </>
+            </g>
           )}
         </g>
         <path className="sam-brows" d={brows[mood]} fill="none" stroke="#bdb9ae" strokeWidth="3.2" strokeLinecap="round" />
@@ -82,6 +108,9 @@ export function UncleSam({ mood = 'happy', size = 140, title, speaking = false }
         <circle cx="78" cy="97" r={mood === 'cheering' || mood === 'proud' ? 5 : 4} fill="#e9a58a" opacity={mood === 'worried' ? 0.2 : 0.45} />
         <g className="sam-mouth-rest">{rest[mood]}</g>
         <g className="sam-mouth-talk">{talk}</g>
+        <g className="sam-m sam-m1"><path d="M53 103 q7 5 14 0 q-7 2 -14 0z" fill={C.line} /></g>
+        <g className="sam-m sam-m2"><path d="M51 102 q9 10 18 0 q-9 3 -18 0z" fill={C.line} />{tongue}</g>
+        <g className="sam-m sam-m3"><ellipse cx="60" cy="105.5" rx="6" ry="7" fill={C.line} />{tongue}</g>
         {mood === 'worried' && <path className="sam-sweat" d="M89 70 q4 6 0 9 q-4 -3 0 -9z" fill="#9cc3e6" />}
         <g className="sam-hat" transform={HAT[mood]}>
           <ellipse cx="60" cy="61" rx="38" ry="7" fill={C.navy} />
@@ -99,6 +128,47 @@ export function UncleSam({ mood = 'happy', size = 140, title, speaking = false }
           </g>
         </g>
       </g>
+      </g>
+      {/* a wave hello, then a hand that talks along with him */}
+      {mood === 'happy' && (
+        <>
+          {greet && <g className="sam-wave">
+            <path d="M93 140 q13 -12 14 -38" fill="none" stroke={C.navy} strokeWidth="10" strokeLinecap="round" />
+            <circle cx="107" cy="98" r="6.5" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+            <path d="M103 92 v-3 M107 91 v-3.5 M111 92 v-3" stroke="#d9d5ca" strokeWidth="1.2" strokeLinecap="round" />
+          </g>}
+          {/* Hidden until he speaks (so a still picture of him has one right arm, not two). */}
+          <g className="sam-explain" opacity="0" data-after-wave={greet || undefined}>
+            <path d="M90 148 q8 -12 13 -26" fill="none" stroke={C.navy} strokeWidth="10" strokeLinecap="round" />
+            <ellipse cx="104" cy="119" rx="7" ry="5" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+          </g>
+        </>
+      )}
+      {/* a hand on his heart when proud */}
+      {mood === 'proud' && (
+        <g className="sam-thumb">
+          <path d="M100 148 q4 -16 -18 -21" fill="none" stroke={C.navy} strokeWidth="10" strokeLinecap="round" />
+          <ellipse cx="78" cy="126" rx="7.5" ry="5.6" transform="rotate(-18 78 126)" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+          <path d="M73 123.5 q5 -1.6 10 0 M73.5 126.5 q5 -1.4 9.5 0" fill="none" stroke="#d9d5ca" strokeWidth="1" strokeLinecap="round" />
+        </g>
+      )}
+      {/* wringing hands when worried */}
+      {mood === 'worried' && (
+        <g className="sam-wring">
+          <path d="M24 148 q8 -12 28 -17 M96 148 q-8 -12 -28 -17" fill="none" stroke={C.navy} strokeWidth="9" strokeLinecap="round" />
+          <circle cx="55" cy="131" r="5.6" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+          <circle cx="65" cy="131" r="5.6" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+        </g>
+      )}
+      {/* hands up when surprised */}
+      {mood === 'surprised' && (
+        <g className="sam-hands-up">
+          <path d="M22 146 q-9 -20 -4 -46 M98 146 q9 -20 4 -46" fill="none" stroke={C.navy} strokeWidth="9" strokeLinecap="round" />
+          <ellipse cx="18" cy="97" rx="5.6" ry="6.6" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+          <ellipse cx="102" cy="97" rx="5.6" ry="6.6" fill={C.white} stroke="#d9d5ca" strokeWidth="0.9" />
+          <path className="sam-pop" d="M14 72 l-4 -5 M22 68 l-1 -6 M98 68 l1 -6 M106 72 l4 -5" stroke="var(--muted)" strokeWidth="1.8" strokeLinecap="round" />
+        </g>
+      )}
       {/* a hand at the chin when thinking */}
       {mood === 'thinking' && (
         <g className="sam-arms">
@@ -109,11 +179,12 @@ export function UncleSam({ mood = 'happy', size = 140, title, speaking = false }
       {mood === 'thinking' && <g className="sam-think"><circle cx="100" cy="40" r="3" fill="var(--muted)" opacity="0.7" /><circle cx="108" cy="30" r="4.5" fill="var(--muted)" opacity="0.5" /></g>}
       {(mood === 'cheering' || mood === 'proud') && (
         <g className="sam-spark" fill={C.gold}>
-          {(mood === 'cheering' ? [[8, 60, 1], [112, 58, 1], [20, 30, 0.7], [100, 22, 0.8]] : [[104, 70, 0.8]]).map(([x, y, s], k) => (
+          {(mood === 'cheering' ? [[8, 60, 1], [112, 58, 1], [20, 30, 0.7], [100, 22, 0.8]] : [[104, 70, 0.8], [112, 84, 0.55]]).map(([x, y, s], k) => (
             <path key={k} transform={`translate(${x} ${y}) scale(${s})`} d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6z" />
           ))}
         </g>
       )}
+      </g>
     </svg>
   );
 }

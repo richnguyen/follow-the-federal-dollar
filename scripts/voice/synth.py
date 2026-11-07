@@ -4,7 +4,8 @@ usage: python synth.py LINES.json MODEL_DIR OUT_DIR MANIFEST.json [--cache DIR] 
 
 LINES.json is {"banks": {"level-1": ["sentence", ...], ...}} as written by collect.mjs. Each bank
 becomes one MP3 (the clips back to back) under OUT_DIR, and MANIFEST.json maps every sentence's
-key to [bank, byte offset, byte length, seconds]. Already-recorded sentences are
+key to [bank, byte offset, byte length, seconds, loudness]. The loudness is a digit 0-3 for every
+1/15 s, so Uncle Sam's mouth can follow his voice. Already-recorded sentences are
 reused from the cache, so re-running only records new lines.
 """
 import argparse, hashlib, json, os, subprocess, sys, tempfile
@@ -22,6 +23,27 @@ def key(s: str) -> str:
         h ^= b[i] | (b[i + 1] << 8)
         h = (h * 0x01000193) & 0xFFFFFFFF
     return format(h, "08x")
+
+
+ENV_FPS = 15  # how often the mouth can change (voice.tsx reads the same rate)
+
+
+def envelope(mp3: str) -> str:
+    """How loud the clip is, ENV_FPS times a second, as digits 0-3 (closed to wide open).
+    Cached next to the recording, so only new clips are measured."""
+    cached = mp3 + ".env"
+    if os.path.exists(cached):
+        return open(cached).read().strip()
+    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", mp3, "-f", "s16le", "-ac", "1", "-ar", "24000", "-"], capture_output=True, check=True).stdout
+    pcm = np.frombuffer(raw, dtype=np.int16).astype(np.float32)
+    step = 24000 // ENV_FPS
+    n = max(1, len(pcm) // step)
+    rms = np.array([np.sqrt(np.mean(pcm[i * step:(i + 1) * step] ** 2)) if (i + 1) * step <= len(pcm) else 0.0 for i in range(n)])
+    ref = float(np.percentile(rms, 95)) or 1.0
+    levels = np.digitize(rms / ref, [0.12, 0.38, 0.7])
+    out = "".join(str(int(v)) for v in levels)
+    open(cached, "w").write(out)
+    return out
 
 
 def main():
@@ -54,12 +76,12 @@ def main():
                 n += 1
                 if a.only and n >= a.only: break
             dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", mp3], capture_output=True, text=True).stdout.strip() or 0)
-            clips.append((kk, open(mp3, "rb").read(), dur))
+            clips.append((kk, open(mp3, "rb").read(), dur, envelope(mp3)))
         off = 0
         with open(os.path.join(a.out_dir, f"{bank}.mp3"), "wb") as f:
-            for kk, data, dur in clips:
+            for kk, data, dur, env in clips:
                 f.write(data)
-                manifest[kk] = [bank, off, len(data), round(dur, 2)]
+                manifest[kk] = [bank, off, len(data), round(dur, 2), env]
                 off += len(data)
         print(f"{bank}: {len(clips)} clips, {off/1024:.0f} KB", flush=True)
         if a.only and n >= a.only: break

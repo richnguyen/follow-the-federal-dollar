@@ -22,12 +22,12 @@ import { useHaptics } from '../game/haptics';
 import { COACH, DESK_PARTY, HINT_LINES, REACT } from '../game/script';
 import { PlanForYou } from '../game/PlanForYou';
 import { activeChallenge, type Challenge, dropChallenge } from '../game/challenge';
-import { AgreementCard, assessShared, ChallengeShare, GOAL_DONE, HeadToHead, headToHead } from '../game/ChallengeParts';
+import { AgreementCard, assessShared, ChallengeShare, challengeText, GOAL_DONE, HeadToHead, headToHead } from '../game/ChallengeParts';
 import { CHALLENGE_LINES } from '../game/script';
 import { ShareButton } from '../game/ShareButton';
 import { countStep } from '../lib/backend';
 import { encodePlan } from '../game/plans';
-import { ballotFrom, compare, myName } from '../game/plans';
+import { ballotFrom, compare, useMyName } from '../game/plans';
 import { useShareLink } from '../game/shortlinks';
 import { activeRoom, type RoomRef, setActiveRoom } from '../game/rooms';
 import { sendRoomPlan } from '../lib/backend';
@@ -227,8 +227,9 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   const challengeKey = challenge ? encodePlan(challenge.plan) : '';
   const returned = () => { if (challenge) countStep('returned', challengeKey); };
   useEffect(() => { if (met && challenge) countStep('met', challengeKey); }, [met, challengeKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars } : null, { by: myName() || undefined, ballot: ballotFrom(journey.choices) });
-  const shareText = desk ? `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars${h2h?.outcome === 'won' ? `, and beat ${byShort}’s plan` : ''}. Can you beat mine?` : undefined;
+  const name = useMyName();
+  const myLink = useShareLink(desk?.id, met && desk ? { ids, lv, gradual, stars: ev.stars } : null, { by: name || undefined, ballot: ballotFrom(journey.choices) });
+  const shareText = desk ? challengeText(name, `I ${GOAL_DONE[goal]} with ${ids.length} policy card${ids.length === 1 ? '' : 's'} and ${ev.stars} of 3 stars${h2h?.outcome === 'won' ? `, and beat ${byShort}’s plan` : ''}. Can you beat mine?`) : undefined;
   const challengeResult = (inCard: boolean) => challenge && theirs && mineNow ? (
     <div className="challenge-result">
       <div className="stat-label">Your challenge from {challengeBy}</div>

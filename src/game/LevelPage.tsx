@@ -3,6 +3,7 @@ import { money, pct } from '../lib/format';
 import { OPTIONS_DATA } from '../lib/planData';
 import { type Choice, useVotes } from '../lib/votes';
 import { Celebration } from './Celebrate';
+import { MyShareCard } from './MyShare';
 import { Stars } from '../components/game';
 import { ActionBar } from '../components/ActionBar';
 import { useHaptics } from './haptics';
@@ -10,6 +11,7 @@ import { LevelIcon } from './icons';
 import { chapterStars, checksOf, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
 import { useJourney } from './state';
 import { useSamDock } from './samdock';
+import { finishLevelTime, levelMinutes, resetLevelTime, useLevelTimer } from './levelTime';
 import { plain, SamSays, UncleSam } from './UncleSam';
 import { lockedLine, QUIZ_LINES } from './script';
 
@@ -58,7 +60,10 @@ function LevelRun({ level }: { level: Level }) {
   const [i, setI] = useState(() => (j.done.includes(level.id) ? level.steps.length : firstOpen < 0 ? level.steps.length : firstOpen));
   const top = useRef<HTMLDivElement>(null);
   const [party, setParty] = useState<number | null>(null);
+  const [mins, setMins] = useState<number | null>(null);
   const buzz = useHaptics();
+  // Active time on the level, for its certificate.
+  useLevelTimer(level.id, i < level.steps.length && party == null);
   useEffect(() => { j.start(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const go = (n: number) => {
@@ -70,6 +75,8 @@ function LevelRun({ level }: { level: Level }) {
     if (i === level.steps.length - 1) {
       const stars = chapterStars(level, j.quiz);
       j.completeLevel(level.id, stars);
+      finishLevelTime(level.id);
+      setMins(levelMinutes(level.id));
       setParty(stars);
     } else buzz('step');
     go(i + 1);
@@ -132,10 +139,10 @@ function LevelRun({ level }: { level: Level }) {
           </ActionBar>
         </section>
       ) : (
-        <Complete level={level} onReview={() => { j.retry(level.steps.filter((x) => x.quiz).map((x) => x.quiz!.id)); go(0); }} />
+        <Complete level={level} onReview={() => { j.retry(level.steps.filter((x) => x.quiz).map((x) => x.quiz!.id)); resetLevelTime(level.id); go(0); }} />
       )}
       <p className="fineprint-link small">This level’s full chapter and the original government documents are in <a href={'#sources-' + level.id}>Sources &amp; methods</a>.</p>
-      {party != null && <Celebration stop={STOP_BY_ID[level.id]} stars={party} onClose={() => setParty(null)} />}
+      {party != null && <Celebration stop={STOP_BY_ID[level.id]} stars={party} minutes={mins} onClose={() => setParty(null)} />}
     </div>
   );
 }
@@ -364,7 +371,14 @@ function Complete({ level, onReview }: { level: Level; onReview: () => void }) {
       <ul className="takeaways">
         {level.takeaways.map((t) => <li key={t}>{t}</li>)}
       </ul>
+      {level.id === 'level-1' && (
+        <div className="complete-me">
+          <div className="stat-label">Your card: your share of Uncle Sam</div>
+          <MyShareCard compact />
+        </div>
+      )}
       {next?.kind === 'desk' && <div className="callout"><div className="callout-title">Up next: a hard level at the budget desk</div><p className="small">Level {next.n} asks you to fix the budget yourself: {next.title.toLowerCase()}. Take your time.</p></div>}
+      <p className="small complete-together">Play it with others: <a href="#rooms">a room for your class or club</a>, <a href="#daily">the Daily Dollar with your group chat</a>, or <a href="#chain">pass the budget</a>.</p>
       <p className="small"><a href="#journey">See your progress on the road map</a></p>
       <ActionBar label="Next">
         {next ? <a className="btn btn-primary" href={'#' + next.id}>Next: level {next.n}, {next.title}</a> : <a className="btn btn-primary" href="#journey">Back to the road map</a>}

@@ -7,6 +7,7 @@ export const ROUTES = [
   'level-9', 'level-10',
   'overview', 'spending', 'revenue', 'gap', 'debt', 'laws', 'process', 'state', 'social-security',
   'receipt', 'glossary', 'sources', 'results', 'plan', 'story', 'daily', 'og-card', 'peoples', 'rooms', 'room', 'chain', 'stats',
+  'me', 'clock', 'together', 'teach',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 

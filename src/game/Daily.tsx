@@ -3,7 +3,7 @@ import { PageHead, Section } from '../components/ui';
 import { ActionBar } from '../components/ActionBar';
 import { SOURCE_BY_ID } from '../data';
 import { ReminderControl } from './reminders';
-import { grid, loadResults, longDate, nextTheme, puzzleFor, ROUNDS, saveResult, span, streak, type Theme, themeBlurb, todayKey, untilNext } from './daily';
+import { editionName, FINALE_NAME, grid, loadResults, longDate, nextTheme, puzzleFor, ROUNDS, saveResult, span, streak, type Theme, themeBlurb, todayKey, untilNext } from './daily';
 import { useHaptics } from './haptics';
 import { DAILY_LINES } from './script';
 import { SITE_URL } from './share';
@@ -18,7 +18,11 @@ const ratio = (a: number, b: number) => {
   return r >= 1 ? `That’s ${r >= 10 ? Math.round(r) : r.toFixed(1)} times the number before.` : `That’s ${r < 0.1 ? 'under a tenth' : `${Math.round(r * 100)}%`} of the number before.`;
 };
 
-const themeLine = (t: Theme) => `${t.finale ? DAILY_LINES.taxDay : t.id === 'tax' ? DAILY_LINES.taxWeek : DAILY_LINES.budgetWeek} ${DAILY_LINES.calls}`;
+const themeLine = (t: Theme) => {
+  const L = DAILY_LINES;
+  const first = t.id === 'tax' ? (t.finale ? L.taxDay : L.taxWeek) : t.id === 'shutdown' ? (t.finale ? L.shutdownDay : L.shutdownWeek) : t.id === 'debt' ? (t.finale ? L.debtDay : L.debtWeek) : L.budgetWeek;
+  return `${first} ${L.calls}`;
+};
 
 export default function Daily({ param = null }: { param?: string | null }) {
   const j = useJourney();
@@ -52,16 +56,16 @@ export default function Daily({ param = null }: { param?: string | null }) {
     if (a.length >= ROUNDS) { j.mark('daily'); if (a.every(Boolean)) buzz('win'); }
   };
   const advance = () => setRevealed(false);
-  const shareTextStr = `The Daily Dollar #${n}${theme ? ` · ${theme.finale ? 'Tax Day' : theme.name}` : ''} · ${score}/${ROUNDS}\n${grid(answers)}\nHigher or lower, on real federal numbers.`;
+  const shareTextStr = `The Daily Dollar #${n}${theme ? ` · ${editionName(theme)}` : ''} · ${score}/${ROUNDS}\n${grid(answers)}\nHigher or lower, on real federal numbers.`;
   const finished = done && !revealed;
 
   return (
     <>
-      <PageHead eyebrow={`The Daily Dollar · #${n}${theme ? ` · ${theme.name}` : ''}`} title={theme?.finale ? 'The Daily Dollar: Tax Day' : theme ? `The Daily Dollar: ${theme.name}` : 'The Daily Dollar'} lede={<>{preview ? 'That day' : 'Today'}: <strong>{pool.title[0].toLowerCase() + pool.title.slice(1)}</strong>. Five quick calls. Is the next number higher or lower? Same puzzle for everyone {preview ? 'that day' : 'today'}.</>} />
+      <PageHead eyebrow={`The Daily Dollar · #${n}${theme ? ` · ${theme.name}` : ''}`} title={theme ? `The Daily Dollar: ${editionName(theme)}` : 'The Daily Dollar'} lede={<>{preview ? 'That day' : 'Today'}: <strong>{pool.title[0].toLowerCase() + pool.title.slice(1)}</strong>. Five quick calls. Is the next number higher or lower? Same puzzle for everyone {preview ? 'that day' : 'today'}.</>} />
       {preview && <div className="callout small" role="note"><strong>Preview of {longDate(preview)}, {preview.slice(0, 4)}.</strong> Play it to see how it works; nothing is saved or counted. <a href="#daily">Today’s puzzle</a></div>}
       {theme && (
         <div className="daily-theme" data-theme={theme.id} role="note">
-          <span className="daily-theme-tag">{theme.finale ? 'Tax Day' : `${theme.name} · day ${theme.day} of ${theme.days}`}</span>
+          <span className="daily-theme-tag">{theme.finale ? FINALE_NAME[theme.id] : `${theme.name} · day ${theme.day} of ${theme.days}`}</span>
           <span className="small">{themeBlurb(theme)}</span>
         </div>
       )}

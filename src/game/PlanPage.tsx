@@ -77,7 +77,7 @@ export default function PlanPage({ param }: { param: string | null }) {
         <button type="button" className="btn btn-primary btn-lg bar-dup" onClick={take}>{mine ? 'Play it again and try to beat it' : 'Take the challenge'}</button>
         <span className="small muted">Opens level {stop.n} right away · about {stop.minutes} minutes · no sign-up</span>
       </section>
-      <SamSays mood="surprised" compact auto>{mine ? PLAN_LINES.played : PLAN_LINES.intro}</SamSays>
+      <SamSays mood="surprised" compact auto say={mine ? PLAN_LINES.played : PLAN_LINES.intro}>{mine ? PLAN_LINES.played : plan.by ? `${plan.by} sent you their plan for my budget. Have a look, then see if you can do better.` : PLAN_LINES.intro}</SamSays>
 
       <section className="card friendplan" aria-label="How the plan scores">
         <div className="friendplan-head">

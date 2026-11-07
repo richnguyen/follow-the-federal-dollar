@@ -6,6 +6,7 @@ import { budget, cbo, debt, HH, POP } from '../data';
 import { categoryTotals, cboSeries } from '../lib/derive';
 import { dateLabel, dollars, money, moneyWords, pct } from '../lib/format';
 import { useLive } from '../lib/live';
+import { DebtClock } from '../game/DebtClock';
 
 export default function Debt() {
   const live = useLive();
@@ -54,6 +55,7 @@ export default function Debt() {
           </div>
         </div>
       </section>
+      <DebtClock />
 
       <Section
         id="added"

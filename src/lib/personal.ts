@@ -1,6 +1,9 @@
 import { HH, tax } from '../data';
 import type { FilingStatus } from '../data/types';
-import { CTX } from './assess';
+import { budget } from '../data';
+import { CTX, runPlan } from './assess';
+import { bucketYear, categoryTotals } from './derive';
+import { ZERO } from './sandbox';
 import { optionPath } from './plan';
 import type { Levers } from './sandbox';
 import { load } from './storage';
@@ -52,5 +55,29 @@ export function personalEffect(ids: string[], lv: Levers, gradual: boolean, wage
     prices: { names: priceSel.map((o) => o.name), perHousehold },
     breaks: sel.filter((o) => BREAK_CARDS[o.id]).map((o) => `${o.name} (${BREAK_CARDS[o.id]})`),
     benefits: sel.filter((o) => o.side === 'spending').map((o) => o.name),
+  };
+}
+
+/**
+ * A plan's tax change, put next to what it buys: the household's part of the fix. The cost stays
+ * in plain view (it is a tax increase, or cut, on this salary); what it buys is the yearly
+ * borrowing it stops and the interest it saves, per household, in the projection's last year.
+ */
+export function partOfTheFix(ids: string[], lv: Levers, gradual: boolean, pe: PersonalEffect) {
+  const plan = runPlan(ids, lv, gradual).at(-1)!;
+  const base = runPlan([], ZERO, gradual).at(-1)!;
+  const fy = budget.latestFY;
+  const cats = categoryTotals(fy);
+  const amt = (id: string) => cats.find((c) => c.id === id)?.amount ?? 0;
+  const interestNow = bucketYear(fy).y.netInterest;
+  return {
+    yourPart: pe.direct,
+    perDay: pe.direct / 365,
+    lastFY: plan.fy,
+    borrowingCut: (base.deficit - plan.deficit) / HH,
+    interestSaved: (base.interest - plan.interest) / HH,
+    interestToday: interestNow / HH,
+    interestBeatsDefense: amt('interest') > amt('defense'),
+    fy,
   };
 }

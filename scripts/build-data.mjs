@@ -7,6 +7,7 @@ import { DATASETS } from './fetch-treasury.mjs';
 import { MEDICARE_PROGRAMS, STATES } from './fetch-usaspending.mjs';
 import { buildCBO } from './build-cbo.mjs';
 import { buildSSA } from './build-ssa.mjs';
+import { debtLimitFrom } from './lib/debtlimit.mjs';
 
 const raw = async (f) => JSON.parse(await readFile(path.join(ROOT, 'data', 'raw', f), 'utf8'));
 const num = (v) => (v == null || v === '' || v === 'null' ? null : Number(v));
@@ -242,7 +243,9 @@ const rates = [];
   }
   for (const [date, v] of [...g.entries()].sort()) if (v.marketable != null) rates.push({ date, marketable: v.marketable, total: v.total ?? v.marketable });
 }
-const debt = { latest: penny.at(-1), series: monthEnd, byFY, interestByFY, rates };
+const limitNow = T.dtsLimit ? debtLimitFrom(T.dtsLimit.rows) : null;
+const debt = { latest: penny.at(-1), series: monthEnd, byFY, interestByFY, rates, ...(limitNow ? { limit: limitNow } : {}) };
+if (T.dtsLimit) addSource({ id: 'dts-limit', title: DATASETS.dtsLimit.title, publisher: 'U.S. Treasury, Bureau of the Fiscal Service', url: DATASETS.dtsLimit.page, retrieved: T.dtsLimit.retrieved });
 addSource({ id: 'penny', title: DATASETS.penny.title, publisher: 'U.S. Treasury, Bureau of the Fiscal Service', url: DATASETS.penny.page, retrieved: T.penny.retrieved });
 addSource({ id: 'debtHist', title: DATASETS.debtHist.title, publisher: 'U.S. Treasury, Bureau of the Fiscal Service', url: DATASETS.debtHist.page, retrieved: T.debtHist.retrieved });
 addSource({ id: 'interest', title: DATASETS.interest.title, publisher: 'U.S. Treasury, Bureau of the Fiscal Service', url: DATASETS.interest.page, retrieved: T.interest.retrieved });

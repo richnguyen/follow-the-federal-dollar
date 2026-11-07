@@ -7,22 +7,27 @@ import { ShareButton, SocialShare } from './ShareButton';
 import { SamSays } from './UncleSam';
 import { CHEER } from './script';
 import type { Outcome } from './ChallengeParts';
+import { MyShareCard } from './MyShare';
+import { NameField } from './NameField';
 
 // The celebration card that pops up when a level is finished: stars, the certificate earned,
 // a quote, a way to share, and the next level. It is earned, never interrupts play, and closes
 // with one tap or Escape.
 
 
+// The certificate a player shares gives nothing away: stars, the time it took, and one fact that
+// is never the answer to a quick check, so a friend still gets to guess for themselves.
 export function factFor(stop: Stop) {
   const l = LEVELS.find((x) => x.id === stop.id);
-  return l ? l.takeaways[0] : `I met the goal “${stop.title.toLowerCase()}” using real options priced by the Congressional Budget Office.`;
+  return l ? l.shareFact : `I met the goal “${stop.title.toLowerCase()}” using real options priced by the Congressional Budget Office.`;
 }
+const took = (m?: number | null) => (m ? ` in ${m} minute${m === 1 ? '' : 's'}` : '');
 
 /**
  * `challenge`: the player took a friend's challenge, so the card ends with the result (send it back,
  * or try again). `newcomer`: they haven't played the earlier levels, so the next step is level 1.
  */
-export function Celebration({ stop, stars, onClose, line, share, children, challenge, newcomer = false, onShare }: { stop: Stop; stars: number; onClose: () => void; line?: string; share?: { text: string; url: string }; children?: ReactNode; challenge?: { outcome: Outcome; by: string }; newcomer?: boolean; onShare?: () => void }) {
+export function Celebration({ stop, stars, onClose, line, share, children, challenge, newcomer = false, onShare, minutes }: { stop: Stop; stars: number; onClose: () => void; line?: string; share?: { text: string; url: string }; children?: ReactNode; challenge?: { outcome: Outcome; by: string }; newcomer?: boolean; onShare?: () => void; minutes?: number | null }) {
   const next = STOPS[stop.n] as Stop | undefined; // n is 1-based, so this is the following level
   const box = useRef<HTMLDivElement>(null);
   const buzz = useHaptics();
@@ -36,9 +41,11 @@ export function Celebration({ stop, stars, onClose, line, share, children, chall
   }, [onClose]); // eslint-disable-line react-hooks/exhaustive-deps
   const say = line ?? CHEER[stars];
   const fact = factFor(stop);
-  const text = share?.text ?? `I just finished level ${stop.n} of “${GAME_NAME}” with ${stars} of 3 stars. ${fact}`;
+  const text = share?.text ?? `I finished level ${stop.n} of “${GAME_NAME}”${took(minutes)} with ${stars} of 3 stars. Did you know? ${fact} Your turn:`;
   const url = share?.url ?? SITE_URL;
-  const card = () => shareCard({ eyebrow: `Level ${stop.n} of ${STOPS.length} complete`, title: stop.title, stars, fact, color: DIFF_COLOR[stop.difficulty], samSvg: box.current?.querySelector('svg.sam')?.outerHTML });
+  const card = () => shareCard({ eyebrow: `Level ${stop.n} of ${STOPS.length} complete${minutes ? ` · ${minutes} min` : ''}`, title: stop.title, stars, fact: `Did you know? ${fact}`, color: DIFF_COLOR[stop.difficulty], samSvg: box.current?.querySelector('svg.sam')?.outerHTML });
+  // Level 1 ends with the player's own card ("my share of Uncle Sam") instead of a fact card.
+  const mine = stop.id === 'level-1' && !share && !challenge;
   return (
     <div className="celebrate-scrim" onClick={onClose}>
       <div className="celebrate" role="dialog" aria-modal="true" aria-labelledby="celebrate-t" onClick={(e) => e.stopPropagation()} ref={box} data-diff={diffKey(stop.difficulty)}>
@@ -57,9 +64,16 @@ export function Celebration({ stop, stars, onClose, line, share, children, chall
             <blockquote>“{stop.quote.text}”</blockquote>
             <figcaption>— {stop.quote.who}, <span className="muted">{stop.quote.where}</span></figcaption>
           </figure>
-          {!challenge && (
+          {mine && (
+            <div className="celebrate-share celebrate-me">
+              <div className="small"><span className="stat-label">Your card is ready</span><div>What your taxes do for the whole country, with your name on it. Nothing political: just your own numbers.</div></div>
+              <MyShareCard compact />
+            </div>
+          )}
+          {!challenge && !mine && (
             <div className="celebrate-share">
               <div className="small"><span className="stat-label">{share ? 'Challenge a friend' : 'Your fact card'}</span><div>{share ? 'Send your plan as a link. Your friend plays the same level and sees how much you two agree.' : fact}</div></div>
+              {share && <NameField id="cel-name" label="Sign your challenge (first name, optional)" />}
               <div className="celebrate-share-actions"><ShareButton text={text} card={card} url={url} label={share ? 'Send the challenge' : 'Share'} kind={share ? 'plan' : 'level'} onShare={onShare} /></div>
               <SocialShare text={text} url={url} kind={share ? 'plan' : 'level'} onShare={onShare} />
             </div>
