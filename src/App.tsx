@@ -45,6 +45,7 @@ import { NarrationProvider, prefetchVoice, useNarrator } from './game/voice';
 import { earnedMedals, MEDALS } from './game/medals';
 import { useHaptics } from './game/haptics';
 import { noteLevel } from './game/resume';
+import { SamDockProvider, SamDockView } from './game/samdock';
 import { Toasts, useToasts } from './components/game';
 import { ActionBar } from './components/ActionBar';
 
@@ -204,11 +205,13 @@ export default function App() {
         <TooltipProvider>
           <JourneyProvider>
             <NarrationProvider>
-              <VotesProvider>
-                <CommunityProvider>
-                  <Shell />
-                </CommunityProvider>
-              </VotesProvider>
+              <SamDockProvider>
+                <VotesProvider>
+                  <CommunityProvider>
+                    <Shell />
+                  </CommunityProvider>
+                </VotesProvider>
+              </SamDockProvider>
             </NarrationProvider>
           </JourneyProvider>
         </TooltipProvider>
@@ -244,6 +247,7 @@ function Shell() {
           </footer>
         </div>
       </main>
+      <SamDockView route={route} />
       <DefaultActions route={route} />
       <MedalWatcher />
     </>

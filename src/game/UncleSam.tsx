@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useId, useRef } from 'react';
 import { useJourney } from './state';
+import { useSamDock } from './samdock';
 import { type Mood, useNarrator } from './voice';
 
 export type { Mood } from './voice';
@@ -127,10 +128,26 @@ export const plain = (n: ReactNode): string => {
 };
 
 /**
- * Uncle Sam with a speech bubble. With `auto`, he reads the line aloud as soon as it appears
- * (when his voice is on and the browser allows it); "Listen" replays it at any time.
+ * Uncle Sam says a line. He speaks from his dock, the fixed spot just above the action bar (see
+ * samdock.tsx), so he's always in the same place; this hands the line to the dock. With `auto`, he
+ * reads it aloud when it appears. `inline` draws him in the page instead (the celebration card).
  */
-export function SamSays({ mood = 'happy', children, size = 120, compact = false, auto = false, delay = 250, say }: { mood?: Mood; children: ReactNode; size?: number; compact?: boolean; auto?: boolean; delay?: number; say?: string }) {
+export function SamSays(props: { mood?: Mood; children: ReactNode; size?: number; compact?: boolean; auto?: boolean; delay?: number; say?: string; inline?: boolean }) {
+  const dock = useSamDock();
+  return props.inline || !dock ? <SamInline {...props} /> : <SamDocked {...props} />;
+}
+
+function SamDocked({ mood = 'happy', children, auto = false, delay = 250, say }: { mood?: Mood; children: ReactNode; auto?: boolean; delay?: number; say?: string }) {
+  const dock = useSamDock()!;
+  const id = useId();
+  const text = (say ?? plain(children)).trim();
+  useEffect(() => { dock.present({ owner: id, mood, node: children, text, auto, delay }); }, [text, mood]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => dock.clear(id), []); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
+/** Uncle Sam with a speech bubble, in the page. "Listen" replays the line at any time. */
+function SamInline({ mood = 'happy', children, size = 120, compact = false, auto = false, delay = 250, say }: { mood?: Mood; children: ReactNode; size?: number; compact?: boolean; auto?: boolean; delay?: number; say?: string }) {
   const { settings } = useJourney();
   const n = useNarrator();
   const id = useId();

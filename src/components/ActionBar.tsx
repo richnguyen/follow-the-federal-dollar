@@ -7,9 +7,11 @@ import type { ReactNode } from 'react';
 // default bar (continue the game) steps aside when a page brings its own (see app.css).
 // `phoneOnly`: the bar exists only on small screens, because the page shows these actions
 // elsewhere on wide ones (the budget desk's scoreboard).
-export function ActionBar({ children, label = 'Actions', className = '', phoneOnly = false }: { children: ReactNode; label?: string; className?: string; phoneOnly?: boolean }) {
+// `keepSam`: taps on this bar don't slide Uncle Sam away by themselves (a level step's Continue and
+// Back decide what happens to him).
+export function ActionBar({ children, label = 'Actions', className = '', phoneOnly = false, keepSam = false }: { children: ReactNode; label?: string; className?: string; phoneOnly?: boolean; keepSam?: boolean }) {
   return (
-    <div className={'actionbar' + (phoneOnly ? ' actionbar-phone' : '') + (className ? ' ' + className : '')} role="group" aria-label={label}>
+    <div className={'actionbar' + (phoneOnly ? ' actionbar-phone' : '') + (className ? ' ' + className : '')} role="group" aria-label={label} data-sam-keep={keepSam || undefined}>
       {children}
     </div>
   );

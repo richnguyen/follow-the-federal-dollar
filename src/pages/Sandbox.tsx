@@ -322,7 +322,8 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
   // On level 10 the board's coach also gives the opening line, since the board comes first.
   // A friend's challenge opens with a short line, so the cards come sooner on a phone.
   const said = hint ? { mood: 'thinking' as Mood, line: hint.line } : special && !met && prog <= 0.001 ? (challenge ? { mood: 'happy' as Mood, line: CHALLENGE_LINES.start } : { mood: 'worried' as Mood, line: introLine }) : coach;
-  const coachBlock = desk ? <div className="sb-coach"><SamSays mood={said.mood} compact auto={party == null && !(met && !wasMet.current)} delay={special ? 300 : 900}>{said.line}</SamSays></div> : null;
+  // Uncle Sam coaches from his dock above the action bar (samdock.tsx), so he's always in one place.
+  const coachBlock = desk ? <SamSays mood={said.mood} auto={party == null && !(met && !wasMet.current)} delay={special ? 300 : 900}>{said.line}</SamSays> : null;
   const progressBlock = (
     <div aria-live="polite" className="sb-progress">
       <div className="sb-big">{met ? (desk ? 'Level complete!' : 'Mission complete!') : `${Math.min(99, Math.floor(shownProg * 100))}% of the way there`}</div>
@@ -495,7 +496,7 @@ export default function Sandbox({ desk }: { desk?: Desk }) {
       )}
       <>
           <section className="topboard card" id="game" aria-label="Scoreboard" data-cm={challenge ? true : undefined}>
-            <div className="tb-coach">{coachBlock}</div>
+            {coachBlock}
             <div className="tb-main">
               <div className="tb-head">
                 <div className="eyebrow">Level {desk!.n} · {desk!.difficulty} level</div>

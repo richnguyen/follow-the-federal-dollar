@@ -101,7 +101,7 @@ export default function PlanPage({ param }: { param: string | null }) {
 
       {mine && (
         <Section id="vs" title="Your plan against theirs" sub={`Your latest plan on level ${stop.n}, scored the same way.`}>
-          <HeadToHead mine={mine} theirs={a} by={by === 'Your friend' ? 'Them' : by} />
+          <HeadToHead mine={mine} theirs={a} by={by === 'Your friend' ? 'Them' : by} sam={false} />
         </Section>
       )}
       {agreement.of > 0 && (

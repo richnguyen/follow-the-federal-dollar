@@ -94,17 +94,27 @@ Most players are on a phone, often for a few minutes at a time. The game was mea
 emulated iPhone 13 (390×664) and tuned to the usual mobile-game principles:
 
 - **One action bar.** Every screen's forward actions sit in one bar
-  (`src/components/ActionBar.tsx`), fixed to the bottom of the screen on phones and tablets
-  (900 px or narrower) so players always know where to look: Back and Continue on a level step,
+  (`src/components/ActionBar.tsx`), fixed to the bottom of the screen at every width so players
+  always know where to look: Back and Continue on a level step,
   the next level after one, Higher and Lower on the Daily Dollar, Take the challenge on a friend's
   plan, the hint or the next steps (with the stars and progress) on the budget desk, Share on the
   People's Budget and the Budget Story, and, on pages with no action of their own, the chapter's
   level or the next level to play. One bar per screen; a button the bar holds isn't repeated in the
-  page. On wide screens the same buttons stay where the page puts them. The celebration opens as
-  a sheet from the bottom with its next step pinned in reach.
+  page. On phones its buttons fill the bar, in reach of a thumb; on wide screens they line up with
+  the right edge of the page's column. The celebration opens as a sheet from the bottom with its
+  next step pinned in reach.
+- **Uncle Sam in one place.** He always speaks from the same spot: standing on the action bar at
+  the bottom left, over whatever is behind him (`src/game/samdock.tsx`; pages say his lines with
+  `<SamSays>`, which hands them to the dock). Each new line slides him in from the left. On a level
+  step with something to see or do (a chart, a quiz, a slider, a vote), Continue first slides him
+  out of view and the next Continue moves on; a step that is only his words moves on in one tap.
+  Back brings him back first, then goes to the previous step. A new line, such as a quiz answer,
+  a reaction on the budget desk or a Daily Dollar result, slides him back in; tapping him or
+  anywhere else slides him away, and a small handle at the left edge brings him back. Only the
+  level-complete pop-up keeps him inside it.
 - **Thumb-friendly.** Every control is at least 44 × 44 px on a touch screen.
-- **Less on screen.** Five controls in the top bar (Glossary and Methods move into the settings
-  menu, and Continue moves down to the action bar); the footer is one line, with the field guide
+- **Less on screen.** Five controls in the top bar on phones (Glossary and Methods move into the
+  settings menu), and the top bar's Continue moves down to the action bar at every width; the footer is one line, with the field guide
   and the note about the figures in Sources & methods; on the desk, the scoreboard and cards come straight after the title. Medal and badge
   messages share one stack under the top bar.
 - **Interruptions.** A call, a locked screen, or a closed tab loses nothing: level steps,

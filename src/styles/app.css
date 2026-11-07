@@ -800,9 +800,6 @@ html[data-text="larger"] { font-size: 125%; }
 .bubble-live i:nth-child(3) { animation-delay: 0.3s; }
 @keyframes bubble-eq { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
 .samsays[data-speaking] .bubble { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, var(--ring)); }
-.sb-coach .samsays.compact .sam { width: 54px; }
-.sb-coach .bubble { padding: 10px 12px; }
-.sb-coach .bubble-text { font-size: 0.9375rem; }
 @media (prefers-reduced-motion: reduce) {
   .sam *, .bubble-live i { animation: none !important; }
   .sam[data-speaking] .sam-mouth-talk { opacity: 1; }
@@ -1000,12 +997,7 @@ html.modal-open { overflow: hidden; }
 .congress a { font-weight: 600; }
 
 /* ---------- level 10: the scoreboard runs across the top ---------- */
-.topboard { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(0, 2.2fr) auto; gap: 18px 24px; align-items: start; }
-.tb-coach .samsays.compact { flex-direction: column; align-items: flex-start; gap: 6px; }
-.tb-coach .samsays.compact .sam { width: 64px; }
-.tb-coach .bubble { padding: 10px 12px; }
-.tb-coach .bubble::before { display: none; }
-.tb-coach .bubble-text { font-size: 0.9375rem; }
+.topboard { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 24px; align-items: start; }
 .tb-main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .tb-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .tb-main .sb-big { font-size: clamp(1.6rem, 3vw, 2.2rem); }
@@ -1019,8 +1011,6 @@ html.modal-open { overflow: hidden; }
 .deck-wide { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 @media (max-width: 1100px) {
   .topboard { grid-template-columns: minmax(0, 1fr) auto; position: static; }
-  .tb-coach { grid-column: 1 / -1; }
-  .tb-coach .samsays.compact { flex-direction: row; }
 }
 @media (max-width: 760px) {
   .topboard { grid-template-columns: minmax(0, 1fr); }
@@ -1055,10 +1045,6 @@ html.modal-open { overflow: hidden; }
 .tb-main .gapbar-track { height: 28px; }
 .tb-actions { gap: 8px; }
 .tb-actions .btn { padding: 6px 12px; font-size: 0.875rem; }
-.tb-coach .samsays.compact { flex-direction: row; align-items: flex-start; }
-.tb-coach .samsays.compact .sam { width: 52px; }
-.tb-coach .bubble { max-height: 9.6em; overflow-y: auto; }
-.tb-coach .bubble-text { font-size: 0.875rem; line-height: 1.45; }
 .tb-side .sb-block { width: 116px; gap: 6px; }
 .tb-side .vmeter-col { height: 100px; }
 .tb-side .vmeter-value { font-size: 0.75rem; }
@@ -1070,7 +1056,6 @@ html.modal-open { overflow: hidden; }
 .starpop-btn:hover, .starpop-btn[aria-expanded="true"] { background: var(--surface-2); }
 .starpop-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: min(340px, 80vw); padding: 12px 14px; border-radius: var(--radius); background: var(--surface); box-shadow: 0 0 0 1px var(--ring), 0 14px 32px rgba(0, 0, 0, 0.16); display: flex; flex-direction: column; gap: 8px; }
 .starpop-panel .checks { margin: 0; }
-@media (max-width: 1100px) { .tb-coach .bubble { max-height: 6.5em; } }
 .starpop-panel .checks { display: flex; flex-direction: column; gap: 10px; }
 .starpop-panel .checks li .small { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 0.8125rem; }
 
@@ -1427,7 +1412,6 @@ html.modal-open { overflow: hidden; }
   /* The budget desk: the scoreboard and the cards come first; badges live in the top bar's menu. */
   .page:has(> .topboard) > .page-head .lede, .page:has(> .topboard) > .accomp { display: none; }
   .page:has(> .topboard) > .page-head .page-title { font-size: clamp(1.9rem, 9vw, 2.4rem); }
-  .tb-coach .bubble { max-height: none; overflow: visible; }
 }
 
 /* The journey's "Today" row: what's new since the last visit. */
@@ -1465,36 +1449,102 @@ html.modal-open { overflow: hidden; }
 
 /* ---------- the action bar ----------
    Each screen's forward actions (continue, take the challenge, play the next level, share) sit
-   in one bar. On phones and tablets it's fixed to the bottom of the screen, so the actions
-   available are always in the same place; on wide screens it stays where the page puts it. */
-.actionbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-@media (min-width: 901px) { .actionbar-phone { display: none !important; } }
+   in one bar, fixed to the bottom of the screen at every width, so the actions available are
+   always in the same place. On phones and tablets its buttons fill the bar, in reach of a thumb;
+   on wide screens they line up on the right of the page's column. */
+.actionbar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; margin: 0;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: color-mix(in srgb, var(--surface) 95%, transparent); backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line); box-shadow: 0 -10px 22px -18px rgba(0, 0, 0, 0.4);
+}
+.actionbar .btn { min-height: 48px; justify-content: center; text-align: center; line-height: 1.2; white-space: normal; padding-inline: 14px; }
+.actionbar .share-manual { position: absolute; left: 12px; right: 12px; bottom: calc(100% + 8px); }
+/* One bar per screen: the app's default bar gives way when the page brings its own, and a
+   button the bar already offers isn't repeated in the page. */
+body:has(.page .actionbar) .actionbar-default { display: none; }
+.bar-dup { display: none !important; }
+.main { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+/* The budget desk's bar: where the plan stands, then its actions. */
+.plan-bar { gap: 8px 12px; font-size: var(--step--1); font-weight: 600; }
+.plan-bar-row { display: flex; align-items: center; gap: 12px; }
+.plan-bar-buttons { display: flex; gap: 8px; }
+.plan-bar-row .plan-bar-track { flex: 1; }
 @media (max-width: 900px) {
-  .actionbar {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; margin: 0;
-    flex-wrap: nowrap; gap: 8px;
-    padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-    background: color-mix(in srgb, var(--surface) 95%, transparent); backdrop-filter: blur(10px);
-    border-top: 1px solid var(--line); box-shadow: 0 -10px 22px -18px rgba(0, 0, 0, 0.4);
-  }
-  .actionbar .btn { min-height: 48px; justify-content: center; text-align: center; line-height: 1.2; white-space: normal; padding-inline: 14px; }
   .actionbar > .btn-primary, .plan-bar-buttons > .btn-primary { flex: 1 1 0; min-width: 0; font-size: 1.0625rem; }
   .actionbar > .btn:not(.btn-primary), .plan-bar-buttons > .btn:not(.btn-primary) { flex: 0 1 auto; }
-  .actionbar > .daily-btn { flex: 1 1 0; }
+  .actionbar > .btn.daily-btn { flex: 1 1 0; }
   .actionbar .keyhint { display: none; }
-  .actionbar .share-manual { position: absolute; left: 12px; right: 12px; bottom: calc(100% + 8px); }
-  /* One bar per screen: the app's default bar gives way when the page brings its own, and a
-     button the bar already offers isn't repeated in the page. */
-  body:has(.page .actionbar) .actionbar-default { display: none; }
-  .bar-dup { display: none !important; }
-  .main { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
-  /* The top bar's Continue button moves down to the action bar. */
-  .ab-right .stb-go { display: none; }
-  /* The budget desk's bar: where the plan stands, then its actions. */
-  .plan-bar { flex-wrap: wrap; gap: 8px 12px; font-size: var(--step--1); font-weight: 600; }
-  .plan-bar-row { display: flex; align-items: center; gap: 12px; flex: 1 1 100%; }
-  .plan-bar-buttons { display: flex; gap: 8px; flex: 1 1 100%; }
-  .plan-bar-buttons > .btn-hint { flex: 1 1 0; }
+  .plan-bar { flex-wrap: wrap; }
+  .plan-bar-row { flex: 1 1 100%; }
+  .plan-bar-buttons { flex: 1 1 100%; }
+  .plan-bar-buttons > .btn.btn-hint { flex: 1 1 0; }
 }
-.plan-bar-row .plan-bar-track { flex: 1; }
+@media (min-width: 901px) {
+  /* The page's column is 1120 px at most; the bar's buttons line up with its right edge. */
+  .actionbar { justify-content: flex-end; padding-inline: max(24px, calc((100vw - 1120px) / 2 + 24px)); gap: 10px; }
+  .actionbar .btn { min-width: 120px; }
+  .actionbar > .btn-primary { min-width: 200px; font-size: 1.0625rem; }
+  .actionbar .keyhint { order: -1; margin-right: auto; margin-left: 0; }
+  .plan-bar-row { flex: 1 1 auto; max-width: 420px; margin-right: auto; }
+}
+
+/* ---------- Uncle Sam's dock ----------
+   He always speaks from the same place: standing on the action bar at the bottom left, over
+   whatever is behind him. Each new line slides him in from the left; Continue (or a tap on him,
+   or anywhere else) slides him back out, and the handle at the edge brings him back. */
+:root { --abh: 0px; }
+.samdock {
+  position: fixed; z-index: 45; bottom: var(--abh);
+  left: max(8px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
+  display: flex; pointer-events: none;
+}
+.samdock .samdock-inner {
+  display: flex; flex-direction: row; align-items: flex-end; gap: 0; width: min(100%, 760px); pointer-events: auto;
+  transform: translateX(calc(-100% - 40px)); opacity: 0; visibility: hidden;
+  transition: transform 0.36s cubic-bezier(0.4, 0, 0.7, 0.2), opacity 0.3s ease 0.06s, visibility 0s linear 0.36s;
+}
+.samdock[data-shown] .samdock-inner {
+  transform: none; opacity: 1; visibility: visible;
+  transition: transform 0.44s cubic-bezier(0.2, 0.9, 0.25, 1.06), opacity 0.2s ease, visibility 0s;
+}
+.samdock-avatar {
+  flex: none; display: block; padding: 0; margin: 0 -4px 0 0; border: 0; background: transparent; cursor: pointer;
+  line-height: 0; border-radius: 12px 12px 0 0; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
+}
+.samdock-avatar .sam { width: 116px; height: auto; display: block; }
+.samdock .bubble {
+  flex: 1; margin: 0 0 16px; max-width: 600px; max-height: min(36vh, 280px); overflow-y: auto; overscroll-behavior: contain;
+  padding: 12px 16px; cursor: pointer;
+  box-shadow: 0 0 0 1px var(--ring), 0 14px 34px -8px rgba(0, 0, 0, 0.32);
+}
+.samdock .samdock-inner .bubble::before { left: -9px; bottom: 26px; top: auto; transform: rotate(45deg); }
+.samdock .bubble-text { font-size: var(--step-0); line-height: 1.5; }
+.samdock .samsays[data-speaking] .bubble { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, var(--ring)), 0 14px 34px -8px rgba(0, 0, 0, 0.32); }
+/* The handle that brings him back: his head, peeking in from the left edge. */
+.samdock-peek {
+  position: fixed; z-index: 45; left: 0; bottom: calc(var(--abh) + 12px);
+  display: grid; place-items: center; width: 52px; height: 56px; padding: 0 4px 0 0; border: 0; cursor: pointer;
+  border-radius: 0 28px 28px 0; background: var(--surface); box-shadow: 0 0 0 1px var(--ring), 0 8px 20px -6px rgba(0, 0, 0, 0.3);
+  animation: peek-in 0.3s ease 0.25s both; overflow: hidden;
+}
+.samdock-peek .sam { width: 34px; height: auto; margin-top: 10px; }
+@keyframes peek-in { from { transform: translateX(-100%); } to { transform: none; } }
+html.modal-open .samdock, html.modal-open .samdock-peek { display: none; }
+@media (min-width: 901px) {
+  .samdock { left: max(12px, calc((100vw - 1120px) / 2 + 12px)); }
+  .samdock-avatar .sam { width: 140px; }
+  .samdock .bubble { margin-bottom: 22px; padding: 14px 18px; }
+  .samdock .bubble-text { font-size: var(--step-1); }
+  .samdock .samdock-inner .bubble::before { bottom: 30px; }
+}
+@media (max-width: 380px) {
+  .samdock-avatar .sam { width: 100px; }
+  .samdock .bubble-text { font-size: 0.9375rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .samdock .samdock-inner, .samdock[data-shown] .samdock-inner { transform: none !important; transition: opacity 0.15s ease, visibility 0s linear 0.15s !important; }
+  .samdock[data-shown] .samdock-inner { transition: opacity 0.15s ease !important; }
+}
 .journey-skip { display: inline-flex; align-items: center; min-height: 44px; margin-top: 6px; }

@@ -52,7 +52,7 @@ export function Celebration({ stop, stars, onClose, line, share, children, chall
             {[1, 2, 3].map((k) => <span key={k} className="cstar" data-on={k <= stars} style={{ animationDelay: `${0.15 + k * 0.18}s` }}>★</span>)}
           </div>
           <div className="celebrate-badge"><span className="stat-label">Certificate earned</span><strong>{stop.badge}</strong></div>
-          <SamSays mood="cheering" compact auto delay={350}>{say}</SamSays>
+          <SamSays mood="cheering" compact auto delay={350} inline>{say}</SamSays>
           <figure className="celebrate-quote">
             <blockquote>“{stop.quote.text}”</blockquote>
             <figcaption>— {stop.quote.who}, <span className="muted">{stop.quote.where}</span></figcaption>

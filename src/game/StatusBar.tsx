@@ -28,10 +28,6 @@ function useDeskBadges() {
 
 type Menu = 'levels' | 'acc' | 'settings' | null;
 
-// Pages that have their own main button (play, continue, take the challenge), so the bar's
-// "Continue" button would only compete with it.
-const GAME_PAGE = (route: string) => route === 'journey' || route === 'plan' || !!STOP_BY_ID[route];
-
 /** A button with a panel; the levels one also opens on hover, with a short grace period. */
 function Pop({ id, open, setOpen, hover = false, button, children, className = '' }: { id: Exclude<Menu, null>; open: Menu; setOpen: (m: Menu) => void; hover?: boolean; button: (p: { 'aria-expanded': boolean; 'aria-controls': string; onClick: () => void }) => ReactNode; children: ReactNode; className?: string }) {
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -142,9 +138,6 @@ export function StatusBar({ route }: { route: string }) {
         </Pop>
 
         <div className="ab-right">
-          {next && !GAME_PAGE(route) && (
-            <a className="btn btn-primary stb-go" href={'#' + next.id}><span className="ab-hide-sm">{done || j.started ? 'Continue: level ' : 'Start level '}</span><span className="ab-show-sm">Play </span>{next.n}</a>
-          )}
           {n.supported && (
             <button type="button" className="ab-icon stb-voice" aria-pressed={voiceOn} aria-label={voiceOn ? 'Turn off Uncle Sam’s voice' : 'Turn on Uncle Sam’s voice'} title={voiceOn ? 'Uncle Sam’s voice is on' : 'Uncle Sam’s voice is off'} onClick={toggleVoice}>
               <SpeakerIcon on={voiceOn} />

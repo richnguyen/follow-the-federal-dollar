@@ -9,6 +9,7 @@ import { useHaptics } from './haptics';
 import { LevelIcon } from './icons';
 import { chapterStars, checksOf, diffKey, isUnlocked, LEVELS, type Level, type Quiz, type Step, STOP_BY_ID, STOPS, unlockText, type VoteSpec } from './levels';
 import { useJourney } from './state';
+import { useSamDock } from './samdock';
 import { plain, SamSays, UncleSam } from './UncleSam';
 import { lockedLine, QUIZ_LINES } from './script';
 
@@ -78,20 +79,38 @@ function LevelRun({ level }: { level: Level }) {
   // A quick check needs the right answer (or two tries); a guess needs any one pick.
   const quizOk = step?.kind !== 'quiz' || !!j.quiz[step.quiz!.id]?.correct || (j.quiz[step.quiz!.id]?.tries ?? 0) >= (step.quiz!.guess ? 1 : 2);
 
+  // Uncle Sam says each step's line from his dock above the bar. On a step with something to see
+  // or do (a chart, a quiz, a slider, a vote), Continue first slides him away to show it, and the
+  // next Continue moves on; a step that is only his words moves on at once. A new line (an answer
+  // to the quick check) slides him back in. Back brings him back first, then goes back.
+  const dock = useSamDock();
+  const samUp = !!dock?.shown && !!dock?.line;
+  const wrong = step?.kind === 'quiz' && !quizOk && (j.quiz[step.quiz!.id]?.tries ?? 0) > 0;
+  const reveal = !!step && samUp && step.kind !== 'story';
+  const primary = () => {
+    if (!step) return;
+    if (reveal) { dock?.hide(); return; }
+    if (quizOk) finishStep();
+  };
+  const back = () => {
+    if (dock?.line && !dock.shown) { dock.show(); return; }
+    if (i > 0) go(i - 1);
+  };
+
   // Keyboard play, so nothing waits on the mouse: Enter or → continues, ← goes back.
-  const keys = useRef({ finishStep, go, i, quizOk, step, party });
-  keys.current = { finishStep, go, i, quizOk, step, party };
+  const keys = useRef({ primary, back, step, party });
+  keys.current = { primary, back, step, party };
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
       const c = keys.current;
       if (c.party != null || e.metaKey || e.ctrlKey || e.altKey) return;
       const t = e.target as HTMLElement;
       if (t.closest('input, select, textarea, [contenteditable="true"]')) return;
-      if ((e.key === 'Enter' || e.key === 'ArrowRight') && c.step && c.quizOk) {
+      if ((e.key === 'Enter' || e.key === 'ArrowRight') && c.step) {
         if (e.key === 'Enter' && t.closest('button, a')) return; // let the focused control act
         e.preventDefault();
-        c.finishStep();
-      } else if (e.key === 'ArrowLeft' && c.i > 0) { e.preventDefault(); c.go(c.i - 1); }
+        c.primary();
+      } else if (e.key === 'ArrowLeft') { e.preventDefault(); c.back(); }
     };
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
@@ -104,10 +123,10 @@ function LevelRun({ level }: { level: Level }) {
         <section className="level-stage" aria-live="polite" aria-labelledby="step-label">
           <div className="step-count" id="step-label">Step {i + 1} of {level.steps.length} · {step.label}</div>
           <StepBody key={level.id + step.id} step={step} />
-          <ActionBar className="level-nav" label="Step">
-            <button type="button" className="btn" onClick={() => go(Math.max(0, i - 1))} disabled={i === 0}>Back</button>
-            <button type="button" className="btn btn-primary" onClick={finishStep} disabled={!quizOk}>
-              {!quizOk ? (step.quiz?.guess ? 'Make a guess to continue' : 'Answer to continue') : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
+          <ActionBar className="level-nav" label="Step" keepSam>
+            <button type="button" className="btn" onClick={back} disabled={i === 0 && (samUp || !dock?.line)}>Back</button>
+            <button type="button" className="btn btn-primary" onClick={primary} disabled={!reveal && !quizOk}>
+              {reveal ? (wrong ? 'Try again' : 'Continue') : !quizOk ? (step.quiz?.guess ? 'Make a guess to continue' : 'Answer to continue') : step.kind === 'vote' ? (hasVoted(step.vote!, j.choices) ? 'Finish the level' : 'Skip the vote and finish') : i === level.steps.length - 1 ? 'Finish the level' : 'Continue'}
             </button>
             <span className="keyhint small muted" aria-hidden="true">{step.kind === 'quiz' ? <><kbd>1</kbd>–<kbd>{step.quiz!.choices.length}</kbd> answer · </> : null}<kbd>Enter</kbd> continue · <kbd>←</kbd> back</span>
           </ActionBar>
